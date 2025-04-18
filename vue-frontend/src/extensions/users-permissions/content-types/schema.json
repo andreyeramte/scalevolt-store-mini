@@ -1,0 +1,28 @@
+{
+    "kind": "collectionType",
+    "collectionName": "up_users",
+    "info": {
+      "name": "user",
+      "description": "",
+      "singularName": "user",
+      "pluralName": "users",
+      "displayName": "User"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "attributes": {
+      "orders": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::order.order",
+        "mappedBy": "user"
+      },
+      "addresses": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::address.address",
+        "mappedBy": "user"
+      }
+    }
+  }

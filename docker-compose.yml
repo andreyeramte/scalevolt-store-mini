@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  vue-frontend:
+    build: ./vue-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./vue-frontend:/app
+      - /app/node_modules
+    depends_on:
+      - node-backend
+    command: npm run serve
+    environment:
+      - NODE_ENV=development
+      - VUE_APP_API_URL=http://node-backend:4242
+      - VUE_APP_RECOMMENDATIONS_URL=http://python-recs:8000
+
+  node-backend:
+    build: ./node-backend/backend-node
+    ports:
+      - "4242:4242"
+      - "1337:1337"  # Added for your Stripe API
+    volumes:
+      - ./node-backend/backend-node:/app
+      - /app/node_modules
+    depends_on:
+      - python-recs
+      - postgres  # Added PostgreSQL dependency
+    command: npm run dev  # This uses nodemon
+    environment:
+      - NODE_ENV=development
+      - PYTHON_SERVICE_URL=http://python-recs:8000
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/ecommerce?authSource=admin
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=scalevolt
+      - STRIPE_SECRET_KEY=sk_test_your_stripe_key_here
+      - STRIPE_API_VERSION=2023-10-16
+      - DOMAIN=http://localhost:3000
+
+  python-recs:
+    build: ./python-recs
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./python-recs:/app
+    command: python app.py
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - NODE_BACKEND_URL=http://node-backend:4242
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=ecommerce
+
+  postgres:
+    image: postgres:14
+    container_name: scalevolt-postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: scalevolt
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./node-backend/backend-node/db:/docker-entrypoint-initdb.d
+
+volumes:
+  mongo-data:
+  postgres_data:

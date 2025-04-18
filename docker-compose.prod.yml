@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  vue-frontend:
+    build:
+      context: ./vue-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    # No volumes in production
+
+  node-backend:
+    build:
+      context: ./node-backend/backend-node
+      dockerfile: Dockerfile
+    ports:
+      - "4242:4242"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/ecommerce?authSource=admin
+
+  python-recs:
+    build:
+      context: ./python-recs
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - FLASK_ENV=production
+
+  mongodb:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=ecommerce
+
+volumes:
+  mongo-data:

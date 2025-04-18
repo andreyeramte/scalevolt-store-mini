@@ -1,0 +1,10 @@
+{
+    "hello": "Hello!",
+    "menu": {
+      "solarPanels": "Solar Panels",
+      "charging": "Charging",
+      "automaticSwitches": "Automatic Switches",
+      "cablesWires": "Cables & Wires"
+    }
+  }
+  

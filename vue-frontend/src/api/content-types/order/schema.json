@@ -1,0 +1,94 @@
+// Path: src/api/order/content-types/order/schema.json
+{
+    "kind": "collectionType",
+    "collectionName": "orders",
+    "info": {
+      "singularName": "order",
+      "pluralName": "orders",
+      "displayName": "Order",
+      "description": "Customer orders"
+    },
+    "options": {
+      "draftAndPublish": false
+    },
+    "pluginOptions": {},
+    "attributes": {
+      "orderNumber": {
+        "type": "string",
+        "unique": true
+      },
+      "status": {
+        "type": "enumeration",
+        "enum": [
+          "PENDING",
+          "PROCESSING",
+          "SHIPPED",
+          "DELIVERED",
+          "CANCELLED"
+        ],
+        "default": "PENDING"
+      },
+      "total": {
+        "type": "decimal",
+        "required": true
+      },
+      "items": {
+        "type": "relation",
+        "relation": "oneToMany",
+        "target": "api::order-item.order-item",
+        "mappedBy": "order"
+      },
+      "user": {
+        "type": "relation",
+        "relation": "manyToOne",
+        "target": "plugin::users-permissions.user",
+        "inversedBy": "orders"
+      },
+      "shippingAddress": {
+        "type": "relation",
+        "relation": "oneToOne",
+        "target": "api::address.address"
+      },
+      "billingAddress": {
+        "type": "relation",
+        "relation": "oneToOne",
+        "target": "api::address.address"
+      },
+      "shippingCost": {
+        "type": "decimal",
+        "default": 0
+      },
+      "tax": {
+        "type": "decimal",
+        "default": 0
+      },
+      "paymentMethod": {
+        "type": "enumeration",
+        "enum": [
+          "CREDIT_CARD",
+          "BANK_TRANSFER",
+          "PAYPAL",
+          "CASH_ON_DELIVERY"
+        ]
+      },
+      "paymentStatus": {
+        "type": "enumeration",
+        "enum": [
+          "PENDING",
+          "PAID",
+          "FAILED",
+          "REFUNDED"
+        ],
+        "default": "PENDING"
+      },
+      "notes": {
+        "type": "text"
+      },
+      "trackingNumber": {
+        "type": "string"
+      },
+      "carrier": {
+        "type": "string"
+      }
+    }
+  }
