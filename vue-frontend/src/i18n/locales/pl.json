@@ -179,7 +179,6 @@
     "officeAddress": "ul. Marszałkowska 142, 00-061 Warszawa, Polska",
     "emailAddress": "scalevolt.info@gmail.com",
     "phoneNumber": "+48 780 176 595",
-    "taxInfo": "NIP: PL1234567890",
     "businessHours": "Pon-Sob: 9:00 - 18:00"
   },
   "cart": {
@@ -713,7 +712,7 @@
     "companyTitle": "Firma SCALEVOLT",
     "companySubtitle": "Dostawca innowacyjnych rozwiązań w zakresie energii odnawialnej",
     "missionTitle": "Nasza misja",
-    "missionText": "Naszą misją w SCALEVOLT jest uczynienie energii słonecznej dostępną dla każdego mieszkańca Polski, wspierając zrównoważony rozwój i redukcję emisji CO2 poprzez dostarczanie nowoczesnych i niezawodnych rozwiązań energetycznych.",
+    "missionText": "Misją SCALEVOLT jest wspieranie zrównoważonej transformacji i ograniczanie emisji CO2 poprzez dostarczanie nowoczesnych i niezawodnych produktów i rozwiązań energetycznych.",
     "valuesTitle": "Nasze wartości",
     "values": [
       {
@@ -738,7 +737,7 @@
 {
 "year": "2022",
 "title": "Założenie firmy",
-"description": "SCALEVOLT zostało założone w Warszawie przez grupę pasjonatów energii odnawialnej, którzy chcieli przyspieszyć transformację energetyczną w Polsce."
+"description": "„description”: „Infrastruktura ScaleVolt została założona w obliczu narastających konfliktów geopolitycznych i pilnego globalnego przejścia na energię odnawialną. Uznaliśmy, że społeczeństwa na całym świecie będą potrzebowały coraz większych dostaw energii, aby zasilać współczesne życie, sztuczną inteligencję, transport elektryczny i podnosić jakość życia”."
 },
 {
 "year": "2023",

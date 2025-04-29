@@ -64,17 +64,17 @@ export default {
   async getCurrencyForRegion(region) {
     try {
       const settings = await this.getRegionalSettings(region);
-      return settings.data?.[0]?.attributes?.currency || (region === 'uk' ? 'UAH' : 'PLN');
+      return settings.data?.[0]?.attributes?.currency || (region === 'ua' ? 'UAH' : 'PLN');
     } catch (error) {
       console.error(`RegionService getCurrencyForRegion(${region}) error:`, error);
       // Fallback values if API fails
-      return region === 'uk' ? 'UAH' : 'PLN';
+      return region === 'ua' ? 'UAH' : 'PLN';
     }
   },
   
   getLocaleConfig() {
     return {
-      uk: {
+      ua: {
         currency: 'UAH',
         currencySymbol: '₴',
         dateFormat: 'DD.MM.YYYY',
@@ -96,9 +96,9 @@ export default {
   },
   
   formatPrice(price, region) {
-    const config = this.getLocaleConfig()[region] || this.getLocaleConfig().uk;
+    const config = this.getLocaleConfig()[region] || this.getLocaleConfig().ua;
     
-    return new Intl.NumberFormat(region === 'pl' ? 'pl-PL' : 'uk-UA', {
+    return new Intl.NumberFormat(region === 'pl' ? 'pl-PL' : 'ua-UA', {
       style: 'currency',
       currency: config.currency
     }).format(price);

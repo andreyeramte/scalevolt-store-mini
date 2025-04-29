@@ -28,20 +28,20 @@
             <div class="translation-section">
               <h3>Ukrainian Translation</h3>
               <div class="form-group">
-                <label for="name_uk">Name (Ukrainian)</label>
+                <label for="name_ua">Name (Ukrainian)</label>
                 <input 
-                  id="name_uk" 
-                  v-model="product.name_uk" 
+                  id="name_ua" 
+                  v-model="product.name_ua" 
                   type="text" 
                   placeholder="Ukrainian product name"
                 />
               </div>
               
               <div class="form-group">
-                <label for="description_uk">Description (Ukrainian)</label>
+                <label for="description_ua">Description (Ukrainian)</label>
                 <textarea 
-                  id="description_uk" 
-                  v-model="product.description_uk" 
+                  id="description_ua" 
+                  v-model="product.description_ua" 
                   placeholder="Ukrainian product description"
                   rows="3"
                 ></textarea>
@@ -138,9 +138,9 @@
         
         try {
           await axios.patch(`/api/products/${product.id}/translations`, {
-            name_uk: product.name_uk,
+            name_ua: product.name_ua,
             name_pl: product.name_pl,
-            description_uk: product.description_uk,
+            description_ua: product.description_ua,
             description_pl: product.description_pl
           });
           
@@ -157,16 +157,16 @@
         
         try {
           const response = await axios.post(`/api/products/${product.id}/auto-translate`, {
-            targetLanguages: ['uk', 'pl'],
+            targetLanguages: ['ua', 'pl'],
             sourceLanguage: 'en'
           });
           
           // Update the product in the UI with translated fields
           const translatedProduct = response.data;
           Object.assign(product, {
-            name_uk: translatedProduct.name_uk,
+            name_ua: translatedProduct.name_ua,
             name_pl: translatedProduct.name_pl,
-            description_uk: translatedProduct.description_uk,
+            description_ua: translatedProduct.description_ua,
             description_pl: translatedProduct.description_pl
           });
           

@@ -1,1024 +1,607 @@
 <template>
-  <div class="product-page-container">
-    <!-- Breadcrumb Navigation -->
-    <nav class="breadcrumb">
-    <router-link to="/">{{ $t("common.home") }}</router-link>
-    <span class="breadcrumb-separator">&gt;</span>
-    <router-link :to="getTypeRoute(product?.type)">
-      {{ product?.type || $t("common.categories") }}
-    </router-link>
-    <span class="breadcrumb-separator">&gt;</span>
-    <span class="current-page">{{
-      product?.title || $t("product.section_title")
-    }}</span>
-  </nav>
+  <div class="product-page-container flex flex-col justify-center items-center">
+    <!-- Fixed Breadcrumb - Added higher z-index and better visibility -->
+    <nav class="breadcrumb ml-8 w-full">
+      <router-link to="/">{{ $t("common.home") }}</router-link>
+      <span class="breadcrumb-separator">/</span>
+      <router-link :to="getTypeRoute(myproduct?.type)">
+        {{ myproduct?.type || $t("common.categories") }}
+      </router-link>
+      <span class="breadcrumb-separator">/</span>
+      <span class="current-page">{{
+        myproduct?.title || $t("product.section_title")
+      }}</span>
+    </nav>
+    <div class="flex flex-col xl:flex-row">
+      <div class="product-containew p-4">
+        <div v-if="product" class="product-content">
+          <div class="product-gallery">
+            <!-- Thumbnail Gallery -->
+            <div class="thumbnail-list">
+              <div
+                v-for="(img, index) in productImages"
+                :key="index"
+                class="thumbnail"
+                :class="{ active: selectedImage === img }"
+                @click="selectedImage = img"
+              >
+                <img :src="img" :alt="`Product Thumbnail ${index + 1}`" />
+              </div>
+            </div>
 
-    <div v-if="product" class="product-content">
-      <div class="product-gallery">
-        <!-- Thumbnail Gallery -->
-        <div class="thumbnail-list">
-          <div
-            v-for="(img, index) in productImages"
-            :key="index"
-            class="thumbnail"
-            :class="{ active: selectedImage === img }"
-            @click="selectedImage = img"
-          >
-            <img :src="img" :alt="`Product Thumbnail ${index + 1}`" />
+            <!-- Main Product Image -->
+            <div class="main-image-container">
+              <img
+                :src="
+                  selectedImage || productImages[0] || '/images/placeholder.png'
+                "
+                :alt="product.title || product.name"
+                class="main-image"
+              />
+            </div>
           </div>
         </div>
-
-        <!-- Main Product Image -->
-        <div class="main-image-container">
-          <img
-            :src="
-              selectedImage || productImages[0] || '/images/placeholder.png'
-            "
-            :alt="product.title || product.name"
-            class="main-image"
-          />
-        </div>
-      </div>
-
-      <!-- Product Details -->
-      <div class="product-details">
-        <h1 class="product-title">{{ $t(product.nameKey) }}</h1>
-
-        <!-- Rating and Reviews -->
-        <div class="product-rating">
-          <div class="rating-stars">
-            <span class="star">★</span>
-            <span class="rating-value">4.7</span>
-          </div>
-          <span class="review-count">(157 Reviews)</span>
-        </div>
-
-        <!-- Pricing -->
-        <div class="pricing-section">
-          <div class="current-price">
-            <span class="price">₹{{ formatPrice(product.price) }}</span>
-            <span class="discount-tag">60% Off</span>
-          </div>
-          <div class="original-price">
-            <span>MRP ₹{{ formatPrice(product.price) }}</span>
-            <span class="tax-info">(incl. of all taxes)</span>
+        <div class="p-4 diviwer mt-6 mb-6"></div>
+        <div class="product-characteristics">
+          <div v-for="(item, i) in productCharacteristics" :key="i" class="">
+            <div class="product-characteristic p-[17px] flex gap-3 my-2">
+              <img :src="item.src" alt="" />
+              <div class="">
+                <div class="characteristics-name">{{ item.name }}</div>
+                <div class="characteristics-description">
+                  {{ item.description }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-
-        <!-- Delivery Info -->
-        <div class="delivery-info">
-          <span class="delivery-icon">⚡</span>
-          <span>Get it in 13 minutes</span>
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <a href="#" class="view-all-offers">{{ $t("delivery.seeAll") }}</a>
-
-      <!-- Quantity and Cart Control -->
-      <div class="cart-control">
-        <div class="quantity-selector">
+        
+        <!-- Installation Button with Popup - Matches Figma design exactly -->
+        <div class="button-instaletion mt-4">
           <button
-            class="quantity-btn"
-            @click="decrementQuantity"
-            :disabled="quantity <= 1"
+            class="flex gap-2 items-center justify-center w-full h-[50px] rounded-[12px] border border-blue-500 text-blue-500"
+            @click="toggleInstallationPopup"
           >
-            -
+            <img src="/images/service.svg" alt="" />
+            <p>{{ $t("product.orderInstallation") || "Замовити встановлення" }}</p>
           </button>
-          <span class="quantity-value">{{ quantity }}</span>
-          <button class="quantity-btn" @click="incrementQuantity">+</button>
         </div>
-        <button class="add-to-cart-btn" @click="addToCart">
-          {{ $t("product.addToCart") }}
-        </button>
+        
+        <div class="p-4 diviwer mt-6 mb-6"></div>
+        <div class="social flex gap-1">
+          <button><img src="/images/facebook.svg" alt="" /></button>
+          <button><img src="/images/tg.svg" alt="" /></button>
+          <button><img src="/images/soc.svg" alt="" /></button>
+        </div>
       </div>
-
-      <!-- Extra Product Details -->
-      <div class="extra-details">
-        <div class="detail-icon">
-          <img
-            src="/images/ProductPage/return-icon.png"
-            alt="7 Days Exchange"
-          />
-          <span>7 Days Exchange</span>
+      <div v-if="product" class="about-product p-4">
+        <div class="about-product-head flex justify-between">
+          <div class="availability">В наявності</div>
+          <div class="code">Код: <span>12743</span></div>
         </div>
-        <div class="detail-icon">
-          <img
-            src="/images/ProductPage/delivery-icon.png"
-            alt="Fast Delivery"
-          />
-          <span>Fast Delivery</span>
+        <!-- Fixed product name with explicit text color -->
+        <h2 class="product-name mt-3">{{ product.defaultName }}</h2>
+        <div class="certification flex items-center mt-6">
+          <img src="/images/certification-Icon.svg" alt="" />
+          <div class="ml-2">Сертифікований товар.</div>
+          <a href="/">Дивитись сертифікат</a>
+        </div>
+
+        <div class="product-boxes flex flex-wrap mt-6">
+          <div
+            v-for="(box, index) in productBoxes"
+            :key="index"
+            class="product-boxe flex items-center mt-2 mr-2"
+          >
+            <img class="mr-2" :src="box.img" alt="" />
+            <div class="">{{ box.title }}</div>
+          </div>
+        </div>
+        <div class="p-4 diviwer mt-6 mb-6"></div>
+        <div class="product-price">
+          <div class="flex items-center">
+            <span class="product-price-discount">64 543 ₴</span>
+            <span class="discount ml-2">-5%</span>
+          </div>
+          <div class="real-price mt-1">57 999 ₴</div>
+          <div class="credits-price flex items-center">
+            <img src="/images/calender.svg" alt="" />
+            <span class="credit-price ml-2 mr-2">від 580 ₴/міс</span>
+            <span class="credit">в кредит</span>
+          </div>
+        </div>
+        <div class="p-4 diviwer mt-6 mb-6"></div>
+        <div class="product-sizes">
+          <span>Разміри сонячної батареї, (мм)</span>
+          <div class="mt-3 product-sizes-buttons">
+            <button
+              @click="sizeButton = size"
+              v-for="(size, i) in productSizes"
+              :key="size.id"
+              :class="{ active: sizeButton.id === size.id }"
+            >
+              {{ size.size }}
+            </button>
+          </div>
+        </div>
+        <div class="garanty">
+          <h4 class="h4">Гарантія та доставка:</h4>
+          <div class="garanty-data mt-3">
+            <div
+              v-for="(garanty, i) in garantyData"
+              :key="i"
+              class="flex items-center mt-6"
+            >
+              <img class="mr-3" :src="garanty.img" alt="" />
+              <span>{{ garanty.title }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="payments-data mt-6">
+          <h3>Оплату можна здійснити:</h3>
+          <div class="flex flex-wrap">
+            <div v-for="(item, i) in paymantData" :key="i" class="paymant">
+              <button><img :src="item.img" alt="" /></button>
+            </div>
+          </div>
+        </div>
+        <div class="main-characters mt-[63px]">
+          <h3>Основні характеристики</h3>
+          <div class="main-characters-data mt-8">
+            <div
+              class="characters-data p-8 flex items-center justify-between xl:justify-start flex-wrap"
+              v-for="(item, i) in mainCharacters"
+              :key="i"
+            >
+              <span>{{ item.name }}</span>
+              <div>{{ item.description }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Product Information Section (from first code) -->
+        <div v-if="product" class="product-info-section mt-8">
+          <h3>{{ $t("product.section_title") || "Інформація про товар" }}</h3>
+          <table class="info-table">
+            <tr>
+              <th>{{ $t("product.quantity") || "Кількість" }}</th>
+              <td>{{ product.quantity || "1" }}</td>
+            </tr>
+            <tr>
+              <th>{{ $t("product.brand") || "Бренд" }}</th>
+              <td>{{ product.brand }}</td>
+            </tr>
+            <tr>
+              <th>{{ $t("product.model") || "Модель" }}</th>
+              <td>{{ product.model || product.defaultName }}</td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
-
-    <!-- Product Highlights -->
-    <div v-if="product" class="product-highlights">
-      <h2>{{ $t("product.section_title") }}</h2>
-      <table class="highlights-table">
-        <tr>
-          <th>{{ $t("product.quantity") }}</th>
-          <td>{{ product.quantity }}</td>
-        </tr>
-        <tr>
-          <th>Brand</th>
-          <td>{{ product.brand }}</td>
-        </tr>
-        <tr>
-          <th>Model</th>
-          <td>{{ product.model }}</td>
-        </tr>
-      </table>
-    </div>
-
-    <div
-      v-if="
-        product &&
-        (product.type === 'Сонячні Панелі' ||
-          product.type === 'Швидкі Зарядні Станції (DC)')
-      "
-    >
-      <ProductQuoteForm
-        :productType="product.type === 'Сонячні Панелі' ? 'solar' : 'charger'"
-        :productId="product.id"
-        :productName="product.title || product.name"
-      />
+    <div class="relative">
+      <div
+        class="add-to-card mt-5 flex items-center justify-between xl:justify-start"
+      >
+        <div class="product-counter flex items-center justify-between">
+          <button @click="changeProductCount('-')">
+            <img src="/images/dash.svg" alt="" />
+          </button>
+          <input v-model="productCount" />
+          <button @click="changeProductCount('+')">
+            <img src="/images/plus.svg" alt="" />
+          </button>
+        </div>
+        <div class="add-to-card-button xl:ml-4">
+          <button
+            @click="addToCart"
+            class="flex items-center justify-center xl:w-[580px]"
+          >
+            <img
+              class="mr-2"
+              src="/images/cart-2.svg"
+              alt=""
+              width="20"
+              height="17"
+            />
+            <p>{{ $t("product.addToCart") || "Додати в кошик" }}</p>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Installation Popup (Modal) -->
+  <div v-if="showInstallationPopup" class="installation-popup-overlay" @click="closeInstallationPopup">
+    <div class="installation-popup" @click.stop>
+      <div class="popup-header">
+        <h3>{{ $t("product.installationRequest") || "Замовлення встановлення" }}</h3>
+        <button class="close-btn" @click="closeInstallationPopup">×</button>
+      </div>
+      <div class="popup-content">
+        <div class="installation-toggle">
+          <input type="checkbox" id="addInstallation" v-model="addInstallation">
+          <label for="addInstallation">{{ $t("product.includeInstallation") || "Додати встановлення до замовлення" }}</label>
+        </div>
+        
+        <div v-if="addInstallation" class="installation-form">
+          <div class="form-group">
+            <label>{{ $t("product.companyName") || "Назва компанії" }} <span class="required-indicator">*</span></label>
+            <input type="text" v-model="installationDetails.companyName" required>
+          </div>
+          
+          <div class="form-group">
+            <label>{{ $t("product.address") || "Адреса" }} <span class="required-indicator">*</span></label>
+            <input type="text" v-model="installationDetails.address" required>
+          </div>
+          
+          <div class="form-group">
+            <label>{{ $t("product.notes") || "Примітки" }}</label>
+            <textarea v-model="installationDetails.notes"></textarea>
+          </div>
+          
+          <div class="installation-provider">
+            <!-- Fixed image path -->
+            <img src="/images/certification-Icon.svg" alt="Installation Provider" class="provider-logo">
+            <div>
+              <div class="provider-name">{{ $t("product.installationProvider") || "Сертифікований монтажник" }}</div>
+              <div class="provider-rating">★★★★★ (4.9)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="popup-footer">
+        <button class="cancel-btn" @click="closeInstallationPopup">{{ $t("common.cancel") || "Скасувати" }}</button>
+        <button class="confirm-btn" @click="confirmInstallation">{{ $t("common.confirm") || "Підтвердити" }}</button>
+      </div>
+    </div>
+  </div>
+
 </template>
 
-<script>
+
+
+<script setup>
 import { ref, onMounted, computed, onUpdated, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useCartStore } from "@/stores/cart";
-import ProductQuoteForm from "@/components/ProductQuoteForm.vue";
 import { useProductsStore } from "@/stores/products";
 
-// Define mockProducts array outside of setup
-const mockProducts = [
-  {
-    id: 1,
-    title: "Portronics 1.5M Cord Length HDMI Cable(Black)",
-    price: 199,
-    originalPrice: 499,
-    quantity: "1 piece",
-    brand: "Portronics",
-    model: "HDMI-1.5M",
-    type: "Cables, Chargers & Powerbanks",
-    images: [
-      "/images/1.jpg",
-      "/images/2.jpg",
-      "/images/3.jpg",
-      "/images/4.jpg",
-      "/images/5.jpg",
-    ],
-    offers: [
-      {
-        id: 1,
-        bank: "CRED",
-        detail: "Get assured rewards",
-        icon: "/images/cred-icon.png",
-      },
-      {
-        id: 2,
-        bank: "BHIM UPI",
-        detail: "Get flat ₹25 discount",
-      },
-      {
-        id: 3,
-        bank: "Amazon Pay",
-        detail: "Get up to ₹25 cashback",
-      },
-    ],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 2,
-    title: "Сонячна Панель Longi-420-Black",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-420-Black",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-420-Black.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 3,
-    title: "Сонячна Панель Longi-425-Black",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-425-Black",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-425-Black.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 4,
-    title: "Сонячна Панель Longi-530-Black",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-530-Black",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-530-Black.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 5,
-    title: "Сонячна Панель Longi-630-Bifacial",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-630-Bifacial",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-630-Bifacial.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 6,
-    title: "Сонячна Панель Longi-430",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-430",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-430.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 7,
-    title: "Сонячна Панель Longi-580",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-580",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-580.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 8,
-    title: "Сонячна Панель Longi-585",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-585",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-585.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 9,
-    title: "Сонячна Панель Longi-440",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-440",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-440.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 10,
-    title: "Сонячна Панель Longi-455",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Longi",
-    model: "Longi-455",
-    type: "Сонячні Панелі",
-    images: ["/images/Categories/solar.panels/Longi-455.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 11,
-    name: "АКБ Deye RW-M6.1-B-1",
-    price: 1000,
-    image: "/images/Categories/batteries/АКБ.Deye.RW-M6.1-B-1.jpg",
-    brand: "Deye",
-    categoryId: 2,
-  },
-  {
-    id: 12,
-    name: "RW-M5.3-Pro_1",
-    price: 1200,
-    image: "/images/Categories/batteries/RW-M5.3-Pro_1-2.jpg",
-    brand: "Deye",
-    categoryId: 2,
-  },
-  {
-    id: 13,
-    name: "Deye-RW-F10.6-51.2V-208AH-10.64KWH-1",
-    price: 1000,
-    image:
-      "/images/Categories/batteries/Deye-RW-F10.6-51.2V-208AH-10.64KWH-1.jpg",
-    brand: "Deyes",
-    categoryId: 2,
-  },
-  {
-    id: 14,
-    name: "АКБ-Pylontech-US5000",
-    price: 1200,
-    image: "/images/Categories/batteries/АКБ-Pylontech-US5000-1.jpg",
-    brand: "Pylontech",
-    categoryId: 2,
-  },
-  {
-    id: 15,
-    name: "Сонячна Панель JA Solar 560kW",
-    price: 1000,
-    image: "/images/5.jpg",
-    brand: "JA Solar",
-    categoryId: 2,
-  },
-  {
-    id: 16,
-    name: "Сонячна Панель Jinko Tiger 560kW",
-    price: 1200,
-    image: "/images/6.jpg",
-    brand: "Jinko Tiger",
-    categoryId: 2,
-  },
-  {
-    id: 17,
-    name: "Сонячна Панель JA Solar 560kW",
-    price: 1000,
-    image: "/images/7.jpg",
-    brand: "JA Solar",
-    categoryId: 2,
-  },
-  {
-    id: 18,
-    name: "Сонячна Панель Jinko Tiger 560kW",
-    price: 1200,
-    image: "/images/8.jpg",
-    brand: "Jinko Tiger",
-    categoryId: 2,
-  },
-  {
-    id: 19,
-    name: "Сонячна Панель JA Solar 560kW",
-    price: 1000,
-    image: "/images/9.jpg",
-    brand: "JA Solar",
-    categoryId: 2,
-  },
-  {
-    id: 20,
-    name: "Сонячна Панель Jinko Tiger 560kW",
-    price: 1200,
-    image: "/images/Categories/batteries/АКБ.Deye.RW-M6.1-B-1.jpg",
-    brand: "Jinko Tiger",
-    categoryId: 2,
-  },
-  {
-    id: 21,
-    title: "PowerBank 10000mAh Ultra Slim",
-    price: 599,
-    originalPrice: 999,
-    quantity: "1 piece",
-    brand: "PowerTech",
-    model: "PB-10000",
-    type: "Батареї",
-    image: ["/images/Categories/batteries/АКБ.Deye.RW-M6.1-B-1.jpg"],
-    offers: [],
-  },
-  {
-    id: 22,
-    title: "PowerBank 20000mAh Solar Charging",
-    price: 899,
-    originalPrice: 1299,
-    quantity: "1 piece",
-    brand: "SolarCharge",
-    model: "SC-20000",
-    type: "Батареї",
-    images: ["/images/batteries/powerbank2.jpg"],
-    offers: [],
-  },
-  {
-    id: 23,
-    title: "Lithium Ion Battery Pack 48V",
-    price: 2499,
-    originalPrice: 3999,
-    quantity: "1 piece",
-    brand: "EnergyCell",
-    model: "EC-48V",
-    type: "Батареї",
-    images: ["/images/batteries/battery-pack1.jpg"],
-    offers: [],
-  },
-  {
-    id: 24,
-    title: "Home Battery Storage 5kWh",
-    price: 4999,
-    originalPrice: 6499,
-    quantity: "1 piece",
-    brand: "HomeEnergy",
-    model: "HE-5000",
-    type: "Батареї",
-    images: ["/images/batteries/home-battery1.jpg"],
-    offers: [],
-  },
-  {
-    id: 25,
-    title: "Portable Generator Battery 1000W",
-    price: 1799,
-    originalPrice: 2499,
-    quantity: "1 piece",
-    brand: "PortaPower",
-    model: "PP-1000",
-    type: "Батареї",
-    images: ["/images/batteries/generator1.jpg"],
-    offers: [],
-  },
-  // Add these inverter products to your mockProducts array in ProductPage.vue
-  {
-    id: 30,
-    title: "Deye Hybrid 5kw 1ph",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 5kw 1ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-5kw-1ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 31,
-    title: "Deye Hybrid 6kw 1ph",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 6kw 1ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-6kw-1ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 32,
-    title: "Deye Hybrid 8kw 1ph",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 8kw 1ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-8kw-1ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 33,
-    title: "Deye Hybrid 10kw 1ph",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 10kw 1ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-10kw-1ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 34,
-    title: "Deye Hybrid 10kw 3ph",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 10kw 3ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-10kw-3ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 35,
-    title: "Deye Hybrid 12kw 1ph",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 12kw 1ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-12kw-1ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 36,
-    title: "Deye Hybrid 12kw 3ph",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 12kw 3ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-12kw-3ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 37,
-    title: "Deye Hybrid 15kw 3ph",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 15kw 3ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-15kw-3ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 38,
-    title: "Deye Hybrid 16kw 1ph",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 16kw 1ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-16kw-1ph-48V.png"],
-    offers: [],
-  },
-  {
-    id: 39,
-    title: "Deye Hybrid 16kw 3ph",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 piece",
-    brand: "Deye",
-    model: "Hybrid 16kw 3ph 48V",
-    type: "Інвертори",
-    images: ["/images/deye-hybrid-16kw-3ph-48V.png"],
-    offers: [],
+const route = useRoute();
+const store = useProductsStore();
+const cartStore = useCartStore();
+const productId = computed(() => route.params.id);
+const product = ref(null);
+const selectedImage = ref(null);
+const productCount = ref(1);
+const sizeButton = ref({ id: 1, size: "1722×1134×30" });
 
-    // Add these solar sets products to your mockProducts array in ProductPage.vue
+// Installation popup state
+const showInstallationPopup = ref(false);
+const addInstallation = ref(false);
+const installationDetails = ref({
+  companyName: "",
+  address: "",
+  notes: "",
+});
+
+const toggleInstallationPopup = () => {
+  showInstallationPopup.value = !showInstallationPopup.value;
+};
+
+const closeInstallationPopup = () => {
+  showInstallationPopup.value = false;
+};
+
+const confirmInstallation = () => {
+  if (addInstallation.value) {
+    // Validate form if installation is selected
+    if (!installationDetails.value.companyName || !installationDetails.value.address) {
+      alert($t("product.fillRequiredFields") || "Будь ласка, заповніть обов'язкові поля");
+      return;
+    }
+  }
+  
+  // Close the popup and keep the installation details
+  showInstallationPopup.value = false;
+  // You can add additional logic here if needed
+};
+
+const changeProductCount = (action) => {
+  if (action === "+") {
+    productCount.value++;
+  } else if (action === "-") {
+    if (productCount.value > 1) {
+      productCount.value--;
+    }
+  }
+};
+
+const productSizes = [
+  { id: 1, size: "1722×1134×30" },
+  { id: 2, size: "2600×1134×30" },
+  { id: 3, size: "2600×1134×30" },
+];
+
+const myproduct = computed(() => {
+  return store.getProducts.filter((product) => +product.id === +productId.value);
+});
+
+const productCharacteristics = [
+  { 
+    src: '/images/manufactury.svg',
+    name: "Виробник",
+    description: "Victron Energy (Китай)",
   },
   {
-    id: 40,
-    title: "Гибридная солнечная электростанция на 30кВ з АКБ 60кВ",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Hybrid 30kW Set",
-    type: "SolarSets",
-    images: ["/images/solar.set.hybrid.30kw.with.АКБ-60кВ.png"],
-    offers: [],
+    src: '/images/core_1.svg',
+    name: "Номінальна потужність",
+    description: "435 Вт",
   },
   {
-    id: 41,
-    title: "Сонячна Панель Longi-420-Black",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-420-Black",
-    type: "SolarSets",
-    images: ["/images/Longi-420-Black.png"],
-    offers: [],
+    src: '/images/core.svg',
+    name: "Маса",
+    description: "1.9 Кг",
   },
   {
-    id: 42,
-    title: "Сонячна Панель Longi-425-Black",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-425-Black",
-    type: "SolarSets",
-    images: ["/images/Longi-425-Black.png"],
-    offers: [],
+    src: '/images/selfie.svg',
+    name: "Номінальна напруга",
+    description: "18.4 В",
   },
   {
-    id: 43,
-    title: "Сонячна Панель Longi-530-Black",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-530-Black",
-    type: "SolarSets",
-    images: ["/images/Longi-530-Black.png"],
-    offers: [],
-  },
-  {
-    id: 44,
-    title: "Сонячна Панель Longi-630-Bifacial",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-630-Bifacial",
-    type: "SolarSets",
-    images: ["/images/Longi-630-Bifacial.png"],
-    offers: [],
-  },
-  {
-    id: 45,
-    title: "Сонячна Панель Longi-430",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-430",
-    type: "SolarSets",
-    images: ["/images/Longi-430.png"],
-    offers: [],
-  },
-  {
-    id: 46,
-    title: "Сонячна Панель Longi-580",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-580",
-    type: "SolarSets",
-    images: ["/images/Longi-580.png"],
-    offers: [],
-  },
-  {
-    id: 47,
-    title: "Сонячна Панель Longi-585",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-585",
-    type: "SolarSets",
-    images: ["/images/Longi-585.png"],
-    offers: [],
-  },
-  {
-    id: 48,
-    title: "Сонячна Панель Longi-440",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "Longi-440",
-    model: "Longi-440",
-    type: "SolarSets",
-    images: ["/images/Longi-440.png"],
-    offers: [],
-  },
-  {
-    id: 49,
-    title: "Сонячна Панель Longi-455",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 комплект",
-    brand: "Longi",
-    model: "Longi-455",
-    type: "SolarSets",
-    images: ["/images/Longi-455.png"],
-    offers: [],
-  },
-  // Add these solar mount system products to your mockProducts array in ProductPage.vue
-  {
-    id: 50,
-    title: "Система монтажу на скатну покрівлю 10кВт",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "MountingSystems",
-    model: "Roof-Mount-10kW",
-    type: "Система монтажу сонячних панелей",
-    images: ["/images/roof-mount-system-10kw.png"],
-    offers: [],
-  },
-  {
-    id: 51,
-    title: "Система монтажу на пласку покрівлю 15кВт",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "1 комплект",
-    brand: "MountingSystems",
-    model: "Flat-Roof-15kW",
-    type: "Система монтажу сонячних панелей",
-    images: ["/images/flat-roof-mount-15kw.png"],
-    offers: [],
-  },
-  {
-    id: 52,
-    title: "Система монтажу на землю 30кВт",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "1 комплект",
-    brand: "MountingSystems",
-    model: "Ground-Mount-30kW",
-    type: "Система монтажу сонячних панелей",
-    images: ["/images/ground-mount-system-30kw.png"],
-    offers: [],
-  },
-  {
-    id: 53,
-    title: "Кріплення на металочерепицю",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "100 шт",
-    brand: "MountingSystems",
-    model: "Metal-Tile-Hook",
-    type: "Система монтажу сонячних панелей",
-    images: ["/images/metal-tile-hooks.png"],
-    offers: [],
-  },
-  {
-    id: 54,
-    title: "Кріплення на бітумну черепицю",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "100 шт",
-    brand: "MountingSystems",
-    model: "Bitumen-Tile-Hook",
-    type: "Система монтажу сонячних панелей",
-    images: ["/images/bitumen-tile-hooks.png"],
-    offers: [],
-  },
-  {
-    id: 55,
-    title: "Алюмінієвий профіль 4м",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "10 шт",
-    brand: "MountingSystems",
-    model: "Aluminum-Rail-4m",
-    type: "Система монтажу сонячних панелей",
-    images: ["/images/aluminum-rail-4m.png"],
-    offers: [],
-  },
-  {
-    id: 60,
-    title: "Швидкі Зарядні Станції (DC)",
-    price: 1200,
-    originalPrice: 1500,
-    quantity: "100 шт",
-    brand: "MountingSystems",
-    model: "Metal-Tile-Hook",
-    type: "Швидкі Зарядні Станції (DC)",
-    images: ["/images/metal-tile-hooks.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 61,
-    title: "Швидкі Зарядні Станції (DC)",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "100 шт",
-    brand: "MountingSystems",
-    model: "Bitumen-Tile-Hook",
-    type: "Швидкі Зарядні Станції (DC)",
-    images: ["/images/bitumen-tile-hooks.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
-  },
-  {
-    id: 63,
-    title: "Швидкі Зарядні Станції (DC)",
-    price: 1000,
-    originalPrice: 1300,
-    quantity: "100 шт",
-    brand: "MountingSystems",
-    model: "Bitumen-Tile-Hook",
-    type: "Швидкі Зарядні Станції (DC)",
-    images: ["/images/bitumen-tile-hooks.png"],
-    offers: [],
-    installationAvailable: true, // Add this flag
+    src: '/images/battery.svg',
+    name: "Струм короткого замикання",
+    description: "1.18 А",
   },
 ];
 
-export default {
-  name: "ProductPage",
-  components: {
-    ProductQuoteForm,
+const productBoxes = [
+  {
+    img: "/images/np.svg",
+    title: "Доставка за 1 грн.",
   },
-  setup() {
-    const route = useRoute();
-    const cartStore = useCartStore();
+  {
+    img: "/images/krash.svg",
+    title: "Кращ",
+  },
+  {
+    img: "/images/trade-in.svg",
+    title: "Trade-In",
+  }
+];
 
-    // Product State
-    const product = ref(null);
-    const selectedImage = ref(null);
-    const quantity = ref(1);
-    const productId = computed(() => route.params.id);
-    const store = useProductsStore();
+const garantyData = [
+  {
+    img: "/images/truck.svg",
+    title: "Безкоштовна доставка у магазин та відділення Нової Пошти.",
+  },
+  {
+    img: "/images/shield-tick.svg",
+    title: "Офіційна гарантія від виробника",
+  },
+  {
+    img: "/images/3d-rotate.svg",
+    title: "Швидкий обмін та повернення протягом 14 днів.",
+  }
+];
 
-    const myproduct = computed(() => {
-      return store.getProducts.filter((product) => +product.id === +productId);
-    });
+const mainCharacters = [
+  {
+    name: "Номінальна потужність, (Вт)",
+    description: "435",
+  },
+  {
+    name: "Тип кристала",
+    description: "Монокристал",
+  },
+  {
+    name: "Напруга при максимальній потужності, (В)",
+    description: "33,04",
+  },
+  {
+    name: "Струм при максимальній потужності, (A)",
+    description: "13,17 А",
+  },
+  {
+    name: "Напруга холостого ходу, (В)",
+    description: "39,33",
+  },
+  {
+    name: "Струм короткого замикання Iк.з. (A) ",
+    description: "1722х1134х30",
+  },
+  {
+    name: "Рама",
+    description: "Анодований алюміній",
+  },
+  {
+    name: "Вага, (кг)",
+    description: "120 Гц",
+  },
+  {
+    name: "Напруга холостого ходу, (В)",
+    description: "20,8",
+  },
+];
 
-    // Add these new reactive properties
-    const addInstallation = ref(false);
-    const installationDetails = ref({
-      companyName: "",
-      address: "",
-      notes: "",
-    });
+const paymantData = [
+  {
+    img: "/images/paymants/google.svg",
+    title: "google",
+  },
+  {
+    img: "/images/paymants/apple.svg",
+    title: "apple",
+  },
+  {
+    img: "/images/paymants/privat.svg",
+    title: "privat",
+  },
+  {
+    img: "/images/paymants/visa.svg",
+    title: "УкрСиббанк",
+  },
+  {
+    img: "/images/paymants/master.svg",
+    title: "УкрСиббанк",
+  },
+  {
+    img: "/images/paymants/green.svg",
+    title: "УкрСиббанк",
+  },
+  {
+    img: "/images/paymants/yellow.svg",
+    title: "УкрСиббанк",
+  },
+];
 
-    // Compute product images safely
-    const productImages = computed(() => {
-      if (!product.value) return [];
-      if (product.value.images) return product.value.images;
-      if (product.value.image) {
-        return Array.isArray(product.value.image)
-          ? product.value.image
-          : [product.value.image];
-      }
-      return ["/images/placeholder.png"];
-    });
-    const getProduct = () => {
-      try {
-        const productId = route.params.id;
-        // Simulate API call or use mock data
-        const foundProduct = store.getProducts.filter(
-          (product) => +product.id === +productId
-        )[0];
-
-        if (foundProduct) {
-          product.value = foundProduct;
-
-          // Set selected image safely
-          if (foundProduct.images && foundProduct.images.length > 0) {
-            selectedImage.value = foundProduct.images[0];
-          } else if (foundProduct.image) {
-            selectedImage.value = Array.isArray(foundProduct.image)
-              ? foundProduct.image[0]
-              : foundProduct.image;
-          } else {
-            selectedImage.value = "/images/placeholder.png";
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      }
+const addToCart = () => {
+  if (product.value) {
+    console.log(product.value);
+    const cartItem = {
+      id: product.value.id,
+      title: product.value.defaultName || product.value.name,
+      price: product.value.price,
+      image: productImages.value[0] || "/images/placeholder.png",
+      quantity: productCount.value,
+      installation: addInstallation.value ? installationDetails.value : null,
     };
-    onUpdated(() => {
-      getProduct();
-    });
-    // Fetch product on component mount
-    onMounted(async () => {
-      await getProduct(), { deep: true };
-    });
-    watch(
-      () => store.getProducts,
-      () => {
-        getProduct();
-      }
+    cartStore.addToCart(cartItem);
+    alert(
+      `Added ${productCount.value} ${
+        product.value.title || product.value.defaultName
+      } to cart${addInstallation.value ? " with installation" : ""}`
     );
-    // Methods
-    const formatPrice = (price) => {
-      return price ? price.toLocaleString("en-IN") : "N/A";
-    };
-
-
-    const updatePageLayout = () => {
-  // Update padding based on actual header height
-  const headerHeight = document.querySelector('.header-container')?.offsetHeight || 135;
-  document.documentElement.style.setProperty('--header-height', `${headerHeight}px`);
-  
-  // Ensure breadcrumbs are visible by scrolling to start
-  const breadcrumb = document.querySelector('.breadcrumb');
-  if (breadcrumb) {
-    breadcrumb.scrollLeft = 0;
   }
 };
-    const getOfferIcon = (bank) => {
-      // Map bank names to icons (you'd replace with actual icon paths)
-      const iconMap = {
-        CRED: "/images/cred-icon.png",
-        "BHIM UPI": "/images/bhim-icon.png",
-        "Amazon Pay": "/images/amazon-pay-icon.png",
-      };
-      return iconMap[bank] || "/images/default-bank-icon.png";
-    };
 
-    const incrementQuantity = () => {
-      quantity.value++;
-    };
-
-    const decrementQuantity = () => {
-      if (quantity.value > 1) {
-        quantity.value--;
-      }
-    };
-
-    const addToCart = () => {
-      if (product.value) {
-        const cartItem = {
-          id: product.value.id,
-          title: product.value.defaultName || product.value.name,
-          price: product.value.price,
-          image: productImages.value[0] || "/images/placeholder.png",
-          quantity: quantity.value,
-          installation: addInstallation.value
-            ? installationDetails.value
-            : null,
-        };
-        console.log(cartItem);
-        console.log(product.value);
-        cartStore.addToCart(cartItem);
-
-        alert(
-          `Added ${quantity.value} ${
-            product.value.title || product.value.defaultName
-          } to cart${addInstallation.value ? " with installation" : ""}`
-        );
-      }
-      const updatePagePadding = () => {
-    const headerHeight = document.querySelector('.header-container').offsetHeight;
-    document.querySelector('.product-page-container').style.paddingTop = `${headerHeight + 20}px`;
+const getTypeRoute = (type) => {
+  const typeToRoute = {
+    "Сонячні Панелі": "/solar-panels",
+    Батареї: "/batteries",
+    "Cables, Chargers & Powerbanks": "/cables",
+    Інвертори: "/inverters",
+    SolarSets: "/solar-sets",
+    "Система монтажу сонячних панелей": "/mounting-systems",
+    "Швидкі Зарядні Станції (DC)": "/dc-charging-stations",
+    "Зарядні Станції Рівня 2 (AC)": "/ac-charging-stations",
+    "Портативні/Мобільні Зарядні Пристрої": "/portable-charging-devices",
+    "Портативна електростанція": "/portable-power-stations",
   };
-  window.addEventListener('resize', updatePagePadding);
-  updatePagePadding();
-    };
-
-    // Add the getTypeRoute function here
-    const getTypeRoute = (type) => {
-      const typeToRoute = {
-        "Сонячні Панелі": "/solar-panels",
-        Батареї: "/batteries",
-        "Cables, Chargers & Powerbanks": "/cables",
-        Інвертори: "/inverters",
-        SolarSets: "/solar-sets",
-        "Система монтажу сонячних панелей": "/mounting-systems", // Changed to match your URL
-        "Швидкі Зарядні Станції (DC)": "/dc-charging-stations",
-        "Зарядні Станції Рівня 2 (AC)": "/ac-charging-stations",
-        "Портативні/Мобільні Зарядні Пристрої": "/portable-charging-devices",
-      };
-      return typeToRoute[type] || "/catalogue";
-    };
-
-    return {
-      product,
-      myproduct,
-      productId,
-      selectedImage,
-      quantity,
-      formatPrice,
-      getOfferIcon,
-      incrementQuantity,
-      decrementQuantity,
-      addToCart,
-      getTypeRoute,
-      addInstallation,
-      installationDetails,
-      productImages,
-    };
-  },
+  return typeToRoute[type] || "/catalogue";
 };
+
+const productImages = computed(() => {
+  if (!product.value) return [];
+  if (product.value.images) return product.value.images;
+  if (product.value.image) {
+    return Array.isArray(product.value.image)
+      ? product.value.image
+      : [product.value.image];
+  }
+  return ["/images/placeholder.png"];
+});
+
+const getProduct = () => {
+  const productId = route.params.id;
+  // Simulation of API call or using mock data
+  const foundProduct = store.getProducts.find(
+    (product) => +product.id === +productId
+  );
+
+  if (foundProduct) {
+    product.value = foundProduct;
+
+    // Set selected image safely
+    if (foundProduct.images && foundProduct.images.length > 0) {
+      selectedImage.value = foundProduct.images[0];
+    } else if (foundProduct.image) {
+      selectedImage.value = Array.isArray(foundProduct.image)
+        ? foundProduct.image[0]
+        : foundProduct.image;
+    } else {
+      selectedImage.value = "/images/placeholder.png";
+    }
+  } else {
+    console.warn(`Product with ID ${productId} not found.`);
+  }
+};
+
+const updatePageLayout = () => {
+  // Update for better visibility of breadcrumbs
+  document.documentElement.style.setProperty('--header-offset', '150px');
+};
+
+onUpdated(() => {
+  getProduct();
+});
+
+// Fetch product on component mount
+onMounted(async () => {
+  await getProduct();
+  updatePageLayout();
+  
+  // Force visibility of breadcrumb
+  setTimeout(() => {
+    const breadcrumb = document.querySelector('.breadcrumb');
+    if (breadcrumb) {
+      breadcrumb.style.visibility = 'visible';
+      breadcrumb.style.opacity = '1';
+    }
+  }, 100);
+});
+
+watch(
+  () => store.getProducts,
+  () => {
+    getProduct();
+  }
+);
+
+// Watch route changes to update product when navigating between products
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      getProduct();
+    }
+  }
+);
 </script>
 
-<style>
+
+<style scoped>
 .product-page-container {
-  max-width: 1200px;
+  max-width: 1920px;
+  /* Fixed: Added padding-top to ensure content is below fixed header */
+  padding-top: var(--header-offset, 150px);
   margin: 0 auto;
-  padding: 20px;
-  padding-top: 130px; /* Add padding to account for the fixed header height */
 }
 
-/* If you have a breadcrumb that needs to be visible */
+/* Fixed: Made breadcrumb visible with higher z-index and clear positioning */
 .breadcrumb {
-  display: block;
   font-size: 14px;
   margin-bottom: 20px;
-  color: #666;
-  margin-top: 10px;
+  color: #2f2e34; /* Darker color for better visibility */
+  padding: 12px 0; /* Added padding for more visibility */
   width: 100%;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  padding: 5px 0;
-}
-
-.breadcrumb::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  background-color: #f8f9fa; /* Light background for contrast */
+  border-radius: 4px;
+  position: relative;
+  z-index: 5; /* Higher z-index to ensure visibility */
+  visibility: visible !important;
+  opacity: 1 !important;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .breadcrumb a {
-  color: #666;
+  color: #4392ff; /* Blue links for better visibility */
   text-decoration: none;
+  font-weight: 500;
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline;
 }
 
 .breadcrumb-separator {
@@ -1027,55 +610,8 @@ export default {
 }
 
 .current-page {
-  color: #333;
+  color: #2f2e34;
   font-weight: 500;
-}
-
-/* Adjust product page container for proper mobile display */
-.product-page-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 10px 15px 20px;
-  padding-top: calc(var(--header-height) + 10px); /* Add padding for header */
-}
-
-/* Responsive layout for mobile */
-@media (max-width: 768px) {
-  .product-content {
-    flex-direction: column;
-  }
-  
-  .product-gallery,
-  .product-details {
-    width: 100%;
-  }
-  
-  /* Ensure breadcrumbs are clearly visible on mobile */
-  .breadcrumb {
-    background-color: #f9f9f9;
-    padding: 8px 10px;
-    border-radius: 4px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    font-size: 12px;
-  }
-  
-  /* Update header height variable for mobile */
-  :root {
-    --header-height: 135px; /* Adjusted for mobile with all icons */
-  }
-}
-
-/* Special handling for very small screens */
-@media (max-width: 320px) {
-  .breadcrumb {
-    font-size: 11px;
-  }
-  
-  .product-page-container {
-    padding: 10px 10px 20px;
-    padding-top: calc(var(--header-height) + 5px);
-  }
 }
 
 .product-content {
@@ -1086,7 +622,6 @@ export default {
 .product-gallery {
   display: flex;
   gap: 20px;
-  width: 50%;
 }
 
 .thumbnail-list {
@@ -1096,8 +631,8 @@ export default {
 }
 
 .thumbnail {
-  width: 60px;
-  height: 60px;
+  width: 96px;
+  height: 96px;
   border: 2px solid transparent;
   cursor: pointer;
   display: flex;
@@ -1106,7 +641,8 @@ export default {
 }
 
 .thumbnail.active {
-  border-color: #f26e9a;
+  border-color: #4392ff;
+  border-radius: 10px;
 }
 
 .thumbnail img {
@@ -1120,260 +656,700 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #e0e0e0;
-  padding: 20px;
 }
 
 .main-image {
   max-width: 100%;
-  max-height: 500px;
+  max-height: 590px;
   object-fit: contain;
 }
 
-.product-details {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.diviwer {
+  width: 100%;
+  padding: 1px;
+  max-height: 1px;
+  background-color: #e0e0e0;
 }
 
-.product-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.product-rating {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.rating-stars {
-  display: flex;
-  align-items: center;
-  color: #ffc107;
-}
-
-.review-count {
-  color: #666;
-}
-
-.pricing-section {
-  margin-bottom: 15px;
-}
-
-.current-price {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.price {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-}
-
-.discount-tag {
-  background-color: #4285f4;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.original-price {
-  color: #666;
-  text-decoration: line-through;
-}
-
-.tax-info {
-  margin-left: 10px;
-  font-size: 12px;
-}
-
-.delivery-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #4caf50;
-  margin-bottom: 15px;
-}
-
-.coupons-section {
-  border: 1px solid #e0e0e0;
-  padding: 15px;
+.product-characteristic {
+  background-color: #e8e8e8;
   border-radius: 8px;
 }
 
-.offers-list {
-  margin-bottom: 10px;
+.characteristics-name {
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 115.99999999999999%;
+  letter-spacing: 0%;
+  color: #8c8f9d;
 }
 
-.offer-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+.characteristics-description {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 115.99999999999999%;
+  letter-spacing: 0%;
+  color: #2f2e34;
 }
 
-.offer-icon {
-  width: 30px;
-  height: 30px;
+.button-instaletion button {
+  background-color: #ffffff;
+  color: #4392ff;
+  border: 1px solid #4392ff;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 135%;
+  letter-spacing: 0%;
 }
 
-.view-all-offers {
-  color: #f26e9a;
-  text-decoration: none;
+.button-instaletion button:hover {
+  background-color: #f0f7ff;
+}
+
+.social button {
+  background-color: #f8f9fa;
+  border-radius: 50%;
+  padding: 16px;
+}
+
+.social img {
+  width: 20px;
+  height: auto;
+}
+
+.availability {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 115.99999999999999%;
+  letter-spacing: 0%;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #2cdb000d;
+  color: #42b029;
+  padding: 6px 12px;
+  border-radius: 1000px;
+}
+
+.code {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 145%;
+  letter-spacing: 0%;
+  text-align: center;
+  vertical-align: middle;
+  color: #b2bac0;
+}
+
+.code span {
+  color: #001e34;
+}
+
+/* Fixed: Made product name explicitly black */
+.product-name {
+  font-weight: 500;
+  font-size: 48px;
+  line-height: 124%;
+  letter-spacing: 0%;
+  color: #2f2e34; /* Explicitly black text */
+}
+
+.certification a {
+  color: #4392ff;
+}
+
+.product-boxe {
+  background: #f8f9fa;
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  padding: 10px 14px;
+  width: max-content;
+}
+
+.product-price-discount {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 115.99999999999999%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  text-decoration: line-through;
+  color: #808080;
+}
+
+.discount {
+  background-color: #ff003a;
+  border-radius: 14px;
+  color: #ffffff;
+  padding: 2px 4px;
+}
+
+.real-price {
   font-weight: 600;
+  font-size: 48px;
+  line-height: 124%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #2f2e34; /* Explicitly dark text */
 }
 
-.cart-control {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+.credit-price {
+  color: #42b029;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 115.99999999999999%;
+  letter-spacing: 0%;
+  vertical-align: middle;
 }
 
-.quantity-selector {
-  display: flex;
-  align-items: center;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+.credit {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 145%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #b2bac0;
 }
 
-.quantity-btn {
-  width: 40px;
-  height: 40px;
-  background: none;
-  border: none;
+.product-sizes {
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 115.99999999999999%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  color: #5d6368;
+}
+
+.product-sizes-buttons {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 132%;
+  letter-spacing: 0%;
+  vertical-align: middle;
+  padding: 12px 8.5px;
+}
+
+.product-sizes-buttons button {
+  background: #ffffff;
+  border: 1px solid #e8e8e8;
+  margin-right: 16px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #2f2e34; /* Explicitly dark text */
+}
+
+.product-sizes-buttons button:hover {
+  border-color: #4392ff;
+}
+
+.product-sizes-buttons .active {
+  border-color: #4392ff;
+  color: #000000;
+}
+
+.garanty h4 {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 124%;
+  letter-spacing: 0%;
+  color: #2f2e34;
+}
+
+.garanty-data {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 132%;
+  letter-spacing: 0%;
+  color: #5d6368;
+  background: #f8f9fa;
+  padding: 32px 26px;
+  border-radius: 24px;
+}
+
+.payments-data h3 {
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 124%;
+  letter-spacing: 0%;
+  color: #2f2e34;
+}
+
+.payments-data button {
+  padding: 0px;
+  background: transparent;
+  margin-right: 16px;
+  margin-top: 16px;
+}
+
+.main-characters h3 {
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 124%;
+  letter-spacing: 0%;
+  color: #2f2e34; /* Explicitly dark text */
+}
+
+.main-characters-data {
+  background: #f8f9fa;
+  border-radius: 24px;
+}
+
+.characters-data span {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 145%;
+  letter-spacing: 0%;
+  color: #5d6368;
+  width: 60%;
+}
+
+.characters-data div {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 145%;
+  letter-spacing: 0%;
+  color: #001e34;
+}
+
+.product-counter {
+  border: 1px solid #4392ff;
+  width: max-content;
+  border-radius: 12px;
+}
+
+.product-counter input {
+  width: 50px;
+  height: 100%;
+  padding: 10px 15px;
+  text-align: center;
+  color: #2f2e34;
+  font-weight: 500;
+}
+
+.product-counter button {
   font-size: 20px;
-  cursor: pointer;
+  color: #001e34;
+  border-radius: 12px;
+  background: transparent;
+  padding: 0 12px;
+  height: 54px;
 }
 
-.quantity-value {
-  padding: 0 15px;
+.product-counter button:hover {
+  border: 1px solid transparent;
+  background-color: #f0f7ff;
+}
+
+.add-to-card-button button {
+  background: #4392ff;
+  color: #ffffff;
+  font-weight: 500;
   font-size: 16px;
+  letter-spacing: 0%;
+  height: 52px;
+  border-radius: 12px;
 }
 
-.add-to-cart-btn {
-  background-color: #4285f4;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
+.add-to-card-button button:hover {
+  background-color: #3a83e8;
 }
 
-.extra-details {
-  display: flex;
-  gap: 20px;
+.about-product {
+  overflow: hidden;
+  overflow-y: auto;
 }
 
-.detail-icon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
+/* Product Info Section Styles */
+.product-info-section {
+  margin-top: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  background-color: #f8f9fa;
 }
 
-.detail-icon img {
-  width: 40px;
-  height: 40px;
+.product-info-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #2f2e34;
 }
 
-.product-highlights {
-  margin-top: 40px;
-}
-
-.highlights-table {
+.info-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.highlights-table th,
-.highlights-table td {
+.info-table th,
+.info-table td {
   border: 1px solid #e0e0e0;
-  padding: 10px;
+  padding: 8px;
   text-align: left;
 }
 
-.highlights-table th {
+.info-table th {
   background-color: #f9f9f9;
-  width: 200px;
+  width: 120px;
+  font-weight: 500;
+  color: #5d6368;
 }
 
-:root {
-  --header-height: 150px; /* Default */
-}
-@media (max-width: 768px) {
-  :root {
-    --header-height: 100px; /* Mobile value */
-  }
-}
-.product-page-container {
-  padding-top: var(--header-height);
+.info-table td {
+  color: #001e34;
 }
 
-  .product-gallery,
-  .product-details {
-    width: 100%;
+/* Installation Popup Styles */
+.installation-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.installation-popup {
+  background-color: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: #2f2e34;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #5d6368;
+  cursor: pointer;
+}
+
+.popup-content {
+  padding: 20px;
+}
+
+.installation-toggle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.installation-toggle input[type="checkbox"] {
+  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+}
+
+.installation-toggle label {
+  font-weight: 500;
+  font-size: 16px;
+  color: #2f2e34;
+  cursor: pointer;
+}
+
+.installation-form {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  font-size: 14px;
+  color: #5d6368;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.required-indicator {
+  color: #ff003a;
+  font-size: 14px;
+}
+
+.installation-provider {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.provider-logo {
+  width: 40px;
+  height: 40px;
+  margin-right: 12px;
+}
+
+.provider-name {
+  font-weight: 500;
+  font-size: 16px;
+  color: #2f2e34;
+}
+
+.provider-rating {
+  color: #ffc107;
+  font-size: 14px;
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cancel-btn {
+  background-color: #f8f9fa;
+  color: #5d6368;
+  border: 1px solid #e0e0e0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.confirm-btn {
+  background-color: #4392ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+@media (min-width: 1280px) {
+  .add-to-card {
+    position: absolute;
+    bottom: 117px;
+    left: -30px;
+    z-index: 100;
+  }
+  .about-product {
+    width: 838px;
+    height: 900px;
+    left: -100px;
+  }
+  
+  /* Responsive adjustments for installation popup */
+  .installation-popup {
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .product-page-container {
+    padding-left: 80px;
   }
 
-  .installation-section {
-    margin-top: 30px;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+  .product-containew {
+    width: 734px;
   }
 
-  .installation-toggle {
-    margin-bottom: 20px;
-  }
-
-  .installation-options {
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-  }
-
-  .form-group {
-    margin-bottom: 15px;
-  }
-
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-
-  .form-group input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-
-  .required-indicator {
-    color: #f26e9a;
-    font-size: 12px;
-    margin-left: 5px;
-  }
-
-  .installation-provider {
+  .product-characteristics {
     display: flex;
-    align-items: center;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
+    flex-wrap: wrap;
   }
+  .product-characteristic {
+    width: max-content;
+    display: flex;
+    margin-right: 16px;
+  }
+  .product-counter {
+    background-color: #ffffff;
+  }
+  .product-counter button {
+    width: 100%;
+  }
+}
 
-  .provider-logo {
-    width: 40px;
-    height: 40px;
-    margin-right: 10px;
-    }
-  </style>
+/* Additional Responsive Styles for Mobile */
+@media (max-width: 768px) {
+  .product-page-container {
+    padding-top: 80px; /* Less padding on mobile */
+  }
+  
+  .breadcrumb {
+    padding: 8px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    position: sticky;
+    top: 60px; /* Keep breadcrumb visible on scroll */
+    z-index: 10;
+  }
+  
+  .product-content {
+    flex-direction: column;
+  }
+  
+  .product-gallery {
+    flex-direction: column-reverse;
+  }
+  
+  .thumbnail-list {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+  
+  .product-name {
+    font-size: 24px;
+  }
+  
+  .real-price {
+    font-size: 32px;
+  }
+  
+  .installation-popup {
+    width: 95%;
+    max-height: 80vh;
+  }
+  
+  .add-to-card {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .product-counter {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .add-to-card-button {
+    width: 100%;
+  }
+  
+  .add-to-card-button button {
+    width: 100%;
+  }
+}
+
+/* Improved hover effects for all interactive elements */
+.button-instaletion button:hover,
+.social button:hover,
+.product-sizes-buttons button:hover,
+.payments-data button:hover,
+.cancel-btn:hover {
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+.add-to-card-button button:hover,
+.confirm-btn:hover {
+  background-color: #3a83e8;
+  transition: all 0.2s ease;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(67, 146, 255, 0.4);
+}
+
+/* Custom scrollbar for better UX */
+.about-product::-webkit-scrollbar,
+.installation-popup::-webkit-scrollbar {
+  width: 8px;
+}
+
+.about-product::-webkit-scrollbar-track,
+.installation-popup::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.about-product::-webkit-scrollbar-thumb,
+.installation-popup::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+.about-product::-webkit-scrollbar-thumb:hover,
+.installation-popup::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Catalogue Page Consistency */
+.catalogue-view {
+  padding-top: var(--header-offset, 150px);
+  margin-top: 0 !important;
+}
+
+.breadcrumb-spacing {
+  margin-bottom: 1rem;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.products-container {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 15px;
+  padding: 20px;
+  background-color: #f9fafb;
+}
+
+/* Consistent heading styles */
+h1, h2, h3, h4, h5, h6 {
+  color: #2f2e34;
+}
+
+/* Fix for product cards */
+.product-card-wrapper {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card-wrapper:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>

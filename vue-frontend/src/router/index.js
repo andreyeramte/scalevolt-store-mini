@@ -1,6 +1,7 @@
 // FILE: vue-frontend/src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router';
 import { i18n } from '@/i18n/index.js';
+import { detectUserLocation, getLanguageFromCountry } from '@/utils/locationDetector'; // Add this import
 
 // View Imports
 import HomeView from '@/views/HomeView.vue';
@@ -34,6 +35,7 @@ import LegalTermsView from '@/views/LegalTermsView.vue';
 import { translateText, translateProduct } from '../utils/translationService.js';
 import { checkoutGuard } from './guards/checkoutGuard'; // Import the checkout guard
 import AuthView from '@/views/AuthView.vue';
+import ProductRental from '@/views/ProductRental.vue';
 
 
 // Define your routes for use within the region layout
@@ -200,6 +202,12 @@ const productRoutes = [
     component: ErrorView,
     props: { errorCode: '404' }
   },
+  {
+    path: '/rent/:id',
+    name: 'ProductRental',
+    component: ProductRental,
+    props: true
+  }
 ];
 
 // Main routes array
@@ -208,7 +216,7 @@ const routes = [
   {
     path: '/:region?',
     component: Layout,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: async (to, from, next) => {
       // FIXED: Update valid regions to match what you're using in URLs
       const validRegions = ['ua', 'pl', 'en'];
       
@@ -222,7 +230,28 @@ const routes = [
       } 
       // If no region specified (root path)
       else if (!to.params.region || to.path === '/') {
-        // No region specified, redirect to default or stored region
+        // Try to detect user's location if accessing root path for the first time
+        if (!localStorage.getItem('userLocale') && (to.path === '/' || to.fullPath === '/')) {
+          try {
+            console.log('Detecting user location...');
+            const ipLocation = await detectUserLocation();
+            console.log('Location detected by IP:', ipLocation);
+            
+            if (!ipLocation.error) {
+              const detectedLanguage = getLanguageFromCountry(ipLocation.country);
+              if (detectedLanguage && validRegions.includes(detectedLanguage)) {
+                console.log(`Setting language to ${detectedLanguage} based on detected country ${ipLocation.country}`);
+                localStorage.setItem('userLocale', detectedLanguage);
+                next({ path: `/${detectedLanguage}` });
+                return;
+              }
+            }
+          } catch (error) {
+            console.error('Error in location detection:', error);
+          }
+        }
+        
+        // No region specified or location detection failed, redirect to default or stored region
         const savedRegion = localStorage.getItem('userLocale') || 'ua';
         // Avoid redirect loop on root path
         if (to.path === '/') {

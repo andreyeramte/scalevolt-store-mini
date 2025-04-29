@@ -1,181 +1,201 @@
-// db/pool.js (ES Module version)
-import pkg from 'pg';
-const { Pool } = pg;
-import dotenv from 'dotenv';
-import { fileURLToPath } from 'url';
-import path from 'path';
-import { buildSearchableText } from './db/pool.js';
+const { Pool } = require('pg');
+const dotenv = require('dotenv');
+const path = require('path');
 
-// Get directory path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-// Load environment variables
-dotenv.config({ path: path.join(__dirname, '..', '.env') });
-
-// Create the pool
+// Connection configuration
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
+  port: process.env.DB_PORT || 5433,
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'Keepongrind7!',
+  password: process.env.DB_PASSWORD || 'new_password', // Replace this with your actual password when running
   database: process.env.DB_NAME || 'scalevolt_store',
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-// Helper function to build searchable text for multilingual support
-function buildSearchableText(product) {
-  return [
-    product.name, 
-    product.name_uk, 
-    product.name_pl,
-    product.description, 
-    product.description_uk, 
-    product.description_pl
-  ].filter(Boolean).join(' ').toLowerCase();
-}
+// Test the connection
+pool.on('connect', () => {
+  console.log('Successfully connected to PostgreSQL database');
+});
 
-// Get all products
-const getProducts = async (filters = {}) => {
-  try {
-    let query = 'SELECT * FROM products';
-    const queryParams = [];
-    
-    // Build WHERE clause based on filters
-    if (Object.keys(filters).length > 0) {
-      query += ' WHERE ';
-      const filterClauses = [];
-      
-      if (filters.type) {
-        filterClauses.push(`type = $${queryParams.length + 1}`);
-        queryParams.push(filters.type);
-      }
-      
-      if (filters.categoryId) {
-        filterClauses.push(`category_id = $${queryParams.length + 1}`);
-        queryParams.push(filters.categoryId);
-      }
-      
-      if (filters.brand) {
-        filterClauses.push(`brand = $${queryParams.length + 1}`);
-        queryParams.push(filters.brand);
-      }
-      
-      query += filterClauses.join(' AND ');
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle PostgreSQL client', err);
+  process.exit(-1);
+});
+
+// Database operations
+async function getProducts(filters = {}) {
+  let query = 'SELECT * FROM products';
+  const params = [];
+  
+  if (Object.keys(filters).length) {
+    const clauses = [];
+    if (filters.type) {
+      clauses.push(`type = $${params.length + 1}`);
+      params.push(filters.type);
     }
+    if (filters.categoryId) {
+      clauses.push(`category_id = $${params.length + 1}`);
+      params.push(filters.categoryId);
+    }
+    if (filters.brand) {
+      clauses.push(`brand = $${params.length + 1}`);
+      params.push(filters.brand);
+    }
+    if (filters.supplier) {
+      clauses.push(`supplier = $${params.length + 1}`);
+      params.push(filters.supplier);
+    }
+    if (filters.sku) {
+      clauses.push(`sku = $${params.length + 1}`);
+      params.push(filters.sku);
+    }
+    query += ' WHERE ' + clauses.join(' AND ');
+  }
+  
+  // Add sorting and limit if needed
+  if (filters.sort) {
+    query += ` ORDER BY ${filters.sort} ${filters.order || 'ASC'}`;
+  }
+  
+  if (filters.limit) {
+    query += ` LIMIT $${params.length + 1}`;
+    params.push(filters.limit);
     
-    const result = await pool.query(query, queryParams);
-    return result.rows;
+    if (filters.offset) {
+      query += ` OFFSET $${params.length + 1}`;
+      params.push(filters.offset);
+    }
+  }
+  
+  try {
+    const res = await pool.query(query, params);
+    return res.rows;
   } catch (error) {
     console.error('Error getting products:', error);
     throw error;
   }
-};
+}
 
-// Get product by ID
-const getProductById = async (id) => {
+async function getProductById(id) {
   try {
-    const result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-    return result.rows[0];
+    const res = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    return res.rows[0];
   } catch (error) {
     console.error('Error getting product by ID:', error);
     throw error;
   }
-};
+}
 
-// Create a new product
-const createProduct = async (productData) => {
-  const {
-    title, name, price, original_price, quantity, brand,
-    model, type, images, image, offers, installation_available, category_id,
-    name_uk, name_pl, description, description_uk, description_pl
-  } = productData;
+// Define the function here instead of importing it
+function buildSearchableText(product) {
+  const fields = [
+    product.name,
+    product.name_ua,
+    product.name_pl,
+    product.description,
+    product.description_ua,
+    product.description_pl,
+    product.brand,
+    product.model,
+    product.type,
+    product.sku
+  ];
   
+  return fields
+    .filter(field => field) // Remove null/undefined values
+    .join(' ')
+    .toLowerCase();
+}
+
+async function createProduct(data) {
   try {
-    // Build searchable text for full-text search with multilingual support
-    const searchable_text = buildSearchableText({
-      name, name_uk, name_pl, description, description_uk, description_pl
-    });
+    const searchable_text = buildSearchableText(data);
     
-    const result = await pool.query(
-      `INSERT INTO products (
-        title, name, price, original_price, quantity, brand, model, 
-        type, images, image, offers, installation_available, category_id,
-        name_uk, name_pl, description, description_uk, description_pl, searchable_text
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) RETURNING *`,
+    // Generate SKU if not provided
+    if (!data.sku) {
+      data.sku = `PRD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    }
+    
+    const res = await pool.query(
+      `INSERT INTO products
+      (title, name, price, original_price, quantity, brand, model,
+      type, images, image, offers, installation_available,
+      category_id, name_ua, name_pl,
+      description, description_ua, description_pl, searchable_text, sku, supplier, properties)
+      VALUES
+      ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
+      RETURNING *`,
       [
-        title, name, price, original_price, quantity, brand, model, 
-        type, JSON.stringify(images || []), image, JSON.stringify(offers || []), 
-        installation_available, category_id, name_uk, name_pl, description, 
-        description_uk, description_pl, searchable_text
+        data.title, data.name, data.price, data.original_price,
+        data.quantity, data.brand, data.model, data.type,
+        JSON.stringify(data.images || []), data.image,
+        JSON.stringify(data.offers || []), data.installation_available,
+        data.category_id, data.name_ua, data.name_pl,
+        data.description, data.description_ua, data.description_pl,
+        searchable_text, data.sku, data.supplier, 
+        JSON.stringify(data.properties || {})
       ]
     );
-    return result.rows[0];
+    return res.rows[0];
   } catch (error) {
     console.error('Error creating product:', error);
     throw error;
   }
-};
+}
 
-// Update a product
-const updateProduct = async (id, productData) => {
+async function updateProduct(id, data) {
   try {
-    // First get existing product
-    const existingProduct = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    const existing = await pool.query('SELECT * FROM products WHERE id=$1', [id]);
+    if (!existing.rows.length) throw new Error('Product not found');
     
-    if (existingProduct.rows.length === 0) {
-      throw new Error('Product not found');
-    }
-    
-    // Combine existing data with new data
-    const product = { ...existingProduct.rows[0], ...productData };
-    
-    // Build searchable text
+    const product = { ...existing.rows[0], ...data };
     const searchable_text = buildSearchableText(product);
-    product.searchable_text = searchable_text;
     
-    // Build the update query dynamically based on the fields provided
-    const fields = Object.keys(productData).filter(key => productData[key] !== undefined);
-    if (fields.length === 0) return existingProduct.rows[0]; // No fields to update
+    const fields = Object.keys(data);
+    const sets = fields.map((f, i) =>
+      ['images', 'offers', 'properties'].includes(f)
+        ? `${f}=$${i + 1}::json`
+        : `${f}=$${i + 1}`
+    );
+    sets.push(`searchable_text=$${fields.length + 1}`);
+    sets.push(`updated_at=CURRENT_TIMESTAMP`);
     
-    // Prepare the SET clause and values array
-    let setClause = fields.map((field, index) => {
-      if (field === 'images' || field === 'offers') {
-        return `${field} = $${index + 1}::json`;
-      }
-      return `${field} = $${index + 1}`;
-    }).join(', ');
+    const values = fields.map(f =>
+      ['images', 'offers', 'properties'].includes(f)
+        ? JSON.stringify(data[f])
+        : data[f]
+    );
+    values.push(searchable_text, id);
     
-    // Add searchable_text to the SET clause
-    setClause += ', searchable_text = $' + (fields.length + 1);
-    
-    // Extract values in the same order as the fields
-    const values = fields.map(field => {
-      if (field === 'images' || field === 'offers') {
-        return JSON.stringify(product[field] || []);
-      }
-      return product[field];
-    });
-    
-    // Add searchable_text value
-    values.push(searchable_text);
-    
-    // Add the id as the last parameter
-    values.push(id);
-    
-    // Execute the update query
-    const result = await pool.query(
-      `UPDATE products SET ${setClause} WHERE id = $${values.length} RETURNING *`,
+    const res = await pool.query(
+      `UPDATE products SET ${sets.join(', ')} WHERE id=$${values.length} RETURNING *`,
       values
     );
-    
-    return result.rows[0];
+    return res.rows[0];
   } catch (error) {
     console.error('Error updating product:', error);
     throw error;
   }
-};
+}
 
-// Export the pool and functions
-export { pool, buildSearchableText, getProducts, getProductById, createProduct, updateProduct };
-export default pool;
+// Added function to get suppliers
+async function getSuppliers() {
+  try {
+    const res = await pool.query('SELECT DISTINCT supplier FROM products WHERE supplier IS NOT NULL ORDER BY supplier');
+    return res.rows.map(row => row.supplier);
+  } catch (error) {
+    console.error('Error getting suppliers:', error);
+    throw error;
+  }
+}
+
+module.exports = {
+  pool,
+  getProducts,
+  getProductById,
+  createProduct,
+  updateProduct,
+  getSuppliers
+};

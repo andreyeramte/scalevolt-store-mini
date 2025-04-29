@@ -15,11 +15,11 @@ export const detectUserCountry = async () => {
 export const mapCountryToLocale = (countryCode) => {
   const countryToLocaleMap = {
     'PL': 'pl',
-    'UA': 'uk',
+    'UA': 'ua',
     // Add more countries as needed
   };
     
-  return countryToLocaleMap[countryCode] || 'uk'; // Default to Ukrainian
+  return countryToLocaleMap[countryCode] || 'ua'; // Default to Ukrainian
 };
 
 // Currency mapping
@@ -45,7 +45,7 @@ export const getCurrencySymbol = (currencyCode) => {
 // Get locale name for display
 export const getLocaleName = (localeCode) => {
   const localeNames = {
-    'uk': 'Українська',
+    'ua': 'Українська',
     'pl': 'Polski',
   };
   
@@ -117,7 +117,7 @@ export const saveLocationPreference = (accept = true) => {
     localStorage.setItem('locationPermission', 'denied');
     // Set default locale if rejecting location detection
     if (!localStorage.getItem('userLocale')) {
-      localStorage.setItem('userLocale', 'uk');
+      localStorage.setItem('userLocale', 'ua');
     }
     return false;
   }

@@ -1,3 +1,4 @@
+// FILE: vue-frontend/src/main.js
 import { createApp, watch, ref } from 'vue';
 import App from './App.vue';
 import router from '@/router';
@@ -5,13 +6,11 @@ import { createPinia } from 'pinia';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import { i18n, debugI18n } from './i18n/index.js';
-import { i18n as i18nAlternative } from './i18n';
 import { auth } from '@/firebase';
 import './style.css';
 import { getUserCurrencyPreference } from '@/services/currency';
 import { useAuthStore } from './stores/auth';
-import { createHead } from '@vueuse/head'
-
+import { createHead } from '@vueuse/head';
 
 // ✅ Add favicon programmatically to prevent 404 errors
 function addFavicon() {
@@ -47,18 +46,20 @@ function globalErrorHandler(err, instance, info) {
 // ✅ Initialize the Vue App with Plugins
 function initializeApp() {
   try {
-    var app = createApp(App);
-    var pinia = createPinia();
+    const app = createApp(App);
+    const pinia = createPinia();
+    const head = createHead();
     
     app.use(pinia);
+    app.use(head);
     
     // Initialize the auth store to connect with Firebase
     // This needs to happen AFTER pinia is installed but BEFORE app is mounted
-    var authStore = useAuthStore();
+    const authStore = useAuthStore();
     authStore.init();
     
     // Load saved locale from localStorage and ensure it's applied
-    var savedLocale = localStorage.getItem('userLocale');
+    const savedLocale = localStorage.getItem('userLocale');
     if (savedLocale) {
       i18n.global.locale.value = savedLocale;
       console.log('Loaded saved locale:', savedLocale);
@@ -68,7 +69,7 @@ function initializeApp() {
     app.config.globalProperties.$locale = ref(i18n.global.locale.value);
     
     // Enhanced locale change handling
-    watch(function() { return i18n.global.locale.value; }, function(newLocale) {
+    watch(() => i18n.global.locale.value, (newLocale) => {
       console.log('🌍 Locale changed to:', newLocale);
       document.documentElement.setAttribute('lang', newLocale);
       localStorage.setItem('userLocale', newLocale);
@@ -79,7 +80,7 @@ function initializeApp() {
       
       // Update currency based on locale if user hasn't explicitly set it
       if (!localStorage.getItem('userCurrency')) {
-        var newCurrency = newLocale === 'pl' ? 'PLN' : 'UAH';
+        const newCurrency = newLocale === 'pl' ? 'PLN' : 'UAH';
         app.config.globalProperties.$currencyStore.value.currentCurrency = newCurrency;
         localStorage.setItem('userCurrency', newCurrency);
       }
@@ -89,7 +90,7 @@ function initializeApp() {
     });
     
     // Add currency store
-    var currencyStore = ref({
+    const currencyStore = ref({
       currentCurrency: getUserCurrencyPreference() || 
                       (i18n.global.locale.value === 'pl' ? 'PLN' : 'UAH'),
       setCurrency: function(currency) {
@@ -117,9 +118,6 @@ function initializeApp() {
       
       // Dispatch custom event for components
       window.dispatchEvent(new CustomEvent('locale-changed', { detail: locale }));
-      
-      // Force global update (optional, may be needed for some components)
-      // app.config.globalProperties.$forceUpdate();
     };
     
     app.use(router);
@@ -188,7 +186,6 @@ window.reloadApp = function() {
 // ✅ 👇 Start everything in the correct order
 addFavicon();
 initializeApp();
-
 const head = createHead()
 // Create and export app before mounting
 const app = createApp(App);

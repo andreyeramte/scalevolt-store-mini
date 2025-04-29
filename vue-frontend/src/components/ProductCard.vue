@@ -54,6 +54,7 @@
 import { computed, ref } from "vue";
 import { useCartStore } from "@/stores/cart";
 import { useI18n } from "vue-i18n";
+import { translateText } from '@/services/api';
 
 export default {
   name: "ProductCard",

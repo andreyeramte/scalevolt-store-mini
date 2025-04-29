@@ -34,7 +34,7 @@
 
       <!-- Contact Information Section -->
       <div class="footer-section">
-        <h3>Kontaktna informacja</h3>
+        <h3>{{ currentLocale === 'pl' ? 'Informacje kontaktowe' : 'Контактна інформація' }}</h3>
         <ul>
           <li v-if="currentLocale === 'pl'">
             ul. Marszałkowska 142, 00-061 Warszawa, Polska
@@ -52,7 +52,8 @@
               {{ getPhoneByLocale() }}
             </a>
           </li>
-          <li v-if="currentLocale === 'pl'">NIP: PL1234567890</li>
+          <li v-if="currentLocale === 'pl'"></li>
+          <li v-else>Пн-Сб: 9:00 - 18:00</li>
           
           <!-- Telegram for Ukrainian locale only -->
           <li v-if="currentLocale === 'uk'" class="social-contact-item">

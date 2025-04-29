@@ -111,6 +111,7 @@ import Breadcrumb from '@/components/Breadcrumb.vue';
 import { useCartStore } from '@/stores/cart';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
+import { translateText } from '@/services/api';
 
 export default {
   name: 'ProductDetail',

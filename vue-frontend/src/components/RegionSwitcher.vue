@@ -38,7 +38,7 @@ export default {
     
     // Available locales with display names and emojis
     const availableLocales = [
-      { code: 'uk', name: 'Українська', emoji: '🇺🇦' },
+      { code: 'ua', name: 'Українська', emoji: '🇺🇦' },
       { code: 'pl', name: 'Polski', emoji: '🇵🇱' }
     ];
     

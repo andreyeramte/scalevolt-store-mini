@@ -1,81 +1,89 @@
-import axios from 'axios';
+// FILE: vue-frontend/src/utils/translationService.js
 
-// In Vite, environment variables are accessed via import.meta.env
-// and must be prefixed with VITE_ in the .env file
-const API_KEY = import.meta.env.VITE_TRANSLATION_API_KEY;
-const TRANSLATION_API_URL = import.meta.env.VITE_TRANSLATION_API_URL || 'https://translation.googleapis.com/language/translate/v2';
+import axios from 'axios';
+import { i18n } from '@/i18n/index.js';
 
 /**
- * Translates text using an external translation API
- * @param {string} text - Text to translate
- * @param {string} targetLanguage - Target language code (e.g., 'pl', 'uk')
- * @param {string} sourceLanguage - Source language code (default 'en' for English)
- * @returns {Promise<string>} - Translated text
+ * Translates text to the target language
+ * @param {string} text - The text to translate
+ * @param {string} targetLanguage - The target language code (e.g., 'ua', 'pl', 'en')
+ * @param {string} sourceLanguage - The source language code (optional, defaults to 'en')
+ * @returns {Promise<string>} - The translated text
  */
 export async function translateText(text, targetLanguage, sourceLanguage = 'en') {
-  if (!text || text.trim().length === 0) {
-    return '';
-  }
-  
   try {
-    // Using Google Translate API as an example
-    const response = await axios.post(
-      TRANSLATION_API_URL,
-      {},
-      {
-        params: {
-          q: text,
-          target: targetLanguage,
-          source: sourceLanguage,
-          key: API_KEY
-        }
-      }
-    );
-    
-    return response.data.data.translations[0].translatedText;
+    // If no text or target language is same as source, return original
+    if (!text || targetLanguage === sourceLanguage) {
+      return text;
+    }
+
+    const response = await axios.post('/api/translations/text', {
+      text,
+      targetLanguage,
+      sourceLanguage
+    });
+
+    return response.data.translatedText;
   } catch (error) {
-    console.error('Translation failed:', error);
-    return text; // Fallback to original text
+    console.error('Translation error:', error);
+    return text; // Return original text if translation fails
   }
 }
 
 /**
- * Batch translate product fields
- * @param {Object} product - Product object with name and description
- * @param {Array<string>} targetLanguages - Array of target language codes
- * @param {string} sourceLanguage - Source language code
- * @returns {Promise<Object>} - Product with translated fields
+ * Translates product fields to multiple languages
+ * @param {Object} product - The product object with name, description, etc.
+ * @param {Array<string>} targetLanguages - Array of target language codes (e.g., ['ua', 'pl'])
+ * @param {string} sourceLanguage - The source language code (optional, defaults to 'en')
+ * @returns {Promise<Object>} - The product with translated fields
  */
-export async function translateProduct(product, targetLanguages = ['uk', 'pl'], sourceLanguage = 'en') {
-  const translatedProduct = { ...product };
-  
+export async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en') {
   try {
-    // Translate to each target language
-    for (const lang of targetLanguages) {
-      if (lang === sourceLanguage) continue;
-      
-      // Translate name if it doesn't already exist
-      if (!translatedProduct[`name_${lang}`] && translatedProduct.name) {
-        translatedProduct[`name_${lang}`] = await translateText(
-          translatedProduct.name, 
-          lang, 
-          sourceLanguage
-        );
-      }
-      
-      // Translate description if it doesn't already exist
-      if (!translatedProduct[`description_${lang}`] && translatedProduct.description) {
-        translatedProduct[`description_${lang}`] = await translateText(
-          translatedProduct.description, 
-          lang, 
-          sourceLanguage
-        );
-      }
+    const response = await axios.post('/api/translations/product', {
+      product,
+      targetLanguages,
+      sourceLanguage
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Product translation error:', error);
+    return product; // Return original product if translation fails
+  }
+}
+
+/**
+ * Get translated content based on current locale
+ * @param {Object} content - Object with translations for different languages
+ * @returns {string} - Content in current language or fallback
+ */
+export function getTranslatedContent(content) {
+  const currentLocale = i18n.global.locale.value;
+  
+  // If content is a string, return it directly
+  if (typeof content === 'string') {
+    return content;
+  }
+  
+  // If content is an object with language keys
+  if (content && typeof content === 'object') {
+    // Try to get content for current locale
+    if (content[currentLocale]) {
+      return content[currentLocale];
     }
     
-    return translatedProduct;
-  } catch (error) {
-    console.error('Product translation failed:', error);
-    return product;
+    // Fallback order: current locale → default locale (ua) → first available
+    if (content.ua) {
+      return content.ua;
+    }
+    
+    // Last resort: return first available translation
+    const firstAvailableLocale = Object.keys(content)[0];
+    if (firstAvailableLocale) {
+      return content[firstAvailableLocale];
+    }
   }
+  
+  // If nothing found, return empty string
+  return '';
 }

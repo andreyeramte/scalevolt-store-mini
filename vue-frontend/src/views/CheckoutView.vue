@@ -1,23 +1,23 @@
 <!-- src/views/CheckoutView.vue -->
 <template>
   <div class="checkout-view">
-    <h1>Checkout</h1>
+    <h1>{{ $t('checkout.shippingAddress') }}</h1>
 
     <div class="checkout-container">
       <!-- Checkout Steps -->
       <div class="checkout-steps">
-        <div class="step" :class="{ active: currentStep === 1 }">1. Shipping</div>
-        <div class="step" :class="{ active: currentStep === 2 }">2. Payment</div>
-        <div class="step" :class="{ active: currentStep === 3 }">3. Review</div>
+        <div class="step" :class="{ active: currentStep === 1 }">1. {{ $t('checkout.shippingAddress') }}</div>
+        <div class="step" :class="{ active: currentStep === 2 }">2. {{ $t('checkout.paymentMethod') }}</div>
+        <div class="step" :class="{ active: currentStep === 3 }">3. {{ $t('checkout.orderSummary') }}</div>
       </div>
 
       <!-- Step 1: Shipping Information -->
       <div v-if="currentStep === 1" class="checkout-section shipping-info">
-        <h2>Shipping Information</h2>
+        <h2>{{ $t('checkout.shippingAddress') }}</h2>
         
         <!-- Saved Addresses Section -->
         <div class="saved-addresses" v-if="savedAddresses.length > 0">
-          <h3>Your Saved Addresses</h3>
+          <h3>{{ $t('profile.personal.addresses') }}</h3>
           <div class="address-selection">
             <div 
               v-for="(address, index) in savedAddresses" 
@@ -29,7 +29,7 @@
               <div class="address-info">
                 <div class="address-name">
                   {{ address.label }} 
-                  <span v-if="address.isDefault" class="default-badge">Default</span>
+                  <span v-if="address.isDefault" class="default-badge">{{ $t('profile.personal.default') }}</span>
                 </div>
                 <p>{{ address.fullName }}</p>
                 <p>{{ address.street }}, {{ address.apartment }}</p>
@@ -48,14 +48,14 @@
             </div>
           </div>
           <div class="or-separator">
-            <span>or enter a new address</span>
+            <span>{{ $t('common.or') }} {{ $t('profile.personal.add_new_address') }}</span>
           </div>
         </div>
         
         <form @submit.prevent="nextStep" class="shipping-form">
           <div class="form-row">
             <div class="form-group">
-              <label for="firstName">First Name</label>
+              <label for="firstName">{{ $t('auth.firstName') }}</label>
               <input 
                 type="text" 
                 id="firstName" 
@@ -64,7 +64,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="lastName">Last Name</label>
+              <label for="lastName">{{ $t('auth.lastName') }}</label>
               <input 
                 type="text" 
                 id="lastName" 
@@ -75,7 +75,7 @@
           </div>
 
           <div class="form-group">
-            <label for="email">Email</label>
+            <label for="email">{{ $t('auth.email') }}</label>
             <input 
               type="email" 
               id="email" 
@@ -85,7 +85,7 @@
           </div>
 
           <div class="form-group">
-            <label for="phone">Phone Number</label>
+            <label for="phone">{{ $t('auth.phone') }}</label>
             <input 
               type="tel" 
               id="phone" 
@@ -95,7 +95,7 @@
           </div>
 
           <div class="form-group">
-            <label for="address">Address</label>
+            <label for="address">{{ $t('profile.personal.street_address') }}</label>
             <input 
               type="text" 
               id="address" 
@@ -106,7 +106,7 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="city">City</label>
+              <label for="city">{{ $t('profile.personal.city') }}</label>
               <input 
                 type="text" 
                 id="city" 
@@ -115,7 +115,7 @@
               />
             </div>
             <div class="form-group">
-              <label for="postalCode">Postal Code</label>
+              <label for="postalCode">{{ $t('profile.personal.postal_code') }}</label>
               <input 
                 type="text" 
                 id="postalCode" 
@@ -126,10 +126,10 @@
           </div>
 
           <div class="form-group">
-            <label for="country">Country</label>
+            <label for="country">{{ $t('profile.personal.country') }}</label>
             <select id="country" v-model="shippingInfo.country" required>
-              <option value="Ukraine">Ukraine</option>
-              <option value="Poland">Poland</option>
+              <option value="Ukraine">{{ $t('common.ukrainian') }}</option>
+              <option value="Poland">{{ $t('common.polish') }}</option>
               <option value="Germany">Germany</option>
               <option value="France">France</option>
               <option value="Other">Other</option>
@@ -137,7 +137,7 @@
           </div>
 
           <div class="form-group shipping-options">
-            <h3>Shipping Method</h3>
+            <h3>{{ $t('checkout.shippingMethod') }}</h3>
             <div class="shipping-option">
               <input 
                 type="radio" 
@@ -147,8 +147,8 @@
               />
               <label for="standard">
                 <div class="shipping-option-details">
-                  <span class="option-name">Standard Shipping</span>
-                  <span class="option-time">3-5 Business Days</span>
+                  <span class="option-name">{{ $t('delivery.standardDelivery') }}</span>
+                  <span class="option-time">3-5 {{ $t('delivery.days') }}</span>
                 </div>
                 <span class="option-price">{{ formatPrice(standardShippingCost) }} грн</span>
               </label>
@@ -162,8 +162,8 @@
               />
               <label for="express">
                 <div class="shipping-option-details">
-                  <span class="option-name">Express Shipping</span>
-                  <span class="option-time">1-2 Business Days</span>
+                  <span class="option-name">{{ $t('delivery.expressDelivery') }}</span>
+                  <span class="option-time">1-2 {{ $t('delivery.days') }}</span>
                 </div>
                 <span class="option-price">{{ formatPrice(expressShippingCost) }} грн</span>
               </label>
@@ -171,15 +171,15 @@
           </div>
 
           <div class="form-buttons">
-            <button type="button" @click="goToCart" class="back-button">Back to Cart</button>
-            <button type="submit" class="next-button">Continue to Payment</button>
+            <button type="button" @click="goToCart" class="back-button">{{ $t('cart.continueShopping') }}</button>
+            <button type="submit" class="next-button">{{ $t('checkout.paymentMethod') }}</button>
           </div>
         </form>
       </div>
 
       <!-- Step 2: Payment Method -->
       <div v-if="currentStep === 2" class="checkout-section payment-info">
-        <h2>Payment Method</h2>
+        <h2>{{ $t('checkout.paymentMethod') }}</h2>
         <div class="payment-options">
           <div class="payment-option">
             <input 
@@ -222,17 +222,17 @@
         </div>
 
         <div class="form-buttons">
-          <button type="button" @click="prevStep" class="back-button">Back to Shipping</button>
-          <button type="button" @click="nextStep" class="next-button">Review Order</button>
+          <button type="button" @click="prevStep" class="back-button">{{ $t('checkout.shippingAddress') }}</button>
+          <button type="button" @click="nextStep" class="next-button">{{ $t('checkout.orderSummary') }}</button>
         </div>
       </div>
 
       <!-- Step 3: Order Review -->
       <div v-if="currentStep === 3" class="checkout-section order-review">
-        <h2>Review Your Order</h2>
+        <h2>{{ $t('checkout.orderSummary') }}</h2>
         
         <div class="review-section">
-          <h3>Shipping Information</h3>
+          <h3>{{ $t('checkout.shippingAddress') }}</h3>
           <div class="review-info">
             <p>{{ shippingInfo.firstName }} {{ shippingInfo.lastName }}</p>
             <p>{{ shippingInfo.email }}</p>
@@ -240,21 +240,21 @@
             <p>{{ shippingInfo.address }}</p>
             <p>{{ shippingInfo.city }}, {{ shippingInfo.postalCode }}</p>
             <p>{{ shippingInfo.country }}</p>
-            <p><strong>Shipping Method:</strong> {{ getShippingMethodName() }}</p>
+            <p><strong>{{ $t('checkout.shippingMethod') }}:</strong> {{ getShippingMethodName() }}</p>
           </div>
-          <button type="button" @click="editSection(1)" class="edit-button">Edit</button>
+          <button type="button" @click="editSection(1)" class="edit-button">{{ $t('profile.personal.edit_address') }}</button>
         </div>
         
         <div class="review-section">
-          <h3>Payment Method</h3>
+          <h3>{{ $t('checkout.paymentMethod') }}</h3>
           <div class="review-info">
             <p><strong>{{ getPaymentMethodName() }}</strong></p>
           </div>
-          <button type="button" @click="editSection(2)" class="edit-button">Edit</button>
+          <button type="button" @click="editSection(2)" class="edit-button">{{ $t('profile.personal.edit_address') }}</button>
         </div>
         
         <div class="review-section">
-          <h3>Order Items</h3>
+          <h3>{{ $t('cart.items') }}</h3>
           <div class="order-items">
             <div v-for="item in cartItems" :key="item.uniqueKey" class="review-item">
               <div class="item-image">
@@ -262,7 +262,7 @@
               </div>
               <div class="item-details">
                 <p class="item-name">{{ item.name }}</p>
-                <p class="item-quantity">Qty: {{ item.quantity }}</p>
+                <p class="item-quantity">{{ $t('product.quantity') }}: {{ item.quantity }}</p>
               </div>
               <p class="item-price">{{ formatPrice(item.price * item.quantity) }} грн</p>
             </div>
@@ -270,24 +270,24 @@
         </div>
 
         <div class="form-buttons">
-          <button type="button" @click="prevStep" class="back-button">Back to Payment</button>
-          <button type="button" @click="handleCheckout" class="checkout-button">Place Order</button>
+          <button type="button" @click="prevStep" class="back-button">{{ $t('checkout.paymentMethod') }}</button>
+          <button type="button" @click="handleCheckout" class="checkout-button">{{ $t('checkout.placeOrder') }}</button>
         </div>
       </div>
 
       <!-- Order Summary -->
       <div class="order-summary">
-        <h2>Order Summary</h2>
+        <h2>{{ $t('cart.orderSummary') }}</h2>
         <div class="summary-item">
-          <span>Items ({{ totalQuantity }}):</span>
+          <span>{{ $t('cart.items') }} ({{ totalQuantity }}):</span>
           <span>{{ formatPrice(totalPrice) }} грн</span>
         </div>
         <div class="summary-item">
-          <span>Tax (20%):</span>
+          <span>{{ $t('cart.tax') }} (20%):</span>
           <span>{{ formatPrice(tax) }} грн</span>
         </div>
         <div class="summary-item">
-          <span>Shipping:</span>
+          <span>{{ $t('cart.shipping') }}:</span>
           <span>{{ formatPrice(shippingCost) }} грн</span>
         </div>
         <div v-if="paymentMethod === 'pod'" class="summary-item">
@@ -296,7 +296,7 @@
         </div>
         <hr />
         <div class="summary-total">
-          <span>Total:</span>
+          <span>{{ $t('cart.total') }}:</span>
           <span>{{ formatPrice(orderTotal) }} грн</span>
         </div>
       </div>
@@ -312,6 +312,7 @@ import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { loadStripe } from '@stripe/stripe-js';
 import { getAuth } from 'firebase/auth';
+import { useI18n } from 'vue-i18n'; // Import i18n
 
 export default {
   name: 'CheckoutView',
@@ -321,6 +322,7 @@ export default {
     const router = useRouter();
     const toast = useToast();
     const auth = getAuth();
+    const { t, locale } = useI18n(); // Use i18n
     
     // Current step in checkout process
     const currentStep = ref(1);
@@ -338,7 +340,7 @@ export default {
       address: '',
       city: '',
       postalCode: '',
-      country: 'Ukraine',
+      country: locale.value === 'pl' ? 'Poland' : 'Ukraine', // Set default country based on locale
       method: 'standard'
     });
     
@@ -423,9 +425,11 @@ export default {
     
     // Get shipping method display name
     const getShippingMethodName = () => {
-      return shippingInfo.value.method === 'express' 
-        ? 'Express Shipping (1-2 Business Days)' 
-        : 'Standard Shipping (3-5 Business Days)';
+      if (shippingInfo.value.method === 'express') {
+        return `${t('delivery.expressDelivery')} (1-2 ${t('delivery.days')})`;
+      } else {
+        return `${t('delivery.standardDelivery')} (3-5 ${t('delivery.days')})`;
+      }
     };
     
     // Get payment method display name
@@ -450,7 +454,7 @@ export default {
     // Handle checkout process with Stripe
     const handleCheckout = async () => {
       if (cartItems.value.length === 0) {
-        toast.error('Your cart is empty.');
+        toast.error(t('cart.emptyCartError'));
         return;
       }
       
@@ -522,7 +526,7 @@ export default {
     onMounted(async () => {
       // Check if cart is empty
       if (cartItems.value.length === 0) {
-        toast.error('Your cart is empty.');
+        toast.error(t('cart.emptyCartError'));
         router.push({ name: 'Cart' });
         return;
       }
@@ -550,7 +554,7 @@ export default {
               apartment: 'Apt 45',
               city: 'Kyiv',
               postalCode: '01001',
-              country: 'Ukraine',
+              country: locale.value === 'pl' ? 'Poland' : 'Ukraine',
               phone: '+380991234567',
               isDefault: true
             },
@@ -563,7 +567,7 @@ export default {
               apartment: 'Floor 3, Office 302',
               city: 'Kyiv',
               postalCode: '01004',
-              country: 'Ukraine',
+              country: locale.value === 'pl' ? 'Poland' : 'Ukraine',
               phone: '+380991234567',
               isDefault: false
             }
@@ -602,7 +606,8 @@ export default {
       getShippingMethodName,
       getPaymentMethodName,
       formatPrice,
-      handleCheckout
+      handleCheckout,
+      t // Expose t for use in template
     };
   }
 };

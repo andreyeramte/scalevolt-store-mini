@@ -3,13 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "build-netlify": "node ./node_modules/vite/bin/vite.js build ",
-    "lint": "vue-cli-service lint",
-    "generate-sitemap": "node scripts/generate-sitemap.js",
-    "dev": "vite"
-
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "build-netlify": "node ./node_modules/vite/bin/vite.js build",
+  "generate-sitemap": "node scripts/generate-sitemap.js",
+  "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@intercom/messenger-js-sdk": "^0.0.14",

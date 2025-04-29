@@ -1,4 +1,4 @@
-// src/router/guards/checkoutGuard.js
+// FILE: vue-frontend/src/router/guards/checkoutGuard.js
 import { useAuthStore } from '@/stores/auth';
 import { useCartStore } from '@/stores/cart';
 import { getAuth } from 'firebase/auth';
@@ -22,7 +22,7 @@ export function checkoutGuard(to, from, next) {
 
   try {
     cartStore = useCartStore();
-    authStore = useAuthStore(); 
+    authStore = useAuthStore();
     toast = useToast();
     t = useI18n().t;
   } catch (error) {
@@ -60,7 +60,7 @@ export function checkoutGuard(to, from, next) {
     localStorage.setItem('checkoutRedirect', redirectPath);
     
     // Redirect to checkout-auth page with return URL
-    next({ 
+    next({
       name: 'CheckoutAuth',
       query: { redirect: redirectPath }
     });

@@ -108,7 +108,7 @@
     
     <!-- Region Dropdown Menu (works for both mobile and desktop) -->
     <div v-if="regionMenuVisible" class="region-dropdown" @click.stop>
-      <div class="region-option" @click="selectRegion('uk')">
+      <div class="region-option" @click="selectRegion('ua')">
         <span class="language">Українська</span>
       </div>
       <div class="region-option" @click="selectRegion('pl')">
@@ -389,7 +389,7 @@
     <div class="selector-indicator" :class="{ active: currentLocale === 'pl' }"></div>
   </div>
   
-  <div class="language-selector-item" @click="selectRegion('uk')">
+  <div class="language-selector-item" @click="selectRegion('ua')">
     <div class="globe-icon-container">
       <img src="/images/header/globe-icon.svg" alt="Region Icon" class="globe-icon" />
     </div>
@@ -397,7 +397,7 @@
       <div class="country-name">Ukraine</div>
       <div class="language-name">Ukrainian</div>
     </div>
-    <div class="selector-indicator" :class="{ active: currentLocale === 'uk' }"></div>
+    <div class="selector-indicator" :class="{ active: currentLocale === 'ua' }"></div>
   </div>
 </div>
 
@@ -443,7 +443,7 @@ export default {
     const isHomePage = computed(() => route.path === "/");
     const currentLocale = computed(() => {
       // Add a default value if locale.value is undefined
-      return locale.value || "uk";
+      return locale.value || "ua";
     });
 
     // Update CSS variable to reflect header height
@@ -537,37 +537,27 @@ export default {
     };
 
     const selectRegion = (region) => {
-  console.log("Changing locale to:", region);
+      // Map 'uk' from UI to 'ua' for the i18n system
+      const localeCode = region === 'uk' ? 'ua' : region;
+      
+      console.log("Changing locale to:", region, "-> mapping to locale code:", localeCode);
 
-  // Update the i18n locale
-  locale.value = region;
+      // Update the i18n locale with the MAPPED code
+      locale.value = localeCode;
 
-  // Store in localStorage
-  localStorage.setItem("userLocale", region);
+      // Store in localStorage with the MAPPED code
+      localStorage.setItem("userLocale", localeCode);
 
-  // Update document language
-  document.documentElement.setAttribute("lang", region);
-
-  // Update currency based on region
-  const newCurrency = region === "pl" ? "PLN" : "UAH";
-  localStorage.setItem("userCurrency", newCurrency);
-  currentCurrency.value = newCurrency;
-
-  // Simply navigate to the root with the new locale
-  // This ensures we don't have nested locale paths
-  const newUrl = `${window.location.origin}/${region}`;
-  
-  console.log("New URL for navigation:", newUrl);
-  
-  // Add a flag to localStorage to indicate this is a language change
-  localStorage.setItem("isLanguageSwitch", "true");
-  
-  // Navigate to the new URL
-  window.location.href = newUrl;
-
-  // Close the dropdown (won't execute with page navigation)
-  regionMenuVisible.value = false;
-};
+      // Update document language
+      document.documentElement.setAttribute("lang", localeCode);
+      
+      // If navigating to a new URL, use the MAPPED code
+      const newUrl = `${window.location.origin}/${localeCode}`;
+      window.location.href = newUrl;
+      
+      // Close the dropdown (won't execute with page navigation)
+      regionMenuVisible.value = false;
+    };
 
     const performSearch = () => {
       if (!searchQuery.value.trim()) return;
@@ -920,7 +910,7 @@ export default {
   display: flex;
   justify-content: space-between; /* This creates space between left and right groups */
   align-items: center;
-  padding: 10px 15px;
+  padding: 10px 24px; /* Match this padding with hamburger position */
   height: 50px;
   width: 100%;
   box-sizing: border-box;
@@ -930,6 +920,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding-left: 0; /* Remove any potential left padding */
+  position: relative; /* Enable positioning context */
 }
 
 .mobile-right-group {
@@ -941,7 +933,7 @@ export default {
 }
 
 .mobile-search-row {
-  padding: 0 15px 10px;
+  padding: 0 24px 10px; /* Match left/right padding with mobile-top-row */
   width: 100%;
   box-sizing: border-box; /* Ensures padding doesn't add to width */
 }
@@ -1033,6 +1025,11 @@ export default {
 /* Hamburger Menu */
 .hamburger-container {
   cursor: pointer;
+  padding-left: 0; /* Remove any potential left padding */
+  display: flex;
+  align-items: center;
+  margin-left: 0; /* Remove any margin that might offset the hamburger */
+  position: relative; /* Enable positioning context */
 }
 
 .hamburger-menu {
@@ -1119,7 +1116,7 @@ export default {
   text-decoration: underline;
 }
 
-/* Mega Menu */
+/* Mega Menu - New Zoom-Responsive Approach */
 .dropdown-mega-menu {
   position: absolute;
   top: var(--menu-top-position, 110px);
@@ -1136,55 +1133,35 @@ export default {
   flex-direction: column;
 }
 
-/* Language Options in Menu */
-.language-options {
-  padding: 15px;
-  border-top: 1px solid #eee;
-}
-
-.language-options h3 {
-  color: #333; /* Dark color for the header */
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-
-.language-option {
+/* Container for menu content - with position property */
+.menu-container {
   display: flex;
-  padding: 8px 15px;
-  cursor: pointer;
+  flex-direction: column;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+  position: relative; /* Enable positioning context */
 }
 
-.language-option .language {
-  color: #000; /* Black text for better visibility */
-  font-weight: normal;
-}
-
-.language-option:hover {
-  background-color: #f5f5f5;
-}
-
-/* Menu Top Section */
-.menu-top-section {
-  padding: 10px 15px;
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-/* Menu Categories */
+/* Fix menu categories for zoom-responsive alignment */
 .menu-categories {
   width: 100%;
   background-color: #f8f8f8;
   border-right: 0;
   border-bottom: 1px solid #e0e0e0;
   padding: 0;
+  position: relative;
 }
 
+/* Fix zoom responsiveness with matching left position */
 .menu-category {
-  padding: 12px 15px;
+  padding: 12px 24px; /* Default padding */
   cursor: pointer;
   transition: all 0.2s ease;
   border-left: 4px solid transparent;
   border-bottom: 1px solid #eaeaea;
+  position: relative;
 }
 
 .menu-category:hover,
@@ -1238,7 +1215,7 @@ export default {
 .menu-subcategories {
   width: 100%;
   background-color: white;
-  padding: 15px;
+  padding: 15px 24px; /* Match padding for alignment */
   overflow-y: auto;
 }
 
@@ -1295,6 +1272,40 @@ export default {
   display: block;
 }
 
+/* Language Options in Menu */
+.language-options {
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+.language-options h3 {
+  color: #333; /* Dark color for the header */
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.language-option {
+  display: flex;
+  padding: 8px 15px;
+  cursor: pointer;
+}
+
+.language-option .language {
+  color: #000; /* Black text for better visibility */
+  font-weight: normal;
+}
+
+.language-option:hover {
+  background-color: #f5f5f5;
+}
+
+/* Menu Top Section */
+.menu-top-section {
+  padding: 10px 15px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #e0e0e0;
+}
+
 /* Tesla-style language selector at bottom of dropdown menu */
 .tesla-language-selector {
   width: 100%;
@@ -1306,7 +1317,7 @@ export default {
 .language-selector-item {
   display: flex;
   align-items: center;
-  padding: 16px 24px;
+  padding: 16px 24px; /* Match padding with menu-category */
   cursor: pointer;
   position: relative;
   border-bottom: 1px solid #f0f0f0;
@@ -1655,6 +1666,7 @@ export default {
     justify-content: space-between !important; /* Key for proper spacing */
     width: 100% !important;
     box-sizing: border-box !important;
+    padding: 10px 24px !important; /* Ensure consistency with hamburger menu */
   }
 
   /* Ensure right group takes proper space */
@@ -1668,6 +1680,7 @@ export default {
   .mobile-left-group {
     width: auto !important;
     flex-shrink: 0; /* Prevent shrinking */
+    padding-left: 0 !important; /* Remove any padding that might offset alignment */
   }
   
   .mobile-icon img {
@@ -1693,6 +1706,55 @@ export default {
   .desktop-header {
     display: none !important;
   }
+  
+  /* Extra specificity to ensure proper alignment of menu items */
+  .dropdown-mega-menu .menu-category {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  
+  .dropdown-mega-menu .language-selector-item {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  
+  .dropdown-mega-menu .menu-subcategories {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+  
+  /* Critical fix: Ensure hamburger has no offset */
+  .hamburger-container {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+  
+  /* Ensure search row padding matches */
+  .mobile-search-row {
+    padding: 0 24px 10px !important;
+  }
+  
+  /* Zoom-responsive approach for menu - fix for all zoom levels */
+  .hamburger-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    opacity: 0;
+  }
+  
+  /* Make menu items align with hamburger at all zoom levels */
+  .dropdown-mega-menu .menu-categories::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 24px;
+    height: 1px;
+    background-color: transparent;
+  }
 }
 
 /* Support for extra small devices */
@@ -1713,12 +1775,13 @@ export default {
     width: 18px !important;
   }
   
+  /* Even on smallest screens, maintain hamburger alignment */
   .mobile-top-row {
-    padding: 8px 5px !important;
+    padding: 8px 24px !important;
   }
   
   .mobile-search-row {
-    padding: 0 5px 8px !important;
+    padding: 0 24px 8px !important;
   }
 }
 
@@ -1727,6 +1790,7 @@ export default {
   --header-height: 110px; /* Default for mobile */
   --header-height-desktop: 60px; /* Desktop value */
   --menu-top-position: 60px; /* For mega menu positioning */
+  --hamburger-padding: 24px; /* Store hamburger padding for reference */
 }
 
 /* Force visibility for mobile elements */
@@ -1738,6 +1802,32 @@ export default {
   
   .desktop-header {
     display: none !important;
+  }
+}
+
+/* Fix for zoom scaling variations */
+@media (min-width: 320px) and (max-width: 767px) {
+  /* Create consistent alignment across zoom levels */
+  .hamburger-container {
+    position: relative;
+  }
+  
+  /* Establish fixed position reference */
+  .mobile-left-group::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 1px;
+    width: 1px;
+    opacity: 0;
+  }
+  
+  /* Scale-independent menu alignment */
+  .dropdown-mega-menu .menu-category,
+  .dropdown-mega-menu .language-selector-item,
+  .dropdown-mega-menu .menu-subcategories {
+    box-sizing: border-box !important;
   }
 }
 </style>
