@@ -1,7 +1,9 @@
 const express = require('express');
-const { pool } = require('../db/pool');
-//const { buildSearchableText } = require('../utils/helpers');
-const { translateText, translateProduct } = require('../../../vue-frontend/src/utils/translationService');
+const { pool } = require('../db/pool.cjs');
+const { buildSearchableText } = require('../utils/helpers.cjs');
+const { translateText, translateProduct, getTranslatedContent } = require('../utils/translationService.cjs');
+
+
 
 const router = express.Router();
 
@@ -24,16 +26,16 @@ router.post('/', async (req, res) => {
     if (auto_translate) {
       try {
         productData = await translateProduct(productData);
-      } catch (error) {
-        console.error('Auto-translation failed:', error);
+      } catch (err) {
+        console.error('Auto-translation failed:', err);
       }
     }
 
-    //const searchable_text = buildSearchableText(productData);
+    const searchable_text = buildSearchableText(productData);
 
     const result = await pool.query(
       `INSERT INTO products 
-       (name, price, description, name_ua, name_pl, description_ua, description_pl, searchable_text) 
+         (name, price, description, name_ua, name_pl, description_ua, description_pl, searchable_text) 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
        RETURNING *`,
       [
@@ -60,34 +62,31 @@ router.get('/', async (req, res) => {
 
   try {
     let result;
-    if (lang === 'en') {
-      result = await pool.query('SELECT * FROM products');
-    } else if (lang === 'ua') {
+    if (lang === 'ua') {
       result = await pool.query(`
-        SELECT 
-          id, 
-          COALESCE(name_ua, name) as name, 
-          price, 
-          COALESCE(description_ua, description) as description,
-          created_at, 
+        SELECT
+          id,
+          COALESCE(name_ua, name) AS name,
+          price,
+          COALESCE(description_ua, description) AS description,
+          created_at,
           updated_at
         FROM products
       `);
     } else if (lang === 'pl') {
       result = await pool.query(`
-        SELECT 
-          id, 
-          COALESCE(name_pl, name) as name, 
-          price, 
-          COALESCE(description_pl, description) as description,
-          created_at, 
+        SELECT
+          id,
+          COALESCE(name_pl, name) AS name,
+          price,
+          COALESCE(description_pl, description) AS description,
+          created_at,
           updated_at
         FROM products
       `);
     } else {
       result = await pool.query('SELECT * FROM products');
     }
-
     res.json(result.rows);
   } catch (err) {
     console.error(err);
@@ -95,65 +94,41 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Search products endpoint
+// Search products
 router.get('/search', async (req, res) => {
-  const query = req.query.q || '';
+  const query = (req.query.q || '').trim().toLowerCase();
   const lang = req.query.lang || 'en';
-
-  console.log(`Searching for products with query: "${query}" in language: ${lang}`);
 
   try {
     let result;
-
-    if (query.trim() === '') {
+    if (!query) {
       result = await pool.query('SELECT * FROM products ORDER BY name ASC LIMIT 20');
     } else {
-      try {
-        result = await pool.query(
-          `SELECT * FROM products
-           WHERE searchable_text ILIKE $1
-           ORDER BY name ASC
-           LIMIT 20`,
-          [`%${query}%`]
-        );
-      } catch (err) {
-        console.log('Falling back to original search method');
-        result = await pool.query(
-          `SELECT * FROM products
-           WHERE name ILIKE $1
-           OR description ILIKE $1
-           OR CAST(id AS TEXT) ILIKE $1
-           ORDER BY name ASC
-           LIMIT 20`,
-          [`%${query}%`]
-        );
+      result = await pool.query(
+        `SELECT * FROM products
+         WHERE searchable_text ILIKE $1
+         ORDER BY name ASC
+         LIMIT 20`,
+        [`%${query}%`]
+      );
+    }
+
+    let rows = result.rows.map(prod => {
+      // translate name/description fields based on lang
+      if (lang === 'ua') {
+        prod.name = prod.name_ua || prod.name;
+        prod.description = prod.description_ua || prod.description;
+      } else if (lang === 'pl') {
+        prod.name = prod.name_pl || prod.name;
+        prod.description = prod.description_pl || prod.description;
       }
-    }
+      return prod;
+    });
 
-    let formattedResults = result.rows;
-
-    if (lang === 'ua') {
-      formattedResults = result.rows.map(product => ({
-        ...product,
-        name: product.name_ua || product.name,
-        description: product.description_ua || product.description
-      }));
-    } else if (lang === 'pl') {
-      formattedResults = result.rows.map(product => ({
-        ...product,
-        name: product.name_pl || product.name,
-        description: product.description_pl || product.description
-      }));
-    }
-
-    console.log(`Found ${formattedResults.length} products matching the search query`);
-    res.json(formattedResults);
+    res.json(rows);
   } catch (err) {
     console.error('Search error:', err);
-    res.status(500).json({
-      error: 'Error searching products',
-      message: err.message
-    });
+    res.status(500).json({ error: 'Error searching products', message: err.message });
   }
 });
 
@@ -164,39 +139,31 @@ router.get('/:id', async (req, res) => {
 
   try {
     let result;
-
-    if (lang === 'en') {
-      result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-    } else if (lang === 'ua') {
-      result = await pool.query(`
-        SELECT 
-          id, 
-          COALESCE(name_ua, name) as name, 
-          price, 
-          COALESCE(description_ua, description) as description,
-          created_at, 
-          updated_at
-        FROM products WHERE id = $1
-      `, [id]);
+    if (lang === 'ua') {
+      result = await pool.query(
+        `SELECT id,
+                COALESCE(name_ua, name) AS name,
+                price,
+                COALESCE(description_ua, description) AS description,
+                created_at, updated_at
+         FROM products WHERE id = $1`, [id]
+      );
     } else if (lang === 'pl') {
-      result = await pool.query(`
-        SELECT 
-          id, 
-          COALESCE(name_pl, name) as name, 
-          price, 
-          COALESCE(description_pl, description) as description,
-          created_at, 
-          updated_at
-        FROM products WHERE id = $1
-      `, [id]);
+      result = await pool.query(
+        `SELECT id,
+                COALESCE(name_pl, name) AS name,
+                price,
+                COALESCE(description_pl, description) AS description,
+                created_at, updated_at
+         FROM products WHERE id = $1`, [id]
+      );
     } else {
       result = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
     }
 
-    if (result.rows.length === 0) {
+    if (!result.rows.length) {
       return res.status(404).send('Product not found');
     }
-
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -215,54 +182,38 @@ router.put('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const existingProduct = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    if (!rows.length) return res.status(404).send('Product not found');
 
-    if (existingProduct.rows.length === 0) {
-      return res.status(404).send('Product not found');
-    }
+    let product = { ...rows[0] };
+    if (name !== undefined)        product.name = name;
+    if (price !== undefined)       product.price = price;
+    if (description !== undefined) product.description = description;
+    if (name_ua !== undefined)     product.name_ua = name_ua;
+    if (name_pl !== undefined)     product.name_pl = name_pl;
+    if (description_ua !== undefined) product.description_ua = description_ua;
+    if (description_pl !== undefined) product.description_pl = description_pl;
 
-    let product = {
-      ...existingProduct.rows[0],
-      name: name !== undefined ? name : existingProduct.rows[0].name,
-      price: price !== undefined ? price : existingProduct.rows[0].price,
-      description: description !== undefined ? description : existingProduct.rows[0].description,
-      name_ua: name_ua !== undefined ? name_ua : existingProduct.rows[0].name_ua,
-      name_pl: name_pl !== undefined ? name_pl : existingProduct.rows[0].name_pl,
-      description_ua: description_ua !== undefined ? description_ua : existingProduct.rows[0].description_ua,
-      description_pl: description_pl !== undefined ? description_pl : existingProduct.rows[0].description_pl
-    };
-
-    if (auto_translate && (name !== undefined || description !== undefined)) {
+    if (auto_translate && (name || description)) {
       try {
-        const fieldsToTranslate = {
+        const translated = await translateProduct({
           name: product.name,
           description: product.description
-        };
-
-        const translatedFields = await translateProduct(fieldsToTranslate);
-
-        if (name !== undefined && !name_ua) {
-          product.name_ua = translatedFields.name_ua;
-        }
-        if (name !== undefined && !name_pl) {
-          product.name_pl = translatedFields.name_pl;
-        }
-        if (description !== undefined && !description_ua) {
-          product.description_ua = translatedFields.description_ua;
-        }
-        if (description !== undefined && !description_pl) {
-          product.description_pl = translatedFields.description_pl;
-        }
-      } catch (error) {
-        console.error('Auto-translation failed during update:', error);
+        });
+        product.name_ua = product.name_ua || translated.name_ua;
+        product.name_pl = product.name_pl || translated.name_pl;
+        product.description_ua = product.description_ua || translated.description_ua;
+        product.description_pl = product.description_pl || translated.description_pl;
+      } catch (err) {
+        console.error('Auto-translation failed during update:', err);
       }
     }
 
-    //const searchable_text = buildSearchableText(product);
+    const searchable_text = buildSearchableText(product);
 
-    const result = await pool.query(
-      `UPDATE products SET 
-         name = $1, 
+    const updateRes = await pool.query(
+      `UPDATE products SET
+         name = $1,
          price = $2,
          description = $3,
          name_ua = $4,
@@ -270,7 +221,7 @@ router.put('/:id', async (req, res) => {
          description_ua = $6,
          description_pl = $7,
          searchable_text = $8
-       WHERE id = $9 
+       WHERE id = $9
        RETURNING *`,
       [
         product.name,
@@ -284,8 +235,7 @@ router.put('/:id', async (req, res) => {
         id
       ]
     );
-
-    res.json(result.rows[0]);
+    res.json(updateRes.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error updating product');
@@ -294,12 +244,9 @@ router.put('/:id', async (req, res) => {
 
 // Delete product
 router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
   try {
-    const result = await pool.query('DELETE FROM products WHERE id = $1 RETURNING *', [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).send('Product not found');
-    }
+    const { rows } = await pool.query('DELETE FROM products WHERE id = $1 RETURNING *', [req.params.id]);
+    if (!rows.length) return res.status(404).send('Product not found');
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
@@ -307,135 +254,88 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Translation-specific endpoint
-router.patch('/:id/translations', async (req, res) => {
-  const { id } = req.params;
-  const { name_ua, name_pl, description_ua, description_pl } = req.body;
-
+// Auto-translate missing fields
+router.post('/:id/auto-translate', async (req, res) => {
   try {
-    const currentProduct = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+    const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
+    if (!rows.length) return res.status(404).send('Product not found');
 
-    if (currentProduct.rows.length === 0) {
-      return res.status(404).send('Product not found');
-    }
+    const product = rows[0];
+    const translated = await translateProduct(product);
 
-    const product = {
-      ...currentProduct.rows[0],
-      name_ua: name_ua !== undefined ? name_ua : currentProduct.rows[0].name_ua,
-      name_pl: name_pl !== undefined ? name_pl : currentProduct.rows[0].name_pl,
-      description_ua: description_ua !== undefined ? description_ua : currentProduct.rows[0].description_ua,
-      description_pl: description_pl !== undefined ? description_pl : currentProduct.rows[0].description_pl
-    };
+    product.name_ua = product.name_ua || translated.name_ua;
+    product.name_pl = product.name_pl || translated.name_pl;
+    product.description_ua = product.description_ua || translated.description_ua;
+    product.description_pl = product.description_pl || translated.description_pl;
 
-    //const searchable_text = buildSearchableText(product);
+    const searchable_text = buildSearchableText(product);
 
-    const result = await pool.query(
-      `UPDATE products SET 
+    const upd = await pool.query(
+      `UPDATE products SET
          name_ua = $1,
          name_pl = $2,
          description_ua = $3,
          description_pl = $4,
          searchable_text = $5
-       WHERE id = $6 
-       RETURNING *`,
-      [product.name_ua, product.name_pl, product.description_ua, product.description_pl, searchable_text, id]
-    );
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error updating translations');
-  }
-});
-
-// Auto-translate missing fields for a product
-router.post('/:id/auto-translate', async (req, res) => {
-  const { id } = req.params;
-  const { targetLanguages = ['ua', 'pl'], sourceLanguage = 'en' } = req.body;
-
-  try {
-    const currentProduct = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-
-    if (currentProduct.rows.length === 0) {
-      return res.status(404).send('Product not found');
-    }
-
-    const product = currentProduct.rows[0];
-    const translatedProduct = await translateProduct(product, targetLanguages, sourceLanguage);
-
-    //const searchable_text = buildSearchableText(translatedProduct);
-
-    const result = await pool.query(
-      `UPDATE products SET 
-         name_ua = COALESCE($1, name_ua),
-         name_pl = COALESCE($2, name_pl),
-         description_ua = COALESCE($3, description_ua),
-         description_pl = COALESCE($4, description_pl),
-         searchable_text = $5
-       WHERE id = $6 
-       RETURNING *`,
+       WHERE id = $6 RETURNING *`,
       [
-        translatedProduct.name_ua,
-        translatedProduct.name_pl,
-        translatedProduct.description_ua,
-        translatedProduct.description_pl,
+        product.name_ua,
+        product.name_pl,
+        product.description_ua,
+        product.description_pl,
         searchable_text,
-        id
+        req.params.id
       ]
     );
-
-    res.json(result.rows[0]);
+    res.json(upd.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error auto-translating product');
   }
 });
 
-// Batch auto-translate multiple products
+// Batch auto-translate
 router.post('/batch-translate', async (req, res) => {
-  const { productIds = [], targetLanguages = ['ua', 'pl'], sourceLanguage = 'en' } = req.body;
-
+  const { productIds = [] } = req.body;
   try {
     const results = [];
-
     for (const id of productIds) {
-      const currentProduct = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-
-      if (currentProduct.rows.length === 0) {
-        results.push({ id, success: false, message: 'Product not found' });
+      const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+      if (!rows.length) {
+        results.push({ id, success: false, message: 'Not found' });
         continue;
       }
-
-      const product = currentProduct.rows[0];
-      const translatedProduct = await translateProduct(product, targetLanguages, sourceLanguage);
-
-     // const searchable_text = buildSearchableText(translatedProduct);
+      const product = rows[0];
+      const translated = await translateProduct(product);
+      product.name_ua = product.name_ua || translated.name_ua;
+      product.name_pl = product.name_pl || translated.name_pl;
+      product.description_ua = product.description_ua || translated.description_ua;
+      product.description_pl = product.description_pl || translated.description_pl;
+      const searchable_text = buildSearchableText(product);
 
       await pool.query(
-        `UPDATE products SET 
-           name_ua = COALESCE($1, name_ua),
-           name_pl = COALESCE($2, name_pl),
-           description_ua = COALESCE($3, description_ua),
-           description_pl = COALESCE($4, description_pl),
+        `UPDATE products SET
+           name_ua = $1,
+           name_pl = $2,
+           description_ua = $3,
+           description_pl = $4,
            searchable_text = $5
          WHERE id = $6`,
         [
-          translatedProduct.name_ua,
-          translatedProduct.name_pl,
-          translatedProduct.description_ua,
-          translatedProduct.description_pl,
+          product.name_ua,
+          product.name_pl,
+          product.description_ua,
+          product.description_pl,
           searchable_text,
           id
         ]
       );
-
       results.push({ id, success: true });
     }
-
     res.json({ results });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error batch translating products');
+    res.status(500).send('Error batch translating');
   }
 });
 

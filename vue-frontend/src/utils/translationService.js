@@ -1,89 +1,69 @@
-// FILE: vue-frontend/src/utils/translationService.js
+// FILE: backend-node/utils/translationService.cjs
 
-import axios from 'axios';
-import { i18n } from '@/i18n/index.js';
+const axios = require('axios'); // ✅ Верно для CommonJS
 
 /**
  * Translates text to the target language
- * @param {string} text - The text to translate
- * @param {string} targetLanguage - The target language code (e.g., 'ua', 'pl', 'en')
- * @param {string} sourceLanguage - The source language code (optional, defaults to 'en')
- * @returns {Promise<string>} - The translated text
+ * @param {string} text
+ * @param {string} targetLanguage
+ * @param {string} sourceLanguage
+ * @returns {Promise<string>}
  */
-export async function translateText(text, targetLanguage, sourceLanguage = 'en') {
+async function translateText(text, targetLanguage, sourceLanguage = 'en') {
   try {
-    // If no text or target language is same as source, return original
     if (!text || targetLanguage === sourceLanguage) {
       return text;
     }
-
-    const response = await axios.post('/api/translations/text', {
-      text,
-      targetLanguage,
-      sourceLanguage
-    });
-
+    const response = await axios.post(
+      'http://localhost:3002/api/translate/text',
+      { text, targetLanguage, sourceLanguage }
+    );
     return response.data.translatedText;
-  } catch (error) {
-    console.error('Translation error:', error);
-    return text; // Return original text if translation fails
+  } catch (err) {
+    console.error('Translation error:', err);
+    return text;
   }
 }
 
 /**
- * Translates product fields to multiple languages
- * @param {Object} product - The product object with name, description, etc.
- * @param {Array<string>} targetLanguages - Array of target language codes (e.g., ['ua', 'pl'])
- * @param {string} sourceLanguage - The source language code (optional, defaults to 'en')
- * @returns {Promise<Object>} - The product with translated fields
+ * Translates all product fields
+ * @param {Object} product
+ * @param {Array<string>} targetLanguages
+ * @param {string} sourceLanguage
+ * @returns {Promise<Object>}
  */
-export async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en') {
+async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en') {
   try {
-    const response = await axios.post('/api/translations/product', {
-      product,
-      targetLanguages,
-      sourceLanguage
-    });
-
+    const response = await axios.post(
+      'http://localhost:3002/api/translate/product',
+      { product, targetLanguages, sourceLanguage }
+    );
     return response.data;
-  } catch (error) {
-    console.error('Product translation error:', error);
-    return product; // Return original product if translation fails
+  } catch (err) {
+    console.error('Product translation error:', err);
+    return product;
   }
 }
 
 /**
- * Get translated content based on current locale
- * @param {Object} content - Object with translations for different languages
- * @returns {string} - Content in current language or fallback
+ * Picks the right translation from an object
+ * @param {Object|string} content
+ * @param {string} currentLocale
+ * @returns {string}
  */
-export function getTranslatedContent(content) {
-  const currentLocale = i18n.global.locale.value;
-  
-  // If content is a string, return it directly
-  if (typeof content === 'string') {
-    return content;
-  }
-  
-  // If content is an object with language keys
+function getTranslatedContent(content, currentLocale = 'en') {
+  if (typeof content === 'string') return content;
   if (content && typeof content === 'object') {
-    // Try to get content for current locale
-    if (content[currentLocale]) {
-      return content[currentLocale];
-    }
-    
-    // Fallback order: current locale → default locale (ua) → first available
-    if (content.ua) {
-      return content.ua;
-    }
-    
-    // Last resort: return first available translation
-    const firstAvailableLocale = Object.keys(content)[0];
-    if (firstAvailableLocale) {
-      return content[firstAvailableLocale];
-    }
+    if (content[currentLocale]) return content[currentLocale];
+    if (content.ua)            return content.ua;
+    const first = Object.keys(content)[0];
+    return content[first] || '';
   }
-  
-  // If nothing found, return empty string
   return '';
 }
+
+module.exports = {
+  translateText,
+  translateProduct,
+  getTranslatedContent
+};

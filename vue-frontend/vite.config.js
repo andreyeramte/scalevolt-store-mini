@@ -1,19 +1,36 @@
+// vite.config.js
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [vue(), tailwindcss(), ],
+  plugins: [
+    vue(),
+    tailwindcss(),  // keep this if it’s working for you
+  ],
 
   server: {
     host: "localhost",
-    port: 5177, // Changed from 5176 to 5177
+    port: 5177,
     open: true,
-    // Removed strictPort: true to allow Vite to find an available port
-    watch: {
-      usePolling: true,
-    },
+    watch: { usePolling: true },
+
+    // ←—— ADD THIS:
+    proxy: {
+      // proxy /api/* to your backend
+      '^/api': {
+        target: "http://localhost:3002",
+        changeOrigin: true,
+        secure: false,
+      },
+      // if you ever hit /health in dev from the front-end:
+      '^/health': {
+        target: "http://localhost:3002",
+        changeOrigin: true,
+        secure: false,
+      }
+    }
   },
 
   resolve: {
@@ -23,12 +40,10 @@ export default defineConfig({
     },
   },
 
-  // To this:
   build: {
-    outDir: "dist", // Changed to use local 'dist' folder
+    outDir: "dist",
     assetsDir: "assets",
     emptyOutDir: true,
-
     rollupOptions: {
       output: {
         assetFileNames: "assets/[name]-[hash][extname]",

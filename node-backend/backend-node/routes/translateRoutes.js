@@ -4,6 +4,8 @@ const { Translate } = require('@google-cloud/translate').v2;
 const { Storage } = require('@google-cloud/storage');
 const fs = require('fs');
 const path = require('path');
+const { pool } = require('../../db/pool.cjs');
+
 
 // Cache for translation results to reduce API calls
 const translationCache = new Map();
