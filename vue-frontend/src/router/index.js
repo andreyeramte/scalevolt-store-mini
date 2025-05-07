@@ -32,7 +32,7 @@ import LiftsAndCranesCategory from '@/views/LiftsAndCranesCategory.vue';
 import PrivacyView from '@/views/PrivacyView.vue';
 import ErrorView from '@/views/ErrorView.vue';
 import LegalTermsView from '@/views/LegalTermsView.vue';
-import { translateText, translateProduct } from '../utils/translationService.js';
+//import { translateText, translateProduct } from '../utils/translationService.js';
 import { checkoutGuard } from './guards/checkoutGuard'; // Import the checkout guard
 import AuthView from '@/views/AuthView.vue';
 import ProductRental from '@/views/ProductRental.vue';

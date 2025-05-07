@@ -1,9 +1,9 @@
 // FILE: backend-node/utils/translationService.cjs
 
-const axios = require('axios'); // ✅ Верно для CommonJS
+const axios = require('axios'); // ✅ CommonJS
 
 /**
- * Translates text to the target language
+ * Translates a single piece of text
  * @param {string} text
  * @param {string} targetLanguage
  * @param {string} sourceLanguage
@@ -14,11 +14,11 @@ async function translateText(text, targetLanguage, sourceLanguage = 'en') {
     if (!text || targetLanguage === sourceLanguage) {
       return text;
     }
-    const response = await axios.post(
+    const { data } = await axios.post(
       'http://localhost:3002/api/translate/text',
       { text, targetLanguage, sourceLanguage }
     );
-    return response.data.translatedText;
+    return data.translatedText;
   } catch (err) {
     console.error('Translation error:', err);
     return text;
@@ -26,19 +26,19 @@ async function translateText(text, targetLanguage, sourceLanguage = 'en') {
 }
 
 /**
- * Translates all product fields
+ * Translates all fields of a product object
  * @param {Object} product
- * @param {Array<string>} targetLanguages
+ * @param {string[]} targetLanguages
  * @param {string} sourceLanguage
  * @returns {Promise<Object>}
  */
 async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en') {
   try {
-    const response = await axios.post(
+    const { data } = await axios.post(
       'http://localhost:3002/api/translate/product',
       { product, targetLanguages, sourceLanguage }
     );
-    return response.data;
+    return data;
   } catch (err) {
     console.error('Product translation error:', err);
     return product;
@@ -46,24 +46,31 @@ async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceL
 }
 
 /**
- * Picks the right translation from an object
+ * Given a translation object or plain string, pick the right locale
  * @param {Object|string} content
  * @param {string} currentLocale
  * @returns {string}
  */
 function getTranslatedContent(content, currentLocale = 'en') {
-  if (typeof content === 'string') return content;
+  if (typeof content === 'string') {
+    return content;
+  }
   if (content && typeof content === 'object') {
-    if (content[currentLocale]) return content[currentLocale];
-    if (content.ua)            return content.ua;
-    const first = Object.keys(content)[0];
-    return content[first] || '';
+    if (content[currentLocale]) {
+      return content[currentLocale];
+    }
+    if (content.ua) {
+      return content.ua;
+    }
+    // Fallback to first available
+    const firstKey = Object.keys(content)[0];
+    return content[firstKey] || '';
   }
   return '';
 }
 
-module.exports = {
-  translateText,
-  translateProduct,
-  getTranslatedContent
-};
+// // module.exports = {
+//   translateText,
+//   translateProduct,
+//   getTranslatedContent,
+// };

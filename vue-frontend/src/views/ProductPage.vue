@@ -159,22 +159,24 @@
           </div>
         </div>
         
-        <!-- Product Information Section (from first code) -->
+        <!-- Product Information Section (from first code) - FIXED TABLE STRUCTURE -->
         <div v-if="product" class="product-info-section mt-8">
           <h3>{{ $t("product.section_title") || "Інформація про товар" }}</h3>
           <table class="info-table">
-            <tr>
-              <th>{{ $t("product.quantity") || "Кількість" }}</th>
-              <td>{{ product.quantity || "1" }}</td>
-            </tr>
-            <tr>
-              <th>{{ $t("product.brand") || "Бренд" }}</th>
-              <td>{{ product.brand }}</td>
-            </tr>
-            <tr>
-              <th>{{ $t("product.model") || "Модель" }}</th>
-              <td>{{ product.model || product.defaultName }}</td>
-            </tr>
+            <tbody>
+              <tr>
+                <th>{{ $t("product.quantity") || "Кількість" }}</th>
+                <td>{{ product.quantity || "1" }}</td>
+              </tr>
+              <tr>
+                <th>{{ $t("product.brand") || "Бренд" }}</th>
+                <td>{{ product.brand }}</td>
+              </tr>
+              <tr>
+                <th>{{ $t("product.model") || "Модель" }}</th>
+                <td>{{ product.model || product.defaultName }}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
@@ -568,7 +570,6 @@ watch(
   }
 );
 </script>
-
 
 <style scoped>
 .product-page-container {

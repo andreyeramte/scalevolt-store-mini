@@ -12,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const app = express();
 
 // ←– now requiring from your new local db folder
-const { pool }        = require('./db/pool.cjs');
+const { pool } = require('../db/pool.cjs');
 const productRoutes   = require('./routes/productRoutes');
 const translateRoutes = require('./routes/translateRoutes');
 

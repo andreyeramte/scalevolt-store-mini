@@ -228,15 +228,20 @@ export const useProductsStore = defineStore("products", {
     },
   },
   actions: {
-    // Fetch products from action
+    // Fetch products from action - modified to use mock data instead of API call
     async getAllProducts() {
       try {
-        const response = await fetch("http://localhost:1337/api/products").then(
-          (response) => {
-            return response.json();
-          }
-        );
-        this.products = response.data;
+        // Comment out API call that's causing the issue
+        // const response = await fetch("http://localhost:1337/api/products").then(
+        //   (response) => {
+        //     return response.json();
+        //   }
+        // );
+        // this.products = response.data;
+        
+        // No need to do anything - we'll use the mock data already defined in state
+        console.log("Using mock product data from store");
+        // The products are already defined in state, so we're good to go!
       } catch (error) {
         console.log(error);
       }

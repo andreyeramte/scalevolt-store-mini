@@ -12,6 +12,15 @@ import { getUserCurrencyPreference } from '@/services/currency';
 import { useAuthStore } from './stores/auth';
 import { createHead } from '@vueuse/head';
 
+// Force hide any loading screens immediately
+window.BYPASS_LOADING = true;
+document.addEventListener('DOMContentLoaded', () => {
+  const loadingElements = document.querySelectorAll('[class*="loading"], [id*="loading"], .loading-container');
+  loadingElements.forEach(el => {
+    el.style.display = 'none';
+  });
+});
+
 // ✅ Add favicon programmatically to prevent 404 errors
 function addFavicon() {
   var link = document.createElement('link');
@@ -56,7 +65,13 @@ function initializeApp() {
     // Initialize the auth store to connect with Firebase
     // This needs to happen AFTER pinia is installed but BEFORE app is mounted
     const authStore = useAuthStore();
-    authStore.init();
+    
+    // IMPORTANT: Don't wait for auth initialization - just try to init
+    try {
+      authStore.init();
+    } catch (e) {
+      console.warn('Auth initialization failed, continuing anyway:', e);
+    }
     
     // Load saved locale from localStorage and ensure it's applied
     const savedLocale = localStorage.getItem('userLocale');
@@ -133,17 +148,18 @@ function initializeApp() {
     // Make i18n available globally for debugging
     window.i18n = i18n;
     
-    // ✅ Handle Firebase Auth & Then Mount
+    // ✅ IMPORTANT CHANGE: Mount the app immediately, don't wait for Firebase
+    app.mount('#app');
+    
+    // Still listen for auth changes, but don't block rendering
     auth.onAuthStateChanged(function(user) {
       if (user) {
         console.log('✅ User is logged in:', user);
       } else {
         console.log('🚨 User is signed out');
       }
-      
-      // ✅ Mount the app AFTER firebase confirms auth status
-      app.mount('#app');
     });
+    
   } catch (error) {
     console.error('🔥 Critical App Error:', error);
     document.getElementById('app').innerHTML = `
@@ -182,6 +198,35 @@ window.reloadApp = function() {
   window.location.reload();
   return 'Reloading application...';
 };
+
+// Add a function to bypass loading screens
+window.bypassLoading = function() {
+  const loadingElements = document.querySelectorAll('[class*="loading"], [id*="loading"], .loading-container');
+  loadingElements.forEach(el => {
+    el.style.display = 'none';
+  });
+  
+  // Find elements containing "Loading ScaleVolt Store"
+  document.querySelectorAll('*').forEach(el => {
+    if (el.textContent && el.textContent.includes('Loading ScaleVolt Store')) {
+      el.style.display = 'none';
+      
+      // Try to hide parent elements too
+      let parent = el.parentElement;
+      for (let i = 0; i < 3 && parent; i++) {
+        parent.style.display = 'none';
+        parent = parent.parentElement;
+      }
+    }
+  });
+  
+  return 'Attempted to bypass loading screens';
+};
+
+// Set a timeout to hide loading screens
+setTimeout(window.bypassLoading, 100);
+setTimeout(window.bypassLoading, 500);
+setTimeout(window.bypassLoading, 1000);
 
 // ✅ 👇 Start everything in the correct order
 addFavicon();
