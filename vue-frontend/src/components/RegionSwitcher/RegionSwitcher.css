@@ -1,0 +1,94 @@
+.region-switcher {
+  position: relative;
+  display: inline-block;
+}
+
+.region-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.region-selector:hover {
+  background-color: #f5f5f5;
+}
+
+.lang-code {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+}
+
+.region-icon-container {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.region-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Region Dropdown Menu */
+.region-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  background-color: white;
+  z-index: 100;
+  margin-top: 5px;
+  padding: 8px 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.region-option {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #333333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.region-option:hover {
+  background-color: #f5f5f5;
+}
+
+.region-option.active {
+  background-color: #e6f0ff;
+  font-weight: 500;
+}
+
+.locale-emoji {
+  font-size: 16px;
+}
+
+.language {
+  font-size: 14px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .region-selector {
+    padding: 3px 6px;
+  }
+  
+  .lang-code {
+    font-size: 12px;
+  }
+  
+  .region-dropdown {
+    width: 180px;
+  }
+}

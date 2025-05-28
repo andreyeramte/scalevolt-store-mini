@@ -10,6 +10,7 @@ const fs         = require('fs');
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
+const cableRoutes = require('./routes/cables');
 
 // ←– now requiring from your new local db folder
 const { pool } = require('../db/pool.cjs');
@@ -23,6 +24,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // mount your APIs
 app.use('/api/products', productRoutes);
 app.use('/api/translate', translateRoutes);
+app.use('/api/cables', cableRoutes);
 
 // ensure upload dirs exist
 const uploadsDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');

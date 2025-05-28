@@ -187,16 +187,16 @@ function convertLanguageCode(code) {
   if (!code) return '';
   
   const codeMap = {
-    // ISO 639-1 to Google Translate codes
-    'ua': 'ua', // Ukrainian
-    'ua': 'ua', // Ukrainian (common alias)
+    'ua': 'uk', // Ukrainian (common alias)
+    'uk': 'uk', // Ukrainian
     'pl': 'pl', // Polish
     'en': 'en', // English
     // Add more mappings as needed
   };
-  
+
   return codeMap[code.toLowerCase()] || code.toLowerCase();
 }
+
 
 module.exports = {
   translateText,

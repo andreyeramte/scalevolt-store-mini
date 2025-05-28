@@ -1,4 +1,9 @@
-export function buildSearchableText(product)  
+/**
+ * Build a searchable text blob from product fields.
+ * @param {Object} product
+ * @returns {string}
+ */
+function buildSearchableText(product) {
   return [
     product.name,
     product.name_ua,

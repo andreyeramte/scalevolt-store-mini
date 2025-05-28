@@ -1,72 +1,194 @@
-// FILE: vue-frontend/src/router/guards/checkoutGuard.js
-import { useAuthStore } from '@/stores/auth';
-import { useCartStore } from '@/stores/cart';
+// FILE: src/router/guards/checkoutGuard.js
+// Convert the Vue guard to a React-compatible function
 import { getAuth } from 'firebase/auth';
-import { useToast } from 'vue-toastification';
-import { useI18n } from 'vue-i18n';
+import { toast } from 'react-toastify'; // You'll need to install react-toastify
 
 /**
  * Authentication guard for checkout routes that works with Firebase
- * Redirects unauthenticated users to login/register page
+ * Returns object with isAllowed boolean and redirect path if needed
  */
-export function checkoutGuard(to, from, next) {
-  // Get Firebase auth instance directly
-  const auth = getAuth();
-  const firebaseUser = auth.currentUser;
-  
-  // Get store instances (may return undefined if pinia not initialized yet)
-  let cartStore;
-  let authStore;
-  let toast;
-  let t;
-
+export const checkoutGuard = async (t, location) => {
   try {
-    cartStore = useCartStore();
-    authStore = useAuthStore();
-    toast = useToast();
-    t = useI18n().t;
-  } catch (error) {
-    console.error('Error getting stores in checkout guard:', error);
-  }
-  
-  // Check if the user is authenticated with Firebase directly
-  // This is the most reliable check and doesn't depend on the Pinia store
-  const isAuthenticated = !!firebaseUser;
-  
-  // Store the intended destination to redirect after login
-  const redirectPath = to.fullPath;
-  
-  console.log('Checkout guard running', {
-    firebaseUser: !!firebaseUser,
-    isAuthenticated,
-    cartItems: cartStore?.cartItems?.length || 0
-  });
-  
-  // Check if cart is empty
-  if (cartStore && cartStore.cartItems.length === 0) {
-    console.log('Cart is empty, redirecting to cart page');
-    if (toast && t) {
-      toast.error(t('cart.emptyCartError'));
-    }
-    next({ name: 'Cart' });
-    return;
-  }
-  
-  // Check if user is authenticated with Firebase
-  if (!isAuthenticated) {
-    console.log('User not authenticated with Firebase, redirecting to auth page');
+    // Get Firebase auth instance directly
+    const auth = getAuth();
+    const firebaseUser = auth.currentUser;
     
-    // Store the intended destination to redirect after login
-    localStorage.setItem('checkoutRedirect', redirectPath);
+    // Check if the user is authenticated with Firebase directly
+    // This is the most reliable check and doesn't depend on any store
+    const isAuthenticated = !!firebaseUser;
     
-    // Redirect to checkout-auth page with return URL
-    next({
-      name: 'CheckoutAuth',
-      query: { redirect: redirectPath }
+    console.log('Checkout guard running', {
+      firebaseUser: !!firebaseUser,
+      isAuthenticated,
+      currentPath: location?.pathname
     });
-  } else {
+    
+    // Check if cart is empty
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    
+    if (!cartItems || cartItems.length === 0) {
+      console.log('Cart is empty, redirecting to cart page');
+      if (t && toast) {
+        toast.error(t('cart.emptyCartError', 'Your cart is empty'));
+      }
+      return {
+        isAllowed: false,
+        redirectTo: '/cart',
+        reason: 'emptyCart',
+        message: t ? t('cart.emptyCartError', 'Your cart is empty') : 'Cart is empty'
+      };
+    }
+
+    // Validate cart items have required fields
+    const invalidItems = cartItems.filter(item => 
+      !item.id || !item.name || !item.price || !item.quantity || item.quantity <= 0
+    );
+
+    if (invalidItems.length > 0) {
+      console.log('Invalid items in cart:', invalidItems);
+      if (t && toast) {
+        toast.error(t('cart.invalidItemsError', 'Some items in your cart are invalid'));
+      }
+      return {
+        isAllowed: false,
+        redirectTo: '/cart',
+        reason: 'invalidItems',
+        message: t ? t('cart.invalidItemsError', 'Some items in your cart are invalid') : 'Invalid items in cart'
+      };
+    }
+
+    // For success/cancel pages, allow without authentication check
+    const isSuccessOrCancel = location?.pathname?.includes('/success') || 
+                             location?.pathname?.includes('/cancel');
+    
+    if (isSuccessOrCancel) {
+      console.log('Success/Cancel page - allowing access');
+      return {
+        isAllowed: true,
+        reason: 'successOrCancel'
+      };
+    }
+    
+    // Check if user is authenticated with Firebase for checkout process
+    if (!isAuthenticated) {
+      console.log('User not authenticated with Firebase, redirecting to auth page');
+      
+      // Store the intended destination to redirect after login
+      const currentPath = location?.pathname || window.location.pathname;
+      localStorage.setItem('checkoutRedirect', currentPath);
+      
+      return {
+        isAllowed: false,
+        redirectTo: '/auth', // or '/checkout/auth' based on your routing
+        reason: 'notAuthenticated',
+        query: { 
+          redirect: currentPath,
+          message: 'Please login to continue with checkout'
+        }
+      };
+    }
+
+    // Additional validation: Check if user profile is complete (optional)
+    if (firebaseUser && !firebaseUser.displayName && !firebaseUser.email) {
+      console.log('User profile incomplete');
+      return {
+        isAllowed: false,
+        redirectTo: '/profile/complete',
+        reason: 'incompleteProfile',
+        message: 'Please complete your profile to continue'
+      };
+    }
+
+    // All checks passed
     console.log('User authenticated with Firebase, proceeding to checkout');
-    // User is authenticated, proceed to checkout
-    next();
+    return {
+      isAllowed: true,
+      reason: 'authenticated',
+      user: {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        displayName: firebaseUser.displayName
+      }
+    };
+    
+  } catch (error) {
+    console.error('Error in checkout guard:', error);
+    if (toast) {
+      toast.error('An error occurred. Please try again.');
+    }
+    return {
+      isAllowed: false,
+      redirectTo: '/cart',
+      reason: 'error',
+      error: error.message
+    };
   }
-}
+};
+
+// Alternative simpler version if you don't want Firebase dependency
+export const simpleCheckoutGuard = async (t, location) => {
+  try {
+    // Check if cart is empty
+    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+    
+    if (!cartItems || cartItems.length === 0) {
+      console.log('Cart is empty, redirecting to cart page');
+      return {
+        isAllowed: false,
+        redirectTo: '/cart',
+        reason: 'emptyCart'
+      };
+    }
+
+    // Validate cart items
+    const invalidItems = cartItems.filter(item => 
+      !item.id || !item.price || !item.quantity || item.quantity <= 0
+    );
+
+    if (invalidItems.length > 0) {
+      return {
+        isAllowed: false,
+        redirectTo: '/cart',
+        reason: 'invalidItems'
+      };
+    }
+
+    // Check if user is logged in (if required)
+    const authToken = localStorage.getItem('authToken');
+    const isAuthenticated = !!authToken;
+
+    // For success/cancel pages, different rules might apply
+    const isSuccessOrCancel = location?.pathname?.includes('/success') || 
+                             location?.pathname?.includes('/cancel');
+    
+    if (!isSuccessOrCancel && !isAuthenticated) {
+      return {
+        isAllowed: false,
+        redirectTo: '/auth',
+        reason: 'notAuthenticated'
+      };
+    }
+
+    return {
+      isAllowed: true,
+      reason: 'validated'
+    };
+    
+  } catch (error) {
+    console.error('Error in checkout guard:', error);
+    return {
+      isAllowed: false,
+      redirectTo: '/cart',
+      reason: 'error'
+    };
+  }
+};
+
+// Hook version for use in React components
+export const useCheckoutGuard = () => {
+  const guardCheck = async (t, location) => {
+    return await checkoutGuard(t, location);
+  };
+
+  return { guardCheck };
+};

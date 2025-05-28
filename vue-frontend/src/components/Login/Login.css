@@ -1,0 +1,74 @@
+.login-view {
+  max-width: 400px;
+  margin: 80px auto;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.login-view h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-view p {
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.login-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.login-button img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.login-button.google {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+}
+
+.login-button.google:hover {
+  background-color: #f5f5f5;
+}
+
+.login-button.apple {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.login-button.apple:hover {
+  background-color: #333333;
+}
+
+.terms {
+  font-size: 0.875rem;
+  color: #777;
+}
+
+.terms a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}
