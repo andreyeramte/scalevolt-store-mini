@@ -3,14 +3,54 @@
   <head>
     <meta charset="UTF-8">
     <!-- Add sizes attribute and absolute path -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" sizes="32x32">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scalevolt Store</title>
-    <script type="module" crossorigin src="./assets/index-BL9PjHUz.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-UvyYEFN7.css">
+    
+    <!-- Preconnect to IP API for faster location detection -->
+    <link rel="preconnect" href="https://ipapi.co" crossorigin>
+    
+    <!-- Cookie consent styles can be added here if not using a component -->
+    <style>
+      /* These styles will be visible before Vue loads */
+      .app-loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #1a73e8;
+        font-family: Arial, sans-serif;
+      }
+      
+      .app-loading-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #1a73e8;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-9GWEwC6O.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Drg08ETP.css">
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <!-- Loading state before Vue initializes -->
+      <div class="app-loading">
+        <div class="app-loading-spinner"></div>
+        <span>Loading ScaleVolt Store...</span>
+      </div>
+    </div>
+    
     <!-- Change to absolute path for Vite compatibility -->
     
     <!-- Add error boundary for white screen debugging -->

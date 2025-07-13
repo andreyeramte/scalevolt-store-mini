@@ -11,7 +11,7 @@ import {
   signOut 
 } from 'firebase/auth';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import useAuthStore from '../stores/authStore'; // Adjust path as needed
+import useAuthStore from '../../stores/auth'; // Adjust path as needed
 
 const UserProfileView = () => {
   console.log('UserProfileView setup starting'); // Debug log

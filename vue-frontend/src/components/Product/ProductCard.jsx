@@ -1,7 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CartContext } from '../../contexts/CartContext';
+import useCartStore from '../../stores/cart';
 import './ProductCard.css';
 
 const ProductCard = ({
@@ -14,7 +14,7 @@ const ProductCard = ({
   isRentalItem = false
 }) => {
   const { t } = useTranslation();
-  const { cartItems, addToCart, increaseQuantity, decreaseQuantity, getItemQuantity } = useContext(CartContext);
+  const { cartItems, addToCart, increaseQuantity, decreaseQuantity, getItemQuantity } = useCartStore();
   
   // State for rental duration
   const [selectedDuration, setSelectedDuration] = useState('day');

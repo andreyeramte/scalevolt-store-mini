@@ -12,8 +12,13 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const app = express();
 const cableRoutes = require('./routes/cables');
 
-// ←– now requiring from your new local db folder
-const { pool } = require('../db/pool.cjs');
+// ←– Force mock mode for now
+let pool = null;
+console.log('⚠️  Running in mock mode - database not connected');
+
+// Make pool available to routes
+app.locals.pool = pool;
+
 const productRoutes   = require('./routes/productRoutes');
 const translateRoutes = require('./routes/translateRoutes');
 
@@ -25,6 +30,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/products', productRoutes);
 app.use('/api/translate', translateRoutes);
 app.use('/api/cables', cableRoutes);
+
+// Add a simple test route
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Test route working', timestamp: new Date() });
+});
 
 // ensure upload dirs exist
 const uploadsDir = path.join(__dirname, process.env.UPLOAD_DIR || 'uploads');
@@ -45,7 +55,7 @@ app.get('/health', (req, res) => {
   res.json({
     status:    'ok',
     timestamp: new Date(),
-    database:  pool ? 'connected' : 'disconnected'
+    database:  pool ? 'connected' : 'disconnected (mock mode)'
   });
 });
 
@@ -68,13 +78,10 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`📦 Products API:   http://localhost:${PORT}/api/products`);
   console.log(`🔤 Translate API:  http://localhost:${PORT}/api/translate`);
   console.log(`❤️ Health check:   http://localhost:${PORT}/health`);
+  console.log(`⚠️  Running in mock mode - database not connected`);
 }).on('error', err => {
   console.error('Failed to start:', err);
   process.exit(1);
 });
 
-// test DB connection
-pool.query('SELECT NOW()', (err, result) => {
-  if (err) console.error('❌ DB connection error:', err);
-  else     console.log('✅ Database connected:', result.rows[0]);
-});
+console.log('⚠️  Database not available, using mock data');

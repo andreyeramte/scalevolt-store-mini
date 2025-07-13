@@ -6,7 +6,7 @@ import qs from "qs";
 const API_URL =
   typeof process !== "undefined" && process.env && process.env.VUE_APP_API_URL
     ? process.env.VUE_APP_API_URL
-    : "http://localhost:1337/api";
+    : "http://localhost:3002/api";
 // Create one service object that combines all methods
 const productService = {
   async getProducts(params = {}) {

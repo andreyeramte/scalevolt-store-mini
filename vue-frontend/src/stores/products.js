@@ -1,250 +1,143 @@
-import { defineStore } from "pinia";
-// project imports
+import create from 'zustand';
 
-export const useProductsStore = defineStore("products", {
-  state: () => ({
-    products: [
-      {
-        id: 8,
-        documentId: "eoowp5el0h3uwwxw7ogb8puj",
-        nameKey: "product.batteries",
-        defaultName: "RW-M6.1-B-1",
-        price: "1000",
-        image: "/images/Categories/batteries/АКБ.Deye.RW-M6.1-B-1.jpg",
-        brand: "Deye",
-        categoryId: "2",
-        createdAt: "2025-04-02T06:15:52.050Z",
-        updatedAt: "2025-04-02T06:15:52.050Z",
-        publishedAt: "2025-04-02T06:15:52.056Z",
-        evwgvrw: null,
-      },
-      {
-        id: 12,
-        documentId: "w4ciyad3oroeb8ohewesfvly",
-        nameKey: "product.batteries",
-        defaultName: "RW-F10.6-51.2V-208AH-10.64KWH-1",
-        price: "1000",
-        image:
-          "/images/Categories/batteries/Deye-RW-F10.6-51.2V-208AH-10.64KWH-1.png",
-        brand: "Deye",
-        categoryId: "2",
-        createdAt: "2025-04-02T06:16:51.905Z",
-        updatedAt: "2025-04-02T06:17:13.541Z",
-        publishedAt: "2025-04-02T06:17:13.547Z",
-        evwgvrw: null,
-      },
-      {
-        id: 17,
-        documentId: "q7x12vchgz0fi9aab75t5nqn",
-        nameKey: "product.batteries",
-        defaultName: "Hybrid 6kw 1ph",
-        price: "1200",
-        image: "/images/Categories/inverters/deye-hybrid-6kw-1ph-48V.png",
-        brand: "Deye",
-        categoryId: "3",
-        createdAt: "2025-04-02T06:18:12.734Z",
-        updatedAt: "2025-04-02T06:18:40.747Z",
-        publishedAt: "2025-04-02T06:18:40.766Z",
-        evwgvrw: null,
-      },
-      {
-        id: 18,
-        documentId: "j6gi3c06rspwbql266aj1bj5",
-        nameKey: "product.batteries",
-        defaultName: "Hybrid 5kw 1ph",
-        price: "1000",
-        image: "/images/Categories/inverters/deye-hybrid-5kw-1ph-48V.png",
-        brand: "Deye",
-        categoryId: "3",
-        createdAt: "2025-04-02T06:18:06.784Z",
-        updatedAt: "2025-04-02T06:18:51.751Z",
-        publishedAt: "2025-04-02T06:18:51.758Z",
-        evwgvrw: null,
-      },
-      {
-        id: 22,
-        documentId: "djfc28e1ghtcpw77ts7lriov",
-        nameKey: "Гибридная солнечная электростанция на 30кВ з АКБ 60кВ",
-        defaultName: "Гибридная солнечная электростанция на 30кВ з АКБ 60кВ",
-        price: "1000",
-        image: "/images/solar.set.hybrid.30kw.with.АКБ-60кВ.png",
-        brand: "Longi",
-        categoryId: "4",
-        createdAt: "2025-04-02T06:20:27.250Z",
-        updatedAt: "2025-04-02T06:20:27.250Z",
-        publishedAt: "2025-04-02T06:20:27.264Z",
-        evwgvrw: null,
-      },
-      {
-        id: 24,
-        documentId: "mw1k8kq9d34sbwoigpgj8387",
-        nameKey: "Сонячна Панель Longi-420-Black",
-        defaultName: "Сонячна Панель Longi-420-Black",
-        price: "1200",
-        image: "/images/Longi-420-Black.png",
-        brand: "Longi",
-        categoryId: "4",
-        createdAt: "2025-04-02T06:21:08.719Z",
-        updatedAt: "2025-04-02T06:21:31.324Z",
-        publishedAt: "2025-04-02T06:21:31.330Z",
-        evwgvrw: null,
-      },
-      {
-        id: 26,
-        documentId: "pnujlxlp4jg45cedoos3zz9s",
-        nameKey: "Сонячна Панель Longi-425-Black",
-        defaultName: "Сонячна Панель Longi-425-Black",
-        price: "1000",
-        image: "/images/Longi-425-Black.png",
-        brand: "Longi",
-        categoryId: "4",
-        createdAt: "2025-04-02T06:21:39.189Z",
-        updatedAt: "2025-04-02T06:21:58.984Z",
-        publishedAt: "2025-04-02T06:21:58.990Z",
-        evwgvrw: null,
-      },
-      {
-        id: 28,
-        documentId: "mzkfk29hiq2tpz4p66mgkfvp",
-        nameKey: "product.batteries",
-        defaultName: " Hybrid 5kw 1ph",
-        price: "1000",
-        image: "/images/deye-hybrid-5kw-1ph-48V.png",
-        brand: "Deye",
-        categoryId: "5",
-        createdAt: "2025-04-02T06:23:01.174Z",
-        updatedAt: "2025-04-02T06:23:01.174Z",
-        publishedAt: "2025-04-02T06:23:01.189Z",
-        evwgvrw: null,
-      },
-      {
-        id: 30,
-        documentId: "toog77mjprg58txuyqtup7pq",
-        nameKey: "product.batteries",
-        defaultName: " Hybrid 6kw 1ph",
-        price: "1200",
-        image: "/images/deye-hybrid-6kw-1ph-48V.png",
-        brand: "Deye",
-        categoryId: "5",
-        createdAt: "2025-04-02T06:23:18.180Z",
-        updatedAt: "2025-04-02T06:23:33.347Z",
-        publishedAt: "2025-04-02T06:23:33.352Z",
-        evwgvrw: null,
-      },
-      {
-        id: 32,
-        documentId: "d5fiu7rerran2uyiy8qcixq2",
-        nameKey: "product.batteries",
-        defaultName: " Hybrid 8kw 1ph",
-        price: "1000",
-        image: "/images/deye-hybrid-8kw-1ph-48V.png",
-        brand: "Deye",
-        categoryId: "5",
-        createdAt: "2025-04-02T06:23:37.035Z",
-        updatedAt: "2025-04-02T06:23:59.547Z",
-        publishedAt: "2025-04-02T06:23:59.554Z",
-        evwgvrw: null,
-      },
-      {
-        id: 34,
-        documentId: "eh8vb1kzyva3ihqs1wkp2nhz",
-        nameKey: "product.batteries",
-        defaultName: "RW-M5.3-Pro_1",
-        price: "1200",
-        image: "/images/Categories/batteries/RW-M5.3-Pro_1-2.jpg",
-        brand: "Deye",
-        categoryId: "2",
-        createdAt: "2025-04-02T06:16:05.041Z",
-        updatedAt: "2025-04-02T09:10:34.022Z",
-        publishedAt: "2025-04-02T09:10:34.029Z",
-        evwgvrw: null,
-      },
-      {
-        id: 37,
-        documentId: "vd5q8uv6r3phs6v0w0q9ue3p",
-        nameKey: "product.batteries",
-        defaultName: " Hybrid 8kw 1ph",
-        price: "1000",
-        image: "/images/Categories/inverters/deye-hybrid-8kw-1ph-48V.png",
-        brand: "Deye",
-        categoryId: "3",
-        createdAt: "2025-04-02T06:19:03.557Z",
-        updatedAt: "2025-04-09T08:53:06.125Z",
-        publishedAt: "2025-04-09T08:53:06.135Z",
-        evwgvrw: null,
-      },
-      {
-        id: 38,
-        documentId: "fqoscf2y2xr0mfljjimmca5t",
-        nameKey: "product.solarPanels",
-        defaultName: "Longi-420-Black",
-        price: "1200",
-        image: "/images/Categories/solar.panels/Longi-420-Black.png",
-        brand: "Longi",
-        categoryId: "1",
-        createdAt: "2025-04-02T06:14:04.214Z",
-        updatedAt: "2025-04-09T08:53:17.219Z",
-        publishedAt: "2025-04-09T08:53:17.228Z",
-        evwgvrw: null,
-      },
-      {
-        id: 39,
-        documentId: "xvk26lkfkg1fyv1hjjmqlzhq",
-        nameKey: "product.solarPanels",
-        defaultName: "Longi-425-Black",
-        price: "1000",
-        image: "/images/Categories/solar.panels/Longi-425-Black.png",
-        brand: "Longi",
-        categoryId: "1",
-        createdAt: "2025-04-02T06:14:41.640Z",
-        updatedAt: "2025-04-09T08:53:39.704Z",
-        publishedAt: "2025-04-09T08:53:39.713Z",
-        evwgvrw: null,
-      },
-      {
-        id: 40,
-        documentId: "vl10l50rcikc6z3gygrhzrw1",
-        nameKey: "product.solarPanels",
-        defaultName: "Longi-410-Black",
-        price: "1000",
-        image: "/images/Categories/solar.panels/Longi-410-Black.png",
-        brand: "Longi",
-        categoryId: "1",
-        createdAt: "2025-04-02T06:13:52.450Z",
-        updatedAt: "2025-04-09T09:54:45.871Z",
-        publishedAt: "2025-04-09T09:54:45.893Z",
-        evwgvrw: [
-          {
-            image: "vwewev",
-          },
-        ],
-      },
-    ],
+const useProductsStore = create((set, get) => ({
+  products: [],
+  loading: false,
+  error: null,
+  filters: {
+    category: '',
+    search: '',
+    priceRange: { min: 0, max: 100000 },
+    inStock: false
+  },
+
+  // Actions
+  setProducts: (products) => set({ products }),
+  
+  setLoading: (loading) => set({ loading }),
+  
+  setError: (error) => set({ error }),
+  
+  setFilters: (filters) => set({ filters: { ...get().filters, ...filters } }),
+  
+  clearFilters: () => set({ 
+    filters: {
+      category: '',
+      search: '',
+      priceRange: { min: 0, max: 100000 },
+      inStock: false
+    }
   }),
-  getters: {
-    // Get metrics from Getters
-    getProducts: (state) => {
-      return state.products;
-    },
+
+  // Computed getters
+  getProducts: () => {
+    const { products, filters } = get();
+    let filteredProducts = [...products];
+
+    // Apply search filter
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      filteredProducts = filteredProducts.filter(product => 
+        product.name?.toLowerCase().includes(searchTerm) ||
+        product.description?.toLowerCase().includes(searchTerm) ||
+        product.brand?.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Apply category filter
+    if (filters.category) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.category === filters.category
+      );
+    }
+
+    // Apply price range filter
+    filteredProducts = filteredProducts.filter(product => 
+      product.price >= filters.priceRange.min && 
+      product.price <= filters.priceRange.max
+    );
+
+    // Apply stock filter
+    if (filters.inStock) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.stock > 0
+      );
+    }
+
+    return filteredProducts;
   },
-  actions: {
-    // Fetch products from action - modified to use mock data instead of API call
-    async getAllProducts() {
-      try {
-        // Comment out API call that's causing the issue
-        // const response = await fetch("http://localhost:1337/api/products").then(
-        //   (response) => {
-        //     return response.json();
-        //   }
-        // );
-        // this.products = response.data;
-        
-        // No need to do anything - we'll use the mock data already defined in state
-        console.log("Using mock product data from store");
-        // The products are already defined in state, so we're good to go!
-      } catch (error) {
-        console.log(error);
+
+  getProductById: (id) => {
+    const { products } = get();
+    return products.find(product => product.id === id);
+  },
+
+  getProductsByCategory: (category) => {
+    const { products } = get();
+    return products.filter(product => product.category === category);
+  },
+
+  // Async actions
+  fetchProducts: async () => {
+    set({ loading: true, error: null });
+    try {
+      // TODO: Replace with real API call
+      const mockProducts = [
+        {
+          id: 1,
+          name: 'Solar Panel 100W',
+          description: 'High efficiency solar panel',
+          price: 150,
+          category: 'solar-panels',
+          brand: 'ScaleVolt',
+          stock: 10,
+          image: '/images/solar-panel-1.jpg'
+        },
+        {
+          id: 2,
+          name: 'Battery Pack 24V',
+          description: 'Lithium battery pack',
+          price: 200,
+          category: 'batteries',
+          brand: 'ScaleVolt',
+          stock: 5,
+          image: '/images/battery-1.jpg'
+        },
+        {
+          id: 3,
+          name: 'Inverter 1000W',
+          description: 'Pure sine wave inverter',
+          price: 300,
+          category: 'inverters',
+          brand: 'ScaleVolt',
+          stock: 8,
+          image: '/images/inverter-1.jpg'
+        }
+      ];
+      
+      set({ products: mockProducts, loading: false });
+    } catch (error) {
+      set({ error: error.message || 'Failed to fetch products', loading: false });
+    }
+  },
+
+  fetchProductById: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      // TODO: Replace with real API call
+      const product = get().getProductById(id);
+      if (product) {
+        set({ loading: false });
+        return product;
+      } else {
+        set({ error: 'Product not found', loading: false });
+        return null;
       }
-    },
-  },
-});
+    } catch (error) {
+      set({ error: error.message || 'Failed to fetch product', loading: false });
+      return null;
+    }
+  }
+}));
+
+export default useProductsStore;

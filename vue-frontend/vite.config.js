@@ -1,13 +1,13 @@
 // vite.config.js
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
+import react from "@vitejs/plugin-react";
 import path from "path";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   plugins: [
-    vue(),
-    tailwindcss(),  // keep this if it’s working for you
+    react(),
+    tailwindcss(),  // keep this if it's working for you
   ],
 
   server: {

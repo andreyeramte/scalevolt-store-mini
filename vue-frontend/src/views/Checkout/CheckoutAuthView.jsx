@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18n';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { getAuth } from 'firebase/auth';
-import useAuthStore from '../stores/authStore'; // Adjust path as needed
+import useAuthStore from '../../stores/auth';
 
 const CheckoutAuthView = () => {
   const navigate = useNavigate();

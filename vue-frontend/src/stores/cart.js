@@ -1,106 +1,116 @@
-// src/stores/cart.js
-import { defineStore } from "pinia";
+import create from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export const useCartStore = defineStore("cart", {
-  state: () => ({
-    cartItems: JSON.parse(localStorage.getItem("cart")) || [],
-  }),
-  getters: {
-    // Calculate total price
-    totalPrice: (state) =>
-      state.cartItems.reduce(
-        (total, item) => total + item.price * item.quantity,
-        0
-      ),
+const useCartStore = create(
+  persist(
+    (set, get) => ({
+      cartItems: [],
+      
+      // Actions
+      addToCart: (item) => {
+        set((state) => {
+          const existingItem = state.cartItems.find(cartItem => cartItem.id === item.id);
+          
+          if (existingItem) {
+            // If item already exists, increase quantity
+            return {
+              cartItems: state.cartItems.map(cartItem =>
+                cartItem.id === item.id
+                  ? { ...cartItem, quantity: cartItem.quantity + (item.quantity || 1) }
+                  : cartItem
+              )
+            };
+          } else {
+            // If item doesn't exist, add it
+            return {
+              cartItems: [...state.cartItems, { ...item, quantity: item.quantity || 1 }]
+            };
+          }
+        });
+      },
 
-    // Calculate total quantity
-    totalQuantity: (state) =>
-      state.cartItems.reduce((total, item) => total + item.quantity, 0),
-  },
-  actions: {
-    // Add item to cart
-    addToCart(product) {
-      console.log("Adding to cart:", product);
-      const existingItem = this.cartItems.find(
-        (item) => +item.id === +product.id
-      );
-      if (existingItem) {
-        existingItem.quantity += product.quantity;
-        console.log(
-          `Increased quantity for ${product.uniqueKey} to ${existingItem.quantity}`
-        );
-      } else {
-        this.cartItems.push({ ...product });
-        console.log(`Added new product to cart: ${product.id}`);
+      removeFromCart: (itemId) => {
+        set((state) => ({
+          cartItems: state.cartItems.filter(item => item.id !== itemId)
+        }));
+      },
+
+      increaseQuantity: (itemId) => {
+        set((state) => ({
+          cartItems: state.cartItems.map(item =>
+            item.id === itemId
+              ? { ...item, quantity: item.quantity + 1 }
+              : item
+          )
+        }));
+      },
+
+      decreaseQuantity: (itemId) => {
+        set((state) => {
+          const item = state.cartItems.find(item => item.id === itemId);
+          if (item && item.quantity > 1) {
+            return {
+              cartItems: state.cartItems.map(item =>
+                item.id === itemId
+                  ? { ...item, quantity: item.quantity - 1 }
+                  : item
+              )
+            };
+          } else if (item && item.quantity === 1) {
+            // Remove item if quantity would become 0
+            return {
+              cartItems: state.cartItems.filter(item => item.id !== itemId)
+            };
+          }
+          return state;
+        });
+      },
+
+      updateQuantity: (itemId, quantity) => {
+        set((state) => ({
+          cartItems: state.cartItems.map(item =>
+            item.id === itemId
+              ? { ...item, quantity: Math.max(0, quantity) }
+              : item
+          ).filter(item => item.quantity > 0)
+        }));
+      },
+
+      clearCart: () => {
+        set({ cartItems: [] });
+      },
+
+      // Getters
+      getItemQuantity: (itemId) => {
+        const item = get().cartItems.find(item => item.id === itemId);
+        return item ? item.quantity : 0;
+      },
+
+      getCartTotal: () => {
+        return get().cartItems.reduce((total, item) => {
+          return total + (item.price * item.quantity);
+        }, 0);
+      },
+
+      getCartCount: () => {
+        return get().cartItems.reduce((count, item) => {
+          return count + item.quantity;
+        }, 0);
+      },
+
+      getCartItems: () => {
+        return get().cartItems;
+      },
+
+      isInCart: (itemId) => {
+        return get().cartItems.some(item => item.id === itemId);
       }
-      this.saveCart();
-    },
+    }),
+    {
+      name: 'cart-storage', // unique name for localStorage key
+      getStorage: () => localStorage, // (optional) by default, 'localStorage' is used
+    }
+  )
+);
 
-    // Remove item from cart
-    removeFromCart(uniqueKey) {
-      console.log(`Removing product from cart: ${uniqueKey}`);
-      this.cartItems = this.cartItems.filter((item) => item.id !== uniqueKey);
-      this.saveCart();
-    },
-
-    // Update item quantity directly
-    updateQuantity(uniqueKey, quantity) {
-      console.log(this.cartItems);
-
-      const item = this.cartItems.find((item) => +item.id === +uniqueKey);
-      console.log(item);
-      if (item) {
-        item.quantity = quantity;
-        if (item.quantity <= 0) {
-          this.removeFromCart(id);
-        } else {
-          this.saveCart();
-          console.log(`Updated quantity for ${uniqueKey} to ${item.quantity}`);
-        }
-      }
-    },
-
-    // Increase quantity by 1
-    increaseQuantity(uniqueKey) {
-      const item = this.cartItems.find((item) => item.uniqueKey === uniqueKey);
-      if (item) {
-        item.quantity += 1;
-        console.log(`Increased quantity for ${uniqueKey} to ${item.quantity}`);
-        this.saveCart();
-      }
-    },
-
-    // Decrease quantity by 1
-    decreaseQuantity(uniqueKey) {
-      const item = this.cartItems.find((item) => item.uniqueKey === uniqueKey);
-      if (item) {
-        item.quantity -= 1;
-        console.log(`Decreased quantity for ${uniqueKey} to ${item.quantity}`);
-        if (item.quantity <= 0) {
-          this.removeFromCart(uniqueKey);
-        } else {
-          this.saveCart();
-        }
-      }
-    },
-
-    // Get the quantity of a specific item
-    getItemQuantity(uniqueKey) {
-      const item = this.cartItems.find((item) => item.uniqueKey === uniqueKey);
-      return item ? item.quantity : 0;
-    },
-
-    // Clear the cart
-    clearCart() {
-      this.cartItems = [];
-      this.saveCart();
-      console.log("Cart has been cleared.");
-    },
-
-    // Save cart to localStorage
-    saveCart() {
-      localStorage.setItem("cart", JSON.stringify(this.cartItems));
-      console.log("Cart saved to localStorage:", this.cartItems);
-    },
-  },
-});
+export default useCartStore;

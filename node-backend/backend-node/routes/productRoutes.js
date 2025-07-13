@@ -1,9 +1,59 @@
 const express = require('express');
-const { pool } = require('../db/pool.cjs');
+// Remove local pool import - will use the one from server
 const { buildSearchableText } = require('../utils/helpers.cjs');
 const { translateText, translateProduct, getTranslatedContent } = require('../utils/translationService.cjs');
 
-
+// Mock data for when database is not available
+let mockProducts = [
+  {
+    id: 1,
+    name: 'Solar Panel 100W',
+    description: 'High efficiency solar panel for residential use',
+    price: 150.00,
+    stock: 10,
+    category: 'solar-panels',
+    brand: 'ScaleVolt',
+    sku: 'SP-100W-001',
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: 2,
+    name: 'Battery Pack 24V 100Ah',
+    description: 'Lithium battery pack for solar systems',
+    price: 800.00,
+    stock: 5,
+    category: 'batteries',
+    brand: 'ScaleVolt',
+    sku: 'BP-24V-100Ah-001',
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: 3,
+    name: 'Inverter 1000W Pure Sine Wave',
+    description: 'Pure sine wave inverter for sensitive electronics',
+    price: 300.00,
+    stock: 8,
+    category: 'inverters',
+    brand: 'ScaleVolt',
+    sku: 'INV-1000W-001',
+    created_at: new Date(),
+    updated_at: new Date()
+  },
+  {
+    id: 4,
+    name: 'EV Charging Station Level 2',
+    description: 'Level 2 electric vehicle charging station',
+    price: 1200.00,
+    stock: 3,
+    category: 'ev-chargers',
+    brand: 'ScaleVolt',
+    sku: 'EV-L2-001',
+    created_at: new Date(),
+    updated_at: new Date()
+  }
+];
 
 const router = express.Router();
 
@@ -17,6 +67,23 @@ router.post('/', async (req, res) => {
   } = req.body;
 
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - return success without actually creating
+      const newProduct = {
+        id: Date.now(),
+        name, price, description,
+        name_ua, name_pl,
+        description_ua, description_pl,
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+      mockProducts.push(newProduct);
+      return res.json(newProduct);
+    }
+
     let productData = {
       name, price, description,
       name_ua, name_pl,
@@ -61,6 +128,47 @@ router.get('/', async (req, res) => {
   const lang = req.query.lang || 'en';
 
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    console.log('GET /api/products called. pool:', pool);
+    console.log('Mock products length:', mockProducts.length);
+    
+    if (!pool) {
+      console.log('Entering mock mode branch');
+      // Mock mode - return mock products
+      let products = [...mockProducts];
+      console.log('Products before date conversion:', products.length);
+      
+      // Convert Date objects to ISO strings for serialization
+      products = products.map(p => ({
+        ...p,
+        created_at: p.created_at instanceof Date ? p.created_at.toISOString() : p.created_at,
+        updated_at: p.updated_at instanceof Date ? p.updated_at.toISOString() : p.updated_at
+      }));
+      console.log('Products after date conversion:', products.length);
+      console.log('First product:', products[0]);
+      
+      // Apply language filtering if needed
+      if (lang === 'ua') {
+        products = products.map(p => ({
+          ...p,
+          name: p.name_ua || p.name,
+          description: p.description_ua || p.description
+        }));
+      } else if (lang === 'pl') {
+        products = products.map(p => ({
+          ...p,
+          name: p.name_pl || p.name,
+          description: p.description_pl || p.description
+        }));
+      }
+      
+      console.log('About to return products:', products.length);
+      return res.json(products);
+    }
+
+    console.log('Entering database mode branch');
     let result;
     if (lang === 'ua') {
       result = await pool.query(`
@@ -89,7 +197,8 @@ router.get('/', async (req, res) => {
     }
     res.json(result.rows);
   } catch (err) {
-    console.error(err);
+    console.error('Error in /api/products:', err);
+    console.error('Error stack:', err.stack);
     res.status(500).send('Error fetching products');
   }
 });
@@ -100,6 +209,39 @@ router.get('/search', async (req, res) => {
   const lang = req.query.lang || 'en';
 
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - filter mock products
+      let products = [...mockProducts];
+      
+      if (query) {
+        products = products.filter(p => 
+          p.name.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query) ||
+          p.brand.toLowerCase().includes(query)
+        );
+      }
+      
+      // Apply language filtering
+      if (lang === 'ua') {
+        products = products.map(p => ({
+          ...p,
+          name: p.name_ua || p.name,
+          description: p.description_ua || p.description
+        }));
+      } else if (lang === 'pl') {
+        products = products.map(p => ({
+          ...p,
+          name: p.name_pl || p.name,
+          description: p.description_pl || p.description
+        }));
+      }
+      
+      return res.json(products.slice(0, 20));
+    }
+
     let result;
     if (!query) {
       result = await pool.query('SELECT * FROM products ORDER BY name ASC LIMIT 20');
@@ -138,6 +280,28 @@ router.get('/:id', async (req, res) => {
   const lang = req.query.lang || 'en';
 
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - find product by ID
+      const product = mockProducts.find(p => p.id == id);
+      if (!product) {
+        return res.status(404).send('Product not found');
+      }
+      
+      let result = { ...product };
+      if (lang === 'ua') {
+        result.name = result.name_ua || result.name;
+        result.description = result.description_ua || result.description;
+      } else if (lang === 'pl') {
+        result.name = result.name_pl || result.name;
+        result.description = result.description_pl || result.description;
+      }
+      
+      return res.json(result);
+    }
+
     let result;
     if (lang === 'ua') {
       result = await pool.query(
@@ -182,6 +346,41 @@ router.put('/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - update mock product
+      const product = mockProducts.find(p => p.id == id);
+      if (!product) return res.status(404).send('Product not found');
+
+      if (name !== undefined)        product.name = name;
+      if (price !== undefined)       product.price = price;
+      if (description !== undefined) product.description = description;
+      if (name_ua !== undefined)     product.name_ua = name_ua;
+      if (name_pl !== undefined)     product.name_pl = name_pl;
+      if (description_ua !== undefined) product.description_ua = description_ua;
+      if (description_pl !== undefined) product.description_pl = description_pl;
+
+      if (auto_translate && (name || description)) {
+        try {
+          const translated = await translateProduct({
+            name: product.name,
+            description: product.description
+          });
+          product.name_ua = product.name_ua || translated.name_ua;
+          product.name_pl = product.name_pl || translated.name_pl;
+          product.description_ua = product.description_ua || translated.description_ua;
+          product.description_pl = product.description_pl || translated.description_pl;
+        } catch (err) {
+          console.error('Auto-translation failed during update:', err);
+        }
+      }
+
+      product.updated_at = new Date();
+      return res.json(product);
+    }
+
     const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
     if (!rows.length) return res.status(404).send('Product not found');
 
@@ -235,7 +434,7 @@ router.put('/:id', async (req, res) => {
         id
       ]
     );
-    res.json(updateRes.rows[0]);
+    return res.json(updateRes.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error updating product');
@@ -245,6 +444,19 @@ router.put('/:id', async (req, res) => {
 // Delete product
 router.delete('/:id', async (req, res) => {
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - delete mock product
+      const initialLength = mockProducts.length;
+      mockProducts = mockProducts.filter(p => p.id != req.params.id);
+      if (mockProducts.length === initialLength) {
+        return res.status(404).send('Product not found');
+      }
+      return res.sendStatus(204);
+    }
+
     const { rows } = await pool.query('DELETE FROM products WHERE id = $1 RETURNING *', [req.params.id]);
     if (!rows.length) return res.status(404).send('Product not found');
     res.sendStatus(204);
@@ -254,21 +466,34 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Auto-translate missing fields
+// Auto-translate product
 router.post('/:id/auto-translate', async (req, res) => {
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - auto-translate mock product
+      const product = mockProducts.find(p => p.id == req.params.id);
+      if (!product) return res.status(404).send('Product not found');
+
+      const translated = await translateProduct(product);
+
+      product.name_ua = product.name_ua || translated.name_ua;
+      product.name_pl = product.name_pl || translated.name_pl;
+      product.description_ua = product.description_ua || translated.description_ua;
+      product.description_pl = product.description_pl || translated.description_pl;
+
+      product.updated_at = new Date();
+      return res.json(product);
+    }
+
     const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
     if (!rows.length) return res.status(404).send('Product not found');
 
-    const product = rows[0];
-    const translated = await translateProduct(product);
+    const translated = await translateProduct(rows[0]);
 
-    product.name_ua = product.name_ua || translated.name_ua;
-    product.name_pl = product.name_pl || translated.name_pl;
-    product.description_ua = product.description_ua || translated.description_ua;
-    product.description_pl = product.description_pl || translated.description_pl;
-
-    const searchable_text = buildSearchableText(product);
+    const searchable_text = buildSearchableText(translated);
 
     const upd = await pool.query(
       `UPDATE products SET
@@ -279,63 +504,86 @@ router.post('/:id/auto-translate', async (req, res) => {
          searchable_text = $5
        WHERE id = $6 RETURNING *`,
       [
-        product.name_ua,
-        product.name_pl,
-        product.description_ua,
-        product.description_pl,
+        translated.name_ua,
+        translated.name_pl,
+        translated.description_ua,
+        translated.description_pl,
         searchable_text,
         req.params.id
       ]
     );
-    res.json(upd.rows[0]);
+    return res.json(upd.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).send('Error auto-translating product');
   }
 });
 
-// Batch auto-translate
-router.post('/batch-translate', async (req, res) => {
+// Batch auto-translate products
+router.post('/batch-auto-translate', async (req, res) => {
   const { productIds = [] } = req.body;
   try {
+    // Get pool from the server context
+    const pool = req.app.locals.pool;
+    
+    if (!pool) {
+      // Mock mode - batch auto-translate mock products
+      const results = [];
+      for (const id of productIds) {
+        const product = mockProducts.find(p => p.id == id);
+        if (!product) {
+          results.push({ id, success: false, message: 'Not found' });
+          continue;
+        }
+        const translated = await translateProduct(product);
+        product.name_ua = product.name_ua || translated.name_ua;
+        product.name_pl = product.name_pl || translated.name_pl;
+        product.description_ua = product.description_ua || translated.description_ua;
+        product.description_pl = product.description_pl || translated.description_pl;
+        product.updated_at = new Date();
+        results.push({ id, success: true });
+      }
+      return res.json({ results });
+    }
+
     const results = [];
     for (const id of productIds) {
-      const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-      if (!rows.length) {
-        results.push({ id, success: false, message: 'Not found' });
-        continue;
-      }
-      const product = rows[0];
-      const translated = await translateProduct(product);
-      product.name_ua = product.name_ua || translated.name_ua;
-      product.name_pl = product.name_pl || translated.name_pl;
-      product.description_ua = product.description_ua || translated.description_ua;
-      product.description_pl = product.description_pl || translated.description_pl;
-      const searchable_text = buildSearchableText(product);
+      try {
+        const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
+        if (!rows.length) {
+          results.push({ id, success: false, message: 'Not found' });
+          continue;
+        }
 
-      await pool.query(
-        `UPDATE products SET
-           name_ua = $1,
-           name_pl = $2,
-           description_ua = $3,
-           description_pl = $4,
-           searchable_text = $5
-         WHERE id = $6`,
-        [
-          product.name_ua,
-          product.name_pl,
-          product.description_ua,
-          product.description_pl,
-          searchable_text,
-          id
-        ]
-      );
-      results.push({ id, success: true });
+        const translated = await translateProduct(rows[0]);
+        const searchable_text = buildSearchableText(translated);
+
+        await pool.query(
+          `UPDATE products SET
+             name_ua = $1,
+             name_pl = $2,
+             description_ua = $3,
+             description_pl = $4,
+             searchable_text = $5
+           WHERE id = $6`,
+          [
+            translated.name_ua,
+            translated.name_pl,
+            translated.description_ua,
+            translated.description_pl,
+            searchable_text,
+            id
+          ]
+        );
+        results.push({ id, success: true });
+      } catch (error) {
+        results.push({ id, success: false, message: error.message });
+      }
     }
     res.json({ results });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error batch translating');
+    res.status(500).send('Error batch auto-translating products');
   }
 });
 

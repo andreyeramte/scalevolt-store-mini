@@ -1,6 +1,9 @@
 // FILE: backend-node/utils/translationService.cjs
 
-const axios = require('axios'); // ✅ CommonJS
+/**
+ * Simple translation service that returns original text
+ * TODO: Integrate with a translation service like Google Translate or DeepL
+ */
 
 /**
  * Translates a single piece of text
@@ -14,11 +17,11 @@ async function translateText(text, targetLanguage, sourceLanguage = 'en') {
     if (!text || targetLanguage === sourceLanguage) {
       return text;
     }
-    const { data } = await axios.post(
-      'http://localhost:3002/api/translate/text',
-      { text, targetLanguage, sourceLanguage }
-    );
-    return data.translatedText;
+    
+    // For now, return the original text
+    // TODO: Integrate with translation service
+    console.log(`Translation requested: ${text} (${sourceLanguage} -> ${targetLanguage})`);
+    return text;
   } catch (err) {
     console.error('Translation error:', err);
     return text;
@@ -34,11 +37,10 @@ async function translateText(text, targetLanguage, sourceLanguage = 'en') {
  */
 async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en') {
   try {
-    const { data } = await axios.post(
-      'http://localhost:3002/api/translate/product',
-      { product, targetLanguages, sourceLanguage }
-    );
-    return data;
+    // For now, return the original product
+    // TODO: Integrate with translation service
+    console.log(`Product translation requested for languages: ${targetLanguages.join(', ')}`);
+    return product;
   } catch (err) {
     console.error('Product translation error:', err);
     return product;
@@ -69,8 +71,8 @@ function getTranslatedContent(content, currentLocale = 'en') {
   return '';
 }
 
-// // module.exports = {
-//   translateText,
-//   translateProduct,
-//   getTranslatedContent,
-// };
+module.exports = {
+  translateText,
+  translateProduct,
+  getTranslatedContent,
+};

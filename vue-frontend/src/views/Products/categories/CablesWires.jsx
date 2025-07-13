@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Breadcrumb from '../../../components/Breadcrumb';
-import ProductCard from '../components/ProductCard';
+import ProductCard from '../../../components/Product/ProductCard';
 
 const CablesWires = () => {
   const [loading, setLoading] = useState(true);

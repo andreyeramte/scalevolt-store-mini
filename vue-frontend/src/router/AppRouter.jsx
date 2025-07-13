@@ -23,27 +23,27 @@ import ErrorView from '../views/ErrorView';
 import AuthView from '../views/User/AuthView';
 
 // Lazy loaded components for better performance
-const SolarPanelsView = lazy(() => import('../views/SolarPanelsView'));
-const BatteriesView = lazy(() => import('../views/BatteriesView'));
-const InvertersView = lazy(() => import('../views/InvertersView'));
-const SolarSetsView = lazy(() => import('../views/SolarSetsView'));
-const ChargingStationsView = lazy(() => import('../views/ChargingStationsView'));
-const CablesWiresView = lazy(() => import('../views/CablesWiresView'));
+const SolarPanelsView = lazy(() => import('../views/Products/categories/SolarPanelsView'));
+const BatteriesView = lazy(() => import('../views/Products/categories/BatteriesView'));
+const InvertersView = lazy(() => import('../views/Products/categories/InvertersView'));
+const SolarSetsView = lazy(() => import('../views/Products/categories/SolarSetsView'));
+const ChargingStationsView = lazy(() => import('../views/Products/categories/ChargingStationsView'));
+const CablesWiresView = lazy(() => import('../views/Products/categories/CablesWires'));
 const CheckoutView = lazy(() => import('../views/Checkout/CheckoutView'));
 const CheckoutSuccess = lazy(() => import('../views/Checkout/CheckoutSuccess'));
 const CheckoutCancel = lazy(() => import('../views/Checkout/CheckoutCancel'));
 const CheckoutAuthView = lazy(() => import('../views/Checkout/CheckoutAuthView'));
-const CategoryView = lazy(() => import('../views/CategoryView'));
+const CategoryView = lazy(() => import('../views/Products/categories/CategoryView'));
 const ProductPage = lazy(() => import('../views/ProductPage'));
-const PortableSolarPanelsView = lazy(() => import('../views/PortableSolarPanelsView'));
-const SolarMountSystemView = lazy(() => import('../views/SolarMountSystemView'));
+const PortableSolarPanelsView = lazy(() => import('../views/Products/categories/PortableSolarPanelsView'));
+const SolarMountSystemView = lazy(() => import('../views/Products/categories/SolarMountSystemView'));
 const PortablePowerStationView = lazy(() => import('../views/PortablePowerStationView'));
-const UserProfileView = lazy(() => import('../views/UserProfileView'));
+const UserProfileView = lazy(() => import('../views/User/UserProfileView'));
 const DeliveryWarrantyReturnsView = lazy(() => import('../views/DeliveryWarrantyReturnsView'));
-const CompanyView = lazy(() => import('../views/CompanyView'));
+const CompanyView = lazy(() => import('../views/Company/CompanyView'));
 const LiftsAndCranesCategory = lazy(() => import('../views/LiftsAndCranesCategory'));
-const PrivacyView = lazy(() => import('../views/PrivacyView'));
-const LegalTermsView = lazy(() => import('../views/LegalTermsView'));
+const PrivacyView = lazy(() => import('../views/Company/PrivacyView'));
+const LegalTermsView = lazy(() => import('../views/Company/LegalTermsView'));
 const ProductRental = lazy(() => import('../views/ProductRental'));
 const CustomerCases = lazy(() => import('../views/CustomerCases'));
 const FAQView = lazy(() => import('../views/FAQView'));
@@ -166,7 +166,7 @@ const ProtectedRoute = ({ children, requireAuth = true }) => {
 
   if (requireAuth && !isAuthenticated) {
     return <Navigate 
-      to="/auth" 
+      to="../auth" 
       state={{ from: location.pathname }} 
       replace 
     />;
@@ -316,16 +316,14 @@ const router = createBrowserRouter([
       {
         path: "lifts-and-cranes",
         element: withLazyLoading(LiftsAndCranesCategory)(),
-        children: [
-          {
-            path: "scissor-lifts",
-            element: withLazyLoading(LiftsAndCranesCategory)(),
-          },
-          {
-            path: "boom-lifts",
-            element: withLazyLoading(LiftsAndCranesCategory)(),
-          },
-        ],
+      },
+      {
+        path: "lifts-and-cranes/scissor-lifts",
+        element: withLazyLoading(LiftsAndCranesCategory)(),
+      },
+      {
+        path: "lifts-and-cranes/boom-lifts",
+        element: withLazyLoading(LiftsAndCranesCategory)(),
       },
       
       // Admin routes

@@ -3,7 +3,7 @@ import React, { useEffect, useState, createContext, useContext } from 'react';
 import { Outlet, useNavigate, useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import SearchBar from '../SearchBar';
+import SearchBar from '../SearchBar/SearchBar';
 // import ConsentBanner from '../ConsentBanner'; // Uncomment when ready
 
 // Create Currency Context
@@ -278,7 +278,7 @@ function Layout() {
         {/* <ConsentBanner /> */}
       </div>
     </CurrencyContext.Provider>
-  ););
+  );
 }
 
 export default Layout;

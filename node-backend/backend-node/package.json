@@ -1,44 +1,28 @@
 {
-  "name": "node-backend",
+  "name": "scalevolt-backend",
   "version": "1.0.0",
-  "type": "commonjs",
-  "description": "E-commerce backend service",
+  "description": "ScaleVolt Store Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "migrate": "psql -U postgres -d scalevolt_store -f ../db/migration_script.sql",
-    "import": "node scripts/import-cli.js",
-    "template": "node scripts/generate-template.js",
-    "seed": "node seedProducts.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.16.0",
-    "@google-cloud/translate": "^9.0.1",
-    "@types/node": "^22.14.1",
-    "axios": "^1.4.0",
-    "body-parser": "^1.20.2",
-    "chalk": "^4.1.2",
-    "commander": "^11.1.0",
+    "express": "^4.21.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "inquirer": "^8.2.6",
-    "mongoose": "^6.8.0",
-    "multer": "^1.4.5-lts.1",
-    "ora": "^5.4.1",
-    "path": "^0.12.7",
+    "body-parser": "^1.20.2",
+    "multer": "^1.4.5-lts.2",
     "pg": "^8.15.6",
-    "stripe": "^12.18.0",
-    "xlsx": "^0.18.5"
+    "path": "^0.12.7",
+    "fs": "^0.0.1-security",
+    "axios": "^1.8.4"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^3.0.1"
   },
-  "engines": {
-    "node": ">=14.0.0"
-  },
-  "bin": {
-    "product-import": "./scripts/import-cli.js"
-  }
+  "keywords": ["express", "api", "scalevolt", "backend"],
+  "author": "",
+  "license": "ISC"
 }

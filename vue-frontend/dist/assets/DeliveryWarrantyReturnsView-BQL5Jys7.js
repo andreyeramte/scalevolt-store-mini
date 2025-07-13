@@ -1,0 +1,1 @@
+import{j as e}from"./index-9GWEwC6O.js";const t=()=>e.jsxs("div",{className:"container mx-auto px-4 py-8",children:[e.jsx("h1",{className:"text-3xl font-bold mb-6",children:"Delivery, Warranty & Returns"}),e.jsx("p",{className:"text-gray-600",children:"Delivery, Warranty & Returns View - Coming Soon"})]});export{t as default};

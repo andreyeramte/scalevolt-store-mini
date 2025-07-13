@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import debounce from 'lodash.debounce';
 import { Link, useNavigate } from 'react-router-dom';
 import productService from '@/services/productService';
-import { useProductsStore } from '@/stores/products';
+import useProductsStore from '@/stores/products';
 import styles from './SearchBar.module.css';
 
 export default function SearchBar({
