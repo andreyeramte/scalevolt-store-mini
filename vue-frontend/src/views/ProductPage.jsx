@@ -1,10 +1,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import "../components/Product/ProductDetail.css";
+import useProductsStore from '../stores/products';
 
 const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const store = useProductsStore();
   
   // State management
   const [product, setProduct] = useState(null);
@@ -20,25 +23,6 @@ const ProductPage = () => {
     address: "",
     notes: "",
   });
-
-  // Mock data - replace with your actual store/API calls
-  const mockProducts = [
-    {
-      id: 1,
-      defaultName: "Сонячна панель Victron Energy 435W",
-      name: "Сонячна панель Victron Energy 435W",
-      type: "Сонячні Панелі",
-      price: 57999,
-      brand: "Victron Energy",
-      model: "435W Solar Panel",
-      quantity: 1,
-      images: [
-        "/images/solar-panel-1.jpg",
-        "/images/solar-panel-2.jpg",
-        "/images/solar-panel-3.jpg"
-      ]
-    }
-  ];
 
   // Static data
   const productSizes = [
@@ -251,12 +235,11 @@ const ProductPage = () => {
     }
   };
 
-  const getProduct = () => {
-    const foundProduct = mockProducts.find(product => +product.id === +id);
-    
+  // Replace getProduct with store-based logic
+  const getProduct = async () => {
+    let foundProduct = store.getProductById(Number(id));
     if (foundProduct) {
       setProduct(foundProduct);
-      
       if (foundProduct.images && foundProduct.images.length > 0) {
         setSelectedImage(foundProduct.images[0]);
       } else if (foundProduct.image) {
@@ -267,7 +250,24 @@ const ProductPage = () => {
         setSelectedImage("/images/placeholder.png");
       }
     } else {
-      console.warn(`Product with ID ${id} not found.`);
+      // Try to fetch from API if not in store
+      const fetched = await store.fetchProductById(Number(id));
+      if (fetched) {
+        setProduct(fetched);
+        if (fetched.images && fetched.images.length > 0) {
+          setSelectedImage(fetched.images[0]);
+        } else if (fetched.image) {
+          setSelectedImage(Array.isArray(fetched.image) 
+            ? fetched.image[0] 
+            : fetched.image);
+        } else {
+          setSelectedImage("/images/placeholder.png");
+        }
+      } else {
+        setProduct(null);
+        setSelectedImage("/images/placeholder.png");
+        console.warn(`Product with ID ${id} not found.`);
+      }
     }
   };
 
@@ -297,8 +297,8 @@ const ProductPage = () => {
   };
 
   return (
-    <div className="product-page-container flex flex-col justify-center items-center">
-      {/* Fixed Breadcrumb */}
+    <div className="product-detail">
+      {/* Breadcrumb */}
       <nav className="breadcrumb ml-8 w-full">
         <Link to="/">Головна</Link>
         <span className="breadcrumb-separator">/</span>
@@ -311,12 +311,12 @@ const ProductPage = () => {
         </span>
       </nav>
 
-      <div className="flex flex-col xl:flex-row">
-        <div className="product-containew p-4">
+      <div className="product-container">
+        {/* Image Gallery */}
+        <div className="product-image-section">
           {product && (
-            <div className="product-content">
+            <>
               <div className="product-gallery">
-                {/* Thumbnail Gallery */}
                 <div className="thumbnail-list">
                   {productImages.map((img, index) => (
                     <div
@@ -328,87 +328,39 @@ const ProductPage = () => {
                     </div>
                   ))}
                 </div>
-
-                {/* Main Product Image */}
                 <div className="main-image-container">
                   <img
                     src={selectedImage || productImages[0] || '/images/placeholder.png'}
                     alt={product.title || product.name}
-                    className="main-image"
+                    className="product-image"
                   />
                 </div>
               </div>
-            </div>
+            </>
           )}
-
-          <div className="p-4 diviwer mt-6 mb-6"></div>
-
-          <div className="product-characteristics">
-            {productCharacteristics.map((item, i) => (
-              <div key={i} className="">
-                <div className="product-characteristic p-[17px] flex gap-3 my-2">
-                  <img src={item.src} alt="" />
-                  <div className="">
-                    <div className="characteristics-name">{item.name}</div>
-                    <div className="characteristics-description">
-                      {item.description}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          
-          {/* Installation Button with Popup */}
-          <div className="button-instaletion mt-4">
-            <button
-              className="flex gap-2 items-center justify-center w-full h-[50px] rounded-[12px] border border-blue-500 text-blue-500"
-              onClick={toggleInstallationPopup}
-            >
-              <img src="/images/service.svg" alt="" />
-              <p>Замовити встановлення</p>
-            </button>
-          </div>
-          
-          <div className="p-4 diviwer mt-6 mb-6"></div>
-          <div className="social flex gap-1">
-            <button><img src="/images/facebook.svg" alt="" /></button>
-            <button><img src="/images/tg.svg" alt="" /></button>
-            <button><img src="/images/soc.svg" alt="" /></button>
-          </div>
         </div>
 
+        {/* Product Info Section */}
         {product && (
-          <div className="about-product p-4">
+          <div className="product-info-section">
             <div className="about-product-head flex justify-between">
-              <div className="availability">В наявності</div>
+              <div className="product-availability in-stock">В наявності</div>
               <div className="code">Код: <span>12743</span></div>
             </div>
-            
-            <h2 className="product-name mt-3">{product.defaultName}</h2>
-            
-            <div className="certification flex items-center mt-6">
-              <img src="/images/certification-Icon.svg" alt="" />
-              <div className="ml-2">Сертифікований товар.</div>
-              <a href="/">Дивитись сертифікат</a>
-            </div>
-
-            <div className="product-boxes flex flex-wrap mt-6">
-              {productBoxes.map((box, index) => (
-                <div key={index} className="product-boxe flex items-center mt-2 mr-2">
-                  <img className="mr-2" src={box.img} alt="" />
-                  <div className="">{box.title}</div>
-                </div>
-              ))}
-            </div>
-
-            <div className="p-4 diviwer mt-6 mb-6"></div>
-            
-            <div className="product-price">
-              <div className="flex items-center">
-                <span className="product-price-discount">64 543 ₴</span>
-                <span className="discount ml-2">-5%</span>
+            <h1 className="product-title mt-3">{product.defaultName}</h1>
+            <div className="product-meta">
+              <div className="product-brand">
+                <span className="meta-label">Бренд:</span>
+                <span className="meta-value">{product.brand}</span>
               </div>
+              <div className="product-model">
+                <span className="meta-label">Модель:</span>
+                <span className="meta-value">{product.model || product.defaultName}</span>
+              </div>
+            </div>
+            <div className="product-price">
+              <span className="product-price-discount">64 543 ₴</span>
+              <span className="discount ml-2">-5%</span>
               <div className="real-price mt-1">57 999 ₴</div>
               <div className="credits-price flex items-center">
                 <img src="/images/calender.svg" alt="" />
@@ -416,116 +368,37 @@ const ProductPage = () => {
                 <span className="credit">в кредит</span>
               </div>
             </div>
-
-            <div className="p-4 diviwer mt-6 mb-6"></div>
-            
-            <div className="product-sizes">
-              <span>Разміри сонячної батареї, (мм)</span>
-              <div className="mt-3 product-sizes-buttons">
-                {productSizes.map((size, i) => (
-                  <button
-                    key={size.id}
-                    onClick={() => setSizeButton(size)}
-                    className={sizeButton.id === size.id ? 'active' : ''}
-                  >
-                    {size.size}
-                  </button>
-                ))}
+            <div className="add-to-cart-section">
+              <div className="quantity-controls">
+                <button onClick={() => changeProductCount('-')} className="quantity-btn">-</button>
+                <span className="quantity-display">{productCount}</span>
+                <button onClick={() => changeProductCount('+')} className="quantity-btn">+</button>
               </div>
+              <button onClick={addToCart} className="add-to-cart-btn mt-3">
+                <img className="mr-2" src="/images/cart-2.svg" alt="" width="20" height="17" />
+                Додати в кошик
+              </button>
             </div>
-
-            <div className="garanty">
-              <h4 className="h4">Гарантія та доставка:</h4>
-              <div className="garanty-data mt-3">
-                {garantyData.map((garanty, i) => (
-                  <div key={i} className="flex items-center mt-6">
-                    <img className="mr-3" src={garanty.img} alt="" />
-                    <span>{garanty.title}</span>
+            <div className="product-tabs">
+              <div className="tab-headers">
+                <button className="tab-btn active">Опис</button>
+                <button className="tab-btn">Характеристики</button>
+              </div>
+              <div className="tab-content">
+                <div className="description-tab">
+                  <p>Опис продукту тут...</p>
+                </div>
+                <div className="specifications-tab">
+                  <div className="spec-item">
+                    <span className="spec-label">Номінальна потужність, (Вт):</span>
+                    <span className="spec-value">435</span>
                   </div>
-                ))}
+                  {/* Add more spec items as needed */}
+                </div>
               </div>
-            </div>
-
-            <div className="payments-data mt-6">
-              <h3>Оплату можна здійснити:</h3>
-              <div className="flex flex-wrap">
-                {paymantData.map((item, i) => (
-                  <div key={i} className="paymant">
-                    <button><img src={item.img} alt="" /></button>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="main-characters mt-[63px]">
-              <h3>Основні характеристики</h3>
-              <div className="main-characters-data mt-8">
-                {mainCharacters.map((item, i) => (
-                  <div
-                    key={i}
-                    className="characters-data p-8 flex items-center justify-between xl:justify-start flex-wrap"
-                  >
-                    <span>{item.name}</span>
-                    <div>{item.description}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            
-            {/* Product Information Section */}
-            <div className="product-info-section mt-8">
-              <h3>Інформація про товар</h3>
-              <table className="info-table">
-                <tbody>
-                  <tr>
-                    <th>Кількість</th>
-                    <td>{product.quantity || "1"}</td>
-                  </tr>
-                  <tr>
-                    <th>Бренд</th>
-                    <td>{product.brand}</td>
-                  </tr>
-                  <tr>
-                    <th>Модель</th>
-                    <td>{product.model || product.defaultName}</td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </div>
         )}
-      </div>
-
-      <div className="relative">
-        <div className="add-to-card mt-5 flex items-center justify-between xl:justify-start">
-          <div className="product-counter flex items-center justify-between">
-            <button onClick={() => changeProductCount('-')}>
-              <img src="/images/dash.svg" alt="" />
-            </button>
-            <input 
-              value={productCount} 
-              onChange={(e) => setProductCount(parseInt(e.target.value) || 1)}
-            />
-            <button onClick={() => changeProductCount('+')}>
-              <img src="/images/plus.svg" alt="" />
-            </button>
-          </div>
-          <div className="add-to-card-button xl:ml-4">
-            <button
-              onClick={addToCart}
-              className="flex items-center justify-center xl:w-[580px]"
-            >
-              <img
-                className="mr-2"
-                src="/images/cart-2.svg"
-                alt=""
-                width="20"
-                height="17"
-              />
-              <p>Додати в кошик</p>
-            </button>
-          </div>
-        </div>
       </div>
 
       {/* Installation Popup (Modal) */}

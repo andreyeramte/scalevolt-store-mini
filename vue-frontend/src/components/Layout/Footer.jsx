@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import './Footer.css';
 
 const Footer = () => {
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language;
+  const location = useLocation();
+  // Get current region from URL (e.g., /ua/...)
+  const region = location.pathname.split('/')[1] || 'ua';
 
   // Custom functions to get locale-specific contact info
   const getEmailByLocale = () => {
@@ -31,15 +35,23 @@ const Footer = () => {
         <div className="footer-section">
           <h3>{t('footer.products')}</h3>
           <ul>
-            <li><a href="#">{t('footer.sale')}</a></li>
+            <li><span className="footer-link-disabled">{t('footer.sale')}</span></li>
             <li>
-              <Link to="/Sets-of-solar-power-plants">
+              <Link to={`/${region}/sets-of-solar-power-plants`}>
                 {t('footer.solarSets')}
               </Link>
             </li>
-            <li><a href="#">{t('footer.batteries')}</a></li>
-            <li><a href="#">{t('footer.inverters')}</a></li>
-            <li><a href="#">{t('footer.customerSupport')}</a></li>
+            <li>
+              <Link to={`/${region}/batteries`}>
+                {t('footer.batteries')}
+              </Link>
+            </li>
+            <li>
+              <Link to={`/${region}/inverters`}>
+                {t('footer.inverters')}
+              </Link>
+            </li>
+            <li><span className="footer-link-disabled">{t('footer.customerSupport')}</span></li>
           </ul>
         </div>
 
@@ -48,13 +60,13 @@ const Footer = () => {
           <h3>{t('footer.aboutUs')}</h3>
           <ul>
             <li>
-              <Link to="/company">{t('footer.about')}</Link>
+              <Link to={`/${region}/company`}>{t('footer.about')}</Link>
             </li>
-            <li><a href="#">{t('footer.ourTeam')}</a></li>
+            <li><span className="footer-link-disabled">{t('footer.ourTeam')}</span></li>
             <li>
-              <Link to="/customer-cases">{t('footer.cases')}</Link>
+              <Link to={`/${region}/customer-cases`}>{t('footer.cases')}</Link>
             </li>
-            <li><a href="#">{t('footer.contactUs')}</a></li>
+            <li><span className="footer-link-disabled">{t('footer.contactUs')}</span></li>
           </ul>
         </div>
 
@@ -79,7 +91,6 @@ const Footer = () => {
               </a>
             </li>
             {currentLocale !== 'pl' && <li>Пн-Сб: 9:00 - 18:00</li>}
-            
             {/* Telegram for Ukrainian locale only */}
             {currentLocale === 'uk' && (
               <li className="social-contact-item">
@@ -91,7 +102,6 @@ const Footer = () => {
                 </a>
               </li>
             )}
-            
             {/* WhatsApp for Polish locale only */}
             {currentLocale === 'pl' && (
               <li className="social-contact-item">
@@ -111,21 +121,21 @@ const Footer = () => {
           <h3>{currentLocale === 'pl' ? 'Wsparcie' : 'Підтримка'}</h3>
           <ul>
             <li>
-              <Link to="/faq">
+              <Link to={`/${region}/faq`}>
                 {currentLocale === 'pl' ? 'Pytania i odpowiedzi' : 'Запитання й відповіді'}
               </Link>
             </li>
             <li>
-              <Link to="/delivery-warranty-returns">
+              <Link to={`/${region}/delivery-warranty-returns`}>
                 {currentLocale === 'pl' ? 'Dostawa, Gwarancja i Zwroty' : 'Доставка, Гарантія та Повернення'}
               </Link>
             </li>
             <li>
-              <Link to="/privacy-policy">
+              <Link to={`/${region}/privacy-policy`}>
                 {currentLocale === 'pl' ? 'Polityka prywatności' : 'Політика конфіденційності'}
               </Link>
             </li>
-            <li><a href="#">{currentLocale === 'pl' ? 'Obsługa klienta' : 'Підтримка клієнтів'}</a></li>
+            <li><span className="footer-link-disabled">{currentLocale === 'pl' ? 'Obsługa klienta' : 'Підтримка клієнтів'}</span></li>
           </ul>
         </div>
 
@@ -134,12 +144,12 @@ const Footer = () => {
           <h3>{currentLocale === 'pl' ? 'Informacje prawne' : 'Юридична інформація'}</h3>
           <ul>
             <li>
-              <Link to="/legal-terms">
+              <Link to={`/${region}/legal-terms`}>
                 {currentLocale === 'pl' ? 'Warunki korzystania' : 'Умови використання'}
               </Link>
             </li>
             <li>
-              <Link to="/privacy-policy">
+              <Link to={`/${region}/privacy-policy`}>
                 {currentLocale === 'pl' ? 'Polityka prywatności' : 'Політика конфіденційності'}
               </Link>
             </li>

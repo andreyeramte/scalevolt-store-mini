@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import useUserStore from '../../stores/user';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './Header.css';
@@ -24,13 +25,16 @@ const Header = () => {
   // Refs
   const headerRef = useRef(null);
   
-  // Mock cart and user state - replace with your actual state management
+  // Mock cart state, but get user from Zustand store
   const [cartCount, setCartCount] = useState(0);
-  const [user, setUser] = useState(null);
+  const user = useUserStore(state => state.user);
   
   // Computed properties as regular variables
   const isHomePage = location.pathname === '/';
   const currentLocale = i18n.language || 'ua';
+  
+  // Get current region from URL or default to 'ua'
+  const region = location.pathname.split('/')[1] || 'ua';
   
   // Update CSS variable to reflect header height
   const updateHeaderHeight = () => {
@@ -384,11 +388,11 @@ const Header = () => {
             {/* Profile */}
             <div className="mobile-icon">
               {!user ? (
-                <Link to="/login">
+                <Link to={`/${region}/auth`}>
                   <img src="/images/header/profile-logo.svg" alt="Account" />
                 </Link>
               ) : (
-                <Link to="/profile">
+                <Link to={`/${region}/profile`}>
                   <img src="/images/header/profile-logo.svg" alt="Account" />
                 </Link>
               )}
@@ -396,7 +400,7 @@ const Header = () => {
             
             {/* Cart */}
             <div className="mobile-icon">
-              <Link to="/cart">
+              <Link to={`/${region}/cart`}>
                 <img src="/images/header/cart.svg" alt="Cart" />
                 {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
               </Link>
@@ -467,18 +471,18 @@ const Header = () => {
           <div className="right-section">
             <div className="user-controls">
               <div className="cart-icon">
-                <Link to="/cart">
+                <Link to={`/${region}/cart`}>
                   <img src="/images/header/cart.svg" alt="Cart" />
                   {cartCount > 0 && <span className="cart-count">{cartCount}</span>}
                 </Link>
               </div>
               <div className="user-icon">
                 {!user ? (
-                  <Link to="/login">
+                  <Link to={`/${region}/auth`}>
                     <img src="/images/header/profile-logo.svg" alt="Account" />
                   </Link>
                 ) : (
-                  <Link to="/profile">
+                  <Link to={`/${region}/profile`}>
                     <img src="/images/header/profile-logo.svg" alt="Account" />
                   </Link>
                 )}
@@ -491,11 +495,11 @@ const Header = () => {
       {/* Region Dropdown Menu (works for both mobile and desktop) */}
       {regionMenuVisible && (
         <div className="region-dropdown" onClick={(e) => e.stopPropagation()}>
-          <div className="region-option" onClick={() => selectRegion('ua')}>
-            <span className="language">Українська</span>
+          <div className={`region-option${currentLocale === 'ua' ? ' active' : ''}`} onClick={() => selectRegion('ua')}>
+            <span className="language">{t('common.language.ukrainian', 'Українська')}</span>
           </div>
-          <div className="region-option" onClick={() => selectRegion('pl')}>
-            <span className="language">Polski</span>
+          <div className={`region-option${currentLocale === 'pl' ? ' active' : ''}`} onClick={() => selectRegion('pl')}>
+            <span className="language">{t('common.language.polish', 'Polski')}</span>
           </div>
         </div>
       )}
@@ -765,8 +769,8 @@ const Header = () => {
                     <img src="/images/header/globe-icon.svg" alt="Region Icon" className="globe-icon" />
                   </div>
                   <div className="language-info">
-                    <div className="country-name">Poland</div>
-                    <div className="language-name">Polish</div>
+                    <div className="country-name">{t('common.country.poland', 'Poland')}</div>
+                    <div className="language-name">{t('common.language.polish', 'Polish')}</div>
                   </div>
                   <div className={`selector-indicator ${currentLocale === 'pl' ? 'active' : ''}`}></div>
                 </div>
@@ -776,8 +780,8 @@ const Header = () => {
                     <img src="/images/header/globe-icon.svg" alt="Region Icon" className="globe-icon" />
                   </div>
                   <div className="language-info">
-                    <div className="country-name">Ukraine</div>
-                    <div className="language-name">Ukrainian</div>
+                    <div className="country-name">{t('common.country.ukraine', 'Ukraine')}</div>
+                    <div className="language-name">{t('common.language.ukrainian', 'Ukrainian')}</div>
                   </div>
                   <div className={`selector-indicator ${currentLocale === 'ua' ? 'active' : ''}`}></div>
                 </div>

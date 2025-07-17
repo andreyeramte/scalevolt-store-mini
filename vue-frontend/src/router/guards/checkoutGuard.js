@@ -1,7 +1,8 @@
 // FILE: src/router/guards/checkoutGuard.js
 // Convert the Vue guard to a React-compatible function
 import { getAuth } from 'firebase/auth';
-import { toast } from 'react-toastify'; // You'll need to install react-toastify
+import { toast } from 'react-toastify';
+import useCartStore from '../../stores/cart';
 
 /**
  * Authentication guard for checkout routes that works with Firebase
@@ -12,20 +13,20 @@ export const checkoutGuard = async (t, location) => {
     // Get Firebase auth instance directly
     const auth = getAuth();
     const firebaseUser = auth.currentUser;
-    
+    // Zustand cart store
+    const cartStore = useCartStore.getState();
+    const cartItems = cartStore.getCartItems();
+
     // Check if the user is authenticated with Firebase directly
-    // This is the most reliable check and doesn't depend on any store
     const isAuthenticated = !!firebaseUser;
-    
+
     console.log('Checkout guard running', {
       firebaseUser: !!firebaseUser,
       isAuthenticated,
       currentPath: location?.pathname
     });
-    
+
     // Check if cart is empty
-    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    
     if (!cartItems || cartItems.length === 0) {
       console.log('Cart is empty, redirecting to cart page');
       if (t && toast) {
@@ -60,7 +61,6 @@ export const checkoutGuard = async (t, location) => {
     // For success/cancel pages, allow without authentication check
     const isSuccessOrCancel = location?.pathname?.includes('/success') || 
                              location?.pathname?.includes('/cancel');
-    
     if (isSuccessOrCancel) {
       console.log('Success/Cancel page - allowing access');
       return {
@@ -68,15 +68,13 @@ export const checkoutGuard = async (t, location) => {
         reason: 'successOrCancel'
       };
     }
-    
+
     // Check if user is authenticated with Firebase for checkout process
     if (!isAuthenticated) {
       console.log('User not authenticated with Firebase, redirecting to auth page');
-      
       // Store the intended destination to redirect after login
       const currentPath = location?.pathname || window.location.pathname;
       localStorage.setItem('checkoutRedirect', currentPath);
-      
       return {
         isAllowed: false,
         redirectTo: '/auth', // or '/checkout/auth' based on your routing
@@ -99,28 +97,16 @@ export const checkoutGuard = async (t, location) => {
       };
     }
 
-    // All checks passed
-    console.log('User authenticated with Firebase, proceeding to checkout');
     return {
       isAllowed: true,
-      reason: 'authenticated',
-      user: {
-        uid: firebaseUser.uid,
-        email: firebaseUser.email,
-        displayName: firebaseUser.displayName
-      }
+      reason: 'validated'
     };
-    
   } catch (error) {
     console.error('Error in checkout guard:', error);
-    if (toast) {
-      toast.error('An error occurred. Please try again.');
-    }
     return {
       isAllowed: false,
       redirectTo: '/cart',
-      reason: 'error',
-      error: error.message
+      reason: 'error'
     };
   }
 };
@@ -128,9 +114,9 @@ export const checkoutGuard = async (t, location) => {
 // Alternative simpler version if you don't want Firebase dependency
 export const simpleCheckoutGuard = async (t, location) => {
   try {
-    // Check if cart is empty
-    const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    
+    // Zustand cart store
+    const cartStore = useCartStore.getState();
+    const cartItems = cartStore.getCartItems();
     if (!cartItems || cartItems.length === 0) {
       console.log('Cart is empty, redirecting to cart page');
       return {
@@ -139,12 +125,10 @@ export const simpleCheckoutGuard = async (t, location) => {
         reason: 'emptyCart'
       };
     }
-
     // Validate cart items
     const invalidItems = cartItems.filter(item => 
       !item.id || !item.price || !item.quantity || item.quantity <= 0
     );
-
     if (invalidItems.length > 0) {
       return {
         isAllowed: false,
@@ -152,15 +136,12 @@ export const simpleCheckoutGuard = async (t, location) => {
         reason: 'invalidItems'
       };
     }
-
     // Check if user is logged in (if required)
     const authToken = localStorage.getItem('authToken');
     const isAuthenticated = !!authToken;
-
     // For success/cancel pages, different rules might apply
     const isSuccessOrCancel = location?.pathname?.includes('/success') || 
                              location?.pathname?.includes('/cancel');
-    
     if (!isSuccessOrCancel && !isAuthenticated) {
       return {
         isAllowed: false,
@@ -168,12 +149,10 @@ export const simpleCheckoutGuard = async (t, location) => {
         reason: 'notAuthenticated'
       };
     }
-
     return {
       isAllowed: true,
       reason: 'validated'
     };
-    
   } catch (error) {
     console.error('Error in checkout guard:', error);
     return {

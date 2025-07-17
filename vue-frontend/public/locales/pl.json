@@ -1,0 +1,20 @@
+{
+  "translation": {
+    "common": {
+      "home": "Dom",
+      "categories": "Kategorie",
+      "loading": "Ładowanie..."
+    },
+    "error": {
+      "notFound": "Strona nie znaleziona",
+      "pageNotFoundMessage": "Przepraszamy, strona, której szukasz, nie istnieje.",
+      "serverError": "Wewnętrzny błąd serwera",
+      "serverErrorMessage": "Coś poszło nie tak. Spróbuj ponownie później.",
+      "forbidden": "Dostęp zabroniony",
+      "forbiddenMessage": "Nie masz uprawnień do dostępu do tej strony.",
+      "somethingWrong": "Błąd",
+      "generalErrorMessage": "Wystąpił nieoczekiwany błąd.",
+      "chatNotAvailable": "Czat jest obecnie niedostępny."
+    }
+  }
+} 

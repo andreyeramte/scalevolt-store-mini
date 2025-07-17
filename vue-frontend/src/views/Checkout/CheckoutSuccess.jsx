@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useCartStore from '../../stores/cart';
 
 const CheckoutSuccess = () => {
   const [searchParams] = useSearchParams();
@@ -9,6 +10,7 @@ const CheckoutSuccess = () => {
   const [orderData, setOrderData] = useState(null);
   const [orderId, setOrderId] = useState('');
   const [orderEmail, setOrderEmail] = useState('');
+  const clearCart = useCartStore(state => state.clearCart);
 
   useEffect(() => {
     // Get order ID from URL params
@@ -26,9 +28,9 @@ const CheckoutSuccess = () => {
       localStorage.removeItem('orderData');
     }
 
-    // Clear cart items since order is complete
-    localStorage.removeItem('cartItems');
-  }, [searchParams]);
+    // Clear Zustand cart store since order is complete
+    clearCart();
+  }, [searchParams, clearCart]);
 
   const formatPrice = (price) => {
     return price.toLocaleString('en-US');

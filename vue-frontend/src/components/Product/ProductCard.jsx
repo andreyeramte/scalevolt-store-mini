@@ -11,7 +11,8 @@ const ProductCard = ({
   imageSrc,
   brand = '',
   rentalPrices = {},
-  isRentalItem = false
+  isRentalItem = false,
+  region = 'ua', // default to 'ua' if not provided
 }) => {
   const { t } = useTranslation();
   const { cartItems, addToCart, increaseQuantity, decreaseQuantity, getItemQuantity } = useCartStore();
@@ -22,8 +23,8 @@ const ProductCard = ({
   // Get current quantity from cart
   const cartCount = getItemQuantity(productId);
   
-  // Product link
-  const productLink = `/product/${productId}`;
+  // Product link with region
+  const productLink = `/${region}/product/${productId}`;
   
   // Method to format rental price
   const formatRentalPrice = (duration) => {

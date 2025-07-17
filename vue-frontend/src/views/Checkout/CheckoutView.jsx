@@ -4,17 +4,16 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { loadStripe } from '@stripe/stripe-js';
 import { getAuth } from 'firebase/auth';
+import useCartStore from '../../stores/cart';
 
 const CheckoutView = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const auth = getAuth();
+  const { cartItems } = useCartStore();
   
   // Current step in checkout process
   const [currentStep, setCurrentStep] = useState(1);
-  
-  // Cart items from localStorage (you might want to use a cart store here)
-  const [cartItems, setCartItems] = useState([]);
   
   // Saved addresses
   const [savedAddresses, setSavedAddresses] = useState([]);
@@ -36,14 +35,10 @@ const CheckoutView = () => {
   // Payment method
   const [paymentMethod, setPaymentMethod] = useState('card');
 
-  // Load cart items and user data on mount
+  // Load user data if authenticated
   useEffect(() => {
-    // Load cart items from localStorage
-    const savedCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    setCartItems(savedCart);
-    
     // Check if cart is empty
-    if (savedCart.length === 0) {
+    if (cartItems.length === 0) {
       toast.error(t('cart.emptyCartError', 'Your cart is empty'));
       navigate('/cart');
       return;
@@ -96,10 +91,10 @@ const CheckoutView = () => {
       // If there's a default address, select it
       const defaultIndex = mockAddresses.findIndex(addr => addr.isDefault);
       if (defaultIndex >= 0) {
-        selectSavedAddress(defaultIndex);
+        setSelectedAddressIndex(defaultIndex);
       }
     }
-  }, [auth, navigate, t, i18n.language]);
+  }, [auth.currentUser, cartItems, i18n.language, navigate, t]);
 
   // Computed values
   const totalPrice = useMemo(() => {

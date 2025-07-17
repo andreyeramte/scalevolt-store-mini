@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProductCard from '../ProductCard/ProductCard';
 import Breadcrumb from '../../common/Breadcrumb/Breadcrumb';
@@ -13,6 +13,10 @@ const ProductCatalog = ({
 }) => {
   const { t } = useTranslation();
   const { id } = useParams();
+  const location = useLocation();
+
+  // Get current region from URL (e.g., /ua/product/123)
+  const region = location.pathname.split('/')[1] || 'ua';
 
   // Get category ID from the route and ensure it's correctly parsed
   const categoryId = useMemo(() => {
@@ -76,9 +80,9 @@ const ProductCatalog = ({
               key={product.uniqueKey}
               className="product-card-wrapper"
             >
-              {/* Wrap ProductCard in Link to /product/:id */}
+              {/* Wrap ProductCard in Link to /:region/product/:id */}
               <Link
-                to={`/product/${product.id}`}
+                to={`/${region}/product/${product.id}`}
                 style={{ textDecoration: 'none', color: 'inherit' }}
               >
                 {/* ProductCard component */}
@@ -90,6 +94,7 @@ const ProductCatalog = ({
                   brand={product.brand}
                   isRentalItem={product.isRentalItem}
                   rentalPrices={product.rentalPrices}
+                  region={region}
                 />
               </Link>
             </div>

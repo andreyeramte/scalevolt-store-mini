@@ -15,6 +15,7 @@ export default defineConfig({
     port: 5177,
     open: true,
     watch: { usePolling: true },
+    historyApiFallback: true,
 
     // ←—— ADD THIS:
     proxy: {

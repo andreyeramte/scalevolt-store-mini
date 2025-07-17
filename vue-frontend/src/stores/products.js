@@ -1,4 +1,4 @@
-import create from 'zustand';
+import { create } from 'zustand';
 
 const useProductsStore = create((set, get) => ({
   products: [],
@@ -79,44 +79,40 @@ const useProductsStore = create((set, get) => ({
 
   // Async actions
   fetchProducts: async () => {
+    // Check if we're already loading to prevent multiple calls
+    const { loading } = get();
+    if (loading) {
+      console.log('🔄 Already loading products, skipping...');
+      return;
+    }
+
+    console.log('🔄 Starting to fetch products...');
     set({ loading: true, error: null });
+    
     try {
-      // TODO: Replace with real API call
-      const mockProducts = [
-        {
-          id: 1,
-          name: 'Solar Panel 100W',
-          description: 'High efficiency solar panel',
-          price: 150,
-          category: 'solar-panels',
-          brand: 'ScaleVolt',
-          stock: 10,
-          image: '/images/solar-panel-1.jpg'
-        },
-        {
-          id: 2,
-          name: 'Battery Pack 24V',
-          description: 'Lithium battery pack',
-          price: 200,
-          category: 'batteries',
-          brand: 'ScaleVolt',
-          stock: 5,
-          image: '/images/battery-1.jpg'
-        },
-        {
-          id: 3,
-          name: 'Inverter 1000W',
-          description: 'Pure sine wave inverter',
-          price: 300,
-          category: 'inverters',
-          brand: 'ScaleVolt',
-          stock: 8,
-          image: '/images/inverter-1.jpg'
-        }
-      ];
+      console.log('📡 Making API call to http://localhost:3002/api/products');
+      const response = await fetch('http://localhost:3002/api/products');
+      console.log('📥 Response status:', response.status);
       
-      set({ products: mockProducts, loading: false });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const products = await response.json();
+      console.log('✅ Products fetched successfully:', products.length, 'products');
+      console.log('📦 First product:', products[0]);
+      
+      // Add default images for products that don't have them
+      const productsWithImages = products.map(product => ({
+        ...product,
+        image: product.image || `/api/placeholder/300/200?text=${encodeURIComponent(product.name)}`
+      }));
+      
+      console.log('🎨 Products with images:', productsWithImages.length);
+      set({ products: productsWithImages, loading: false });
+      console.log('✅ Products store updated successfully');
     } catch (error) {
+      console.error('❌ Error fetching products:', error);
       set({ error: error.message || 'Failed to fetch products', loading: false });
     }
   },
@@ -124,16 +120,22 @@ const useProductsStore = create((set, get) => ({
   fetchProductById: async (id) => {
     set({ loading: true, error: null });
     try {
-      // TODO: Replace with real API call
-      const product = get().getProductById(id);
-      if (product) {
-        set({ loading: false });
-        return product;
-      } else {
-        set({ error: 'Product not found', loading: false });
-        return null;
+      const response = await fetch(`http://localhost:3002/api/products/${id}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+      const product = await response.json();
+      
+      // Add default image if product doesn't have one
+      const productWithImage = {
+        ...product,
+        image: product.image || `/api/placeholder/300/200?text=${encodeURIComponent(product.name)}`
+      };
+      
+      set({ loading: false });
+      return productWithImage;
     } catch (error) {
+      console.error('Error fetching product:', error);
       set({ error: error.message || 'Failed to fetch product', loading: false });
       return null;
     }

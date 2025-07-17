@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
@@ -10,7 +11,8 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase'; // Adjust path as needed
 
-const AuthView = ({ onNavigate }) => {
+const AuthView = () => {
+  const location = useLocation();
   // Form state
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
@@ -22,14 +24,7 @@ const AuthView = ({ onNavigate }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Navigation function
-  const navigate = (path) => {
-    if (onNavigate) {
-      onNavigate(path);
-    } else {
-      window.location.href = path;
-    }
-  };
+  const navigate = useNavigate();
 
   // Translation texts (replace with your i18n solution)
   const t = (key) => {
@@ -128,12 +123,14 @@ const AuthView = ({ onNavigate }) => {
         }
       }
 
-      // Navigate to homepage or redirect URL
-      const redirectUrl = localStorage.getItem('checkoutRedirect') || '/';
+      // Get region from URL (e.g., /ua/auth)
+      const region = location.pathname.split('/')[1] || 'ua';
+      const redirectUrl = localStorage.getItem('checkoutRedirect') || `/${region}/profile`;
       localStorage.removeItem('checkoutRedirect');
+      console.log('✅ Login successful, navigating to:', redirectUrl);
       navigate(redirectUrl);
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error('❌ Authentication error:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -150,9 +147,10 @@ const AuthView = ({ onNavigate }) => {
       
       const redirectUrl = localStorage.getItem('checkoutRedirect') || '/';
       localStorage.removeItem('checkoutRedirect');
+      console.log('✅ Google login successful, navigating to:', redirectUrl);
       navigate(redirectUrl);
     } catch (error) {
-      console.error('Google sign-in error:', error);
+      console.error('❌ Google sign-in error:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -169,9 +167,10 @@ const AuthView = ({ onNavigate }) => {
       
       const redirectUrl = localStorage.getItem('checkoutRedirect') || '/';
       localStorage.removeItem('checkoutRedirect');
+      console.log('✅ Apple login successful, navigating to:', redirectUrl);
       navigate(redirectUrl);
     } catch (error) {
-      console.error('Apple sign-in error:', error);
+      console.error('❌ Apple sign-in error:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);
@@ -191,7 +190,7 @@ const AuthView = ({ onNavigate }) => {
       await sendPasswordResetEmail(auth, formData.email);
       alert(t('login.resetEmailSent'));
     } catch (error) {
-      console.error('Password reset error:', error);
+      console.error('❌ Password reset error:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);

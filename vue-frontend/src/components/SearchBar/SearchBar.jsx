@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import debounce from 'lodash.debounce';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import productService from '@/services/productService';
 import useProductsStore from '@/stores/products';
 import styles from './SearchBar.module.css';
@@ -20,7 +20,11 @@ export default function SearchBar({
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
   const store = useProductsStore();
+
+  // Get current region from URL (e.g., /ua/product/123)
+  const region = location.pathname.split('/')[1] || 'ua';
 
   const searchContainer = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -146,7 +150,7 @@ export default function SearchBar({
   // Selectors
   const selectProduct = (p) => {
     onSearchSelected?.(p);
-    navigate(`${productRoute}${p.id}`);
+    navigate(`/${region}/product/${p.id}`);
     resetAll();
   };
   const applySuggestion = s => {
@@ -207,7 +211,7 @@ export default function SearchBar({
               <ul className={`${styles['suggestions-list']} flex flex-col px-20`}>
                 {searchResult.map((sugg, i) => (
                   <li key={i} className={`${styles['suggestions-item']} flex jutify-between w-full`} onMouseDown={() => applySuggestion(sugg)}>
-                    <Link to={`/product/${sugg.id}`} className="flex jutify-between w-full items-center">
+                    <Link to={`/${region}/product/${sugg.id}`} className="flex jutify-between w-full items-center">
                       <img className="suggestion-img" src={sugg.image} alt={sugg.defaultName || 'Product Image'} />
                       <div className="flex flex-col">
                         <h5 className="w-[200px] break-all">{t(sugg.nameKey)}</h5>

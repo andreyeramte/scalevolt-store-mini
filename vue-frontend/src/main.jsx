@@ -4,8 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/index';
 import AppRouter from './router/AppRouter'; // Fixed import path
-import { initializeApp as initializeFirebaseApp } from "firebase/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { app, auth } from './firebase';
 
 // Force hide any loading screens immediately
 window.BYPASS_LOADING = true;
@@ -19,31 +18,6 @@ function addFavicon() {
   link.type = 'image/x-icon';
   link.href = '/favicon.ico';
   document.head.appendChild(link);
-}
-
-// Initialize Firebase (replace with your actual config)
-const firebaseConfig = {
-  // Add your Firebase config here from your Vue app
-  // For now, using placeholder values - replace with your actual values
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "demo.firebaseapp.com",
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "demo.appspot.com",
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: process.env.REACT_APP_FIREBASE_APP_ID || "demo-app-id"
-};
-
-let firebaseApp = null;
-let auth = null;
-
-// Initialize Firebase only if config is provided
-try {
-  firebaseApp = initializeFirebaseApp(firebaseConfig);
-  auth = getAuth(firebaseApp);
-  console.log('✅ Firebase initialized');
-} catch (error) {
-  console.warn('⚠️ Firebase initialization failed:', error.message);
-  console.warn('💡 App will continue without Firebase features');
 }
 
 // Create contexts for global state
@@ -323,13 +297,13 @@ function initializeReactApp() {
     
     // Listen for auth changes if Firebase is available
     if (auth) {
-      onAuthStateChanged(auth, function(user) {
-        if (user) {
-          console.log('✅ User is logged in:', user.email);
-        } else {
-          console.log('👤 User is signed out');
-        }
-      });
+      // onAuthStateChanged(auth, function(user) {
+      //   if (user) {
+      //     console.log('✅ User is logged in:', user.email);
+      //   } else {
+      //     console.log('👤 User is signed out');
+      //   }
+      // });
     }
     
     console.log('🚀 ScaleVolt React App initialized successfully');

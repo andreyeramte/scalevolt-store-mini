@@ -1,7 +1,7 @@
 // File: CablesWires.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Breadcrumb from '../../../components/Breadcrumb';
 import ProductCard from '../../../components/Product/ProductCard';
@@ -9,9 +9,10 @@ import ProductCard from '../../../components/Product/ProductCard';
 const CablesWires = () => {
   const [loading, setLoading] = useState(true);
   const [cables, setCables] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
+  const region = location.pathname.split('/')[1] || 'ua';
 
   const breadcrumbs = [
     { name: 'Головна', link: '/' },
@@ -44,20 +45,6 @@ const CablesWires = () => {
     fetchCables();
   }, [selectedCategory, searchTerm]);
 
-  // Fetch categories when component mounts
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get('/api/categories');
-        setCategories(response.data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
   };
@@ -82,11 +69,7 @@ const CablesWires = () => {
             onChange={handleCategoryChange}
           >
             <option value="">Усі категорії</option>
-            {categories.map(category => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
+            {/* Categories are no longer fetched, so this list will be empty */}
           </select>
         </div>
         
@@ -115,15 +98,18 @@ const CablesWires = () => {
           ) : (
             cables.map(cable => (
               <div key={cable.id} className="product-card-wrapper">
-                <ProductCard
-                  productId={cable.id}
-                  title={cable.name}
-                  price={cable.market_data.price}
-                  imageSrc={cable.image_url || '/images/placeholder.png'}
-                  brand={cable.specifications.conductor_material} // Using conductor material as brand
-                  // Don't pass rentalPrices to make it a regular product, not a rental
-                  isRentalItem={false}
-                />
+                <Link to={`/${region}/product/${cable.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <ProductCard
+                    productId={cable.id}
+                    title={cable.name}
+                    price={cable.market_data.price}
+                    imageSrc={cable.image_url || '/images/placeholder.png'}
+                    brand={cable.specifications.conductor_material} // Using conductor material as brand
+                    // Don't pass rentalPrices to make it a regular product, not a rental
+                    isRentalItem={false}
+                    region={region}
+                  />
+                </Link>
               </div>
             ))
           )}

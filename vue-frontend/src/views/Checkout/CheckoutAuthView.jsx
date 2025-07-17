@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { getAuth } from 'firebase/auth';
 import useAuthStore from '../../stores/auth';
+import useCartStore from '../../stores/cart';
 
 const CheckoutAuthView = () => {
   const navigate = useNavigate();
@@ -13,12 +14,12 @@ const CheckoutAuthView = () => {
   
   // Zustand store
   const { user, loading, error, login, register, clearError } = useAuthStore();
+  const { cartItems } = useCartStore();
   
   // Local state
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [isAlreadyAuthenticated, setIsAlreadyAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('login');
-  const [cartItems, setCartItems] = useState([]);
   
   // Form states
   const [loginForm, setLoginForm] = useState({
@@ -36,17 +37,6 @@ const CheckoutAuthView = () => {
     confirmPassword: '',
     acceptTerms: false
   });
-
-  // Load cart items
-  useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
-    setCartItems(savedCart);
-  }, []);
-
-  // Check Firebase auth status on mount
-  useEffect(() => {
-    checkFirebaseAuth();
-  }, []);
 
   // Cart calculations
   const totalQuantity = useMemo(() => {

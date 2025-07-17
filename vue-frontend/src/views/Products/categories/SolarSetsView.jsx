@@ -1,45 +1,8 @@
 import React, { useMemo } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import ProductCard from '../../../components/Product/ProductCard';
 
 // Mock components - replace with your actual components
-const ProductCard = ({ productId, title, price, imageSrc, brand, onClick }) => (
-  <div 
-    onClick={onClick}
-    style={{
-      border: '1px solid #e5e7eb',
-      borderRadius: '8px',
-      padding: '16px',
-      backgroundColor: 'white',
-      cursor: 'pointer',
-      transition: 'transform 0.2s, box-shadow 0.2s',
-      ':hover': {
-        transform: 'translateY(-2px)',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-      }
-    }}
-  >
-    <img 
-      src={imageSrc || '/placeholder-product.jpg'} 
-      alt={title}
-      style={{
-        width: '100%',
-        height: '200px',
-        objectFit: 'cover',
-        borderRadius: '4px',
-        marginBottom: '12px'
-      }}
-    />
-    <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', color: '#333' }}>
-      {title}
-    </h3>
-    <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
-      {brand}
-    </p>
-    <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#0066cc' }}>
-      ${price}
-    </p>
-  </div>
-);
-
 const Breadcrumb = ({ breadcrumbs, className }) => (
   <nav className={className}>
     <ol style={{ 
@@ -139,20 +102,20 @@ const useCartStore = () => ({
 });
 
 const SolarSets = () => {
-  // Get category ID from the route and ensure it's correctly parsed
-  const categoryId = 4;
+  const location = useLocation();
+  const region = location.pathname.split('/')[1] || 'ua';
   const store = useProductsStore();
   const cartStore = useCartStore();
 
   // Filter products by category and add uniqueKey
   const products = useMemo(() => {
     return store.getProducts
-      .filter(product => +product.categoryId === categoryId)
+      .filter(product => +product.categoryId === 4) // Assuming categoryId 4 is SolarSets
       .map(product => ({
         ...product,
         uniqueKey: product.id
       }));
-  }, [store.getProducts, categoryId]);
+  }, [store.getProducts]);
 
   // Get translated product name based on current locale
   const getTranslatedProductName = (product) => {
@@ -183,22 +146,27 @@ const SolarSets = () => {
 
       {/* Product Listing */}
       <div className="products-container">
-        {products.map((product) => (
-          <div
-            key={product.uniqueKey}
-            className="product-card-wrapper"
-          >
-            {/* Wrap ProductCard to navigate to /product/:id */}
-            <ProductCard
-              productId={product.id}
-              title={getTranslatedProductName(product)}
-              price={product.price}
-              imageSrc={product.image}
-              brand={product.brand}
-              onClick={() => handleProductClick(product.id)}
-            />
-          </div>
-        ))}
+        {products.map((product) => {
+          const imageSrc = product.image || '/images/placeholder.png';
+          return (
+            <div
+              key={product.uniqueKey}
+              className="product-card-wrapper"
+            >
+              <Link to={`/${region}/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <ProductCard
+                  productId={product.id}
+                  title={getTranslatedProductName(product)}
+                  price={product.price}
+                  imageSrc={imageSrc}
+                  brand={product.brand}
+                  region={region}
+                  // Add other props as needed
+                />
+              </Link>
+            </div>
+          );
+        })}
       </div>
 
       <style jsx>{`

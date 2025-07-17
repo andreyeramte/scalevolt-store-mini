@@ -1,59 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
-// Mock ProductCard component - replace with your actual component
-const ProductCard = ({ productId, title, price, imageSrc, brand, isRentalItem, rentalPrices, onClick }) => (
-  <div 
-    onClick={onClick}
-    style={{
-      border: '1px solid #e5e7eb',
-      borderRadius: '8px',
-      padding: '16px',
-      backgroundColor: 'white',
-      cursor: 'pointer',
-      transition: 'transform 0.2s, box-shadow 0.2s',
-      ':hover': {
-        transform: 'translateY(-2px)',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-      }
-    }}
-  >
-    <img 
-      src={imageSrc || '/placeholder-product.jpg'} 
-      alt={title}
-      style={{
-        width: '100%',
-        height: '200px',
-        objectFit: 'cover',
-        borderRadius: '4px',
-        marginBottom: '12px'
-      }}
-    />
-    <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px', color: '#333' }}>
-      {title}
-    </h3>
-    <p style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>
-      {brand}
-    </p>
-    {isRentalItem && rentalPrices ? (
-      <div style={{ marginBottom: '8px' }}>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-          Day: ${rentalPrices.day} | Week: ${rentalPrices.week} | Month: ${rentalPrices.month}
-        </p>
-      </div>
-    ) : (
-      <p style={{ fontSize: '18px', fontWeight: 'bold', color: '#0066cc' }}>
-        ${price}
-      </p>
-    )}
-  </div>
-);
+import ProductCard from '../../../components/Product/ProductCard';
 
 const CategoryView = ({ categoryName = '', currentPath = '', categoryId = null }) => {
   const { t } = useTranslation();
   const params = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const region = location.pathname.split('/')[1] || 'ua';
   
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -278,12 +234,6 @@ const CategoryView = ({ categoryName = '', currentPath = '', categoryId = null }
     }
   }, [isCustomRoute, currentPath, categoryId]);
 
-  const handleProductClick = (productId) => {
-    // Replace with your actual navigation logic
-    console.log('Navigate to product:', productId);
-    // For React Router: navigate(`/product/${productId}`);
-  };
-
   return (
     <div className="category-view">
       <h1>{displayCategoryName}</h1>
@@ -299,17 +249,20 @@ const CategoryView = ({ categoryName = '', currentPath = '', categoryId = null }
       {!loading && products.length > 0 && (
         <div className="products-container">
           {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              productId={product.id}
-              title={product.name || product.title}
-              price={product.price}
-              imageSrc={getProductImage(product)}
-              brand={product.brand}
-              isRentalItem={product.isRentalItem}
-              rentalPrices={product.rentalPrices}
-              onClick={() => handleProductClick(product.id)}
-            />
+            <div key={product.id} className="product-card-wrapper">
+              <Link to={`/${region}/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <ProductCard
+                  productId={product.id}
+                  title={product.name || product.title}
+                  price={product.price}
+                  imageSrc={getProductImage(product)}
+                  brand={product.brand}
+                  isRentalItem={product.isRentalItem}
+                  rentalPrices={product.rentalPrices}
+                  region={region}
+                />
+              </Link>
+            </div>
           ))}
         </div>
       )}

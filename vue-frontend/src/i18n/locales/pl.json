@@ -26,7 +26,15 @@
     "sale_delivery": "Wyprzedaż i dostawa",
     "garanty": "Gwarancja i zwroty",
     "rent": "Wynajem",
-    "stock": "Akcje"
+    "stock": "Akcje",
+    "language": {
+      "ukrainian": "Ukraiński",
+      "polish": "Polski"
+    },
+    "country": {
+      "ukraine": "Ukraina",
+      "poland": "Polska"
+    }
   },
   "homeView": {
     "residentialCommercialSolar": "Domowe i komercyjne systemy słoneczne",
@@ -792,4 +800,6 @@
 "submit": "Wyślij",
 "submitSuccess": "Dziękujemy za wiadomość! Skontaktujemy się z Tobą wkrótce."
 }
+,
+"testFooter": "FOOTER TRANSLATION WORKS PL"
 }

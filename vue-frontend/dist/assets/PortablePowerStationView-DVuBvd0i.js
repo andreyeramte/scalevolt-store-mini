@@ -1,1 +1,0 @@
-import{j as t}from"./index-9GWEwC6O.js";const o=()=>t.jsxs("div",{className:"container mx-auto px-4 py-8",children:[t.jsx("h1",{className:"text-3xl font-bold mb-6",children:"Portable Power Station"}),t.jsx("p",{className:"text-gray-600",children:"Portable Power Station View - Coming Soon"})]});export{o as default};

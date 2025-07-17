@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -11,6 +12,11 @@ import 'swiper/css/autoplay';
 
 const HomeView = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get current region from URL or default to 'ua'
+  const region = location.pathname.split('/')[1] || 'ua';
   
   // State management
   const [ads, setAds] = useState([]);
@@ -204,24 +210,15 @@ const HomeView = () => {
     },
   ], [t]);
 
+  const minSlidesForLoop = 4; // For slidesPerView=1, Swiper needs at least 4 for loop mode
+
   // Methods converted from Vue
   const getCategoryRoute = (slug) => {
     return `/${slug.toLowerCase().replace(/ /g, "-")}`;
   };
 
   const handleCategoryClick = (slug) => {
-    // Use window.location for navigation (replace with your router solution)
-    window.location.href = getCategoryRoute(slug);
-  };
-
-  const fetchSolarisCategories = async () => {
-    try {
-      const response = await fetch("http://localhost:1337/api/categories");
-      const data = await response.json();
-      setSolarisCategories(data.data);
-    } catch (error) {
-      console.error("Error fetching Categories from Strapi:", error);
-    }
+    navigate(`/${region}/${slug.toLowerCase().replace(/ /g, '-')}`);
   };
 
   const fetchAds = async () => {
@@ -255,7 +252,6 @@ const HomeView = () => {
 
   // Effects (converted from Vue mounted)
   useEffect(() => {
-    fetchSolarisCategories();
     // Uncomment these when you have the services ready
     // fetchAds();
     // fetchPromotionCategories();
@@ -315,38 +311,44 @@ const HomeView = () => {
       {/* Carousel Section */}
       <div className="page-container">
         <section className="carousel-section">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            slidesPerView={1}
-            loop={true}
-            autoplay={{ delay: 5000, disableOnInteraction: false }}
-            navigation
-            pagination
-            className="carousel-container"
-          >
-            {carouselSlides.map((slide, index) => (
-              <SwiperSlide key={index}>
-                {slide.type === 'video' ? (
-                  <video
-                    src={slide.src}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="carousel-video"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <img src={slide.src} alt={slide.title} />
-                )}
-                <div className="slide-content">
-                  <h2>{slide.title}</h2>
-                  <p>{slide.description}</p>
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+          {carouselSlides.length > 0 ? (
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              slidesPerView={1}
+              loop={carouselSlides.length >= minSlidesForLoop}
+              autoplay={{ delay: 5000, disableOnInteraction: false }}
+              navigation
+              pagination
+              className="carousel-container"
+            >
+              {carouselSlides.map((slide, index) => (
+                <SwiperSlide key={index}>
+                  {slide.type === 'video' ? (
+                    <video
+                      src={slide.src}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="carousel-video"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <img src={slide.src} alt={slide.title} />
+                  )}
+                  <div className="slide-content">
+                    <h2>{slide.title}</h2>
+                    <p>{slide.description}</p>
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <div style={{textAlign: 'center', padding: '2rem', color: '#888'}}>
+              No slides available
+            </div>
+          )}
         </section>
       </div>
 
@@ -378,7 +380,7 @@ const HomeView = () => {
             <h2>{t("homeView.rental")}</h2>
             <button 
               className="see-all-button"
-              onClick={() => window.location.href = "/categories"}
+              onClick={() => navigate(`/${region}/categories`)}
             >
               {t("homeView.seeAll")}
             </button>
@@ -402,7 +404,7 @@ const HomeView = () => {
         </section>
       </div>
 
-      <style jsx>{`
+      <style>{`
         /* All your original CSS styles - EXACTLY the same */
         .home-view {
           font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;

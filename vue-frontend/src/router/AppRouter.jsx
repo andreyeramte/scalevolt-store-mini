@@ -10,6 +10,7 @@ import {
   useLocation 
 } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import useUserStore from '../stores/user';
 
 // Layout component
 import Layout from '../components/Layout/Layout';
@@ -151,27 +152,22 @@ const RegionLayout = () => {
     return <LoadingSpinner />;
   }
 
-  return (
-    <Layout>
-      <Outlet />
-    </Layout>
-  );
+  return <Layout />;
 };
 
 // Protected Route Component for Authentication
 const ProtectedRoute = ({ children, requireAuth = true }) => {
-  // Replace with your actual auth logic
-  const isAuthenticated = localStorage.getItem('authToken') !== null;
+  const user = useUserStore(state => state.user);
   const location = useLocation();
-
-  if (requireAuth && !isAuthenticated) {
+  console.log('🔒 ProtectedRoute: user is', user);
+  if (requireAuth && !user) {
+    console.log('🔒 ProtectedRoute: user not authenticated, redirecting to /auth');
     return <Navigate 
       to="../auth" 
       state={{ from: location.pathname }} 
       replace 
     />;
   }
-
   return children;
 };
 
@@ -485,7 +481,6 @@ const router = createBrowserRouter([
 
 // Main Router Component
 const AppRouter = () => {
-  usePageTitle();
 
   return (
     <ErrorBoundary>
