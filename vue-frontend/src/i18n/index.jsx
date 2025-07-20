@@ -17,31 +17,31 @@ const defaultLocale = 'ua';
 
 i18n
   .use(initReactI18next)
-  .use(LanguageDetector)
-  .init({
-    lng: defaultLocale,
-    fallbackLng: 'ua',
-    debug: import.meta.env.MODE === 'development',
+    .use(LanguageDetector)
+    .init({
+      lng: defaultLocale,
+      fallbackLng: 'ua',
+      debug: import.meta.env.MODE === 'development',
     resources,
-    detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
-      lookupLocalStorage: 'userLocale',
-      caches: ['localStorage'],
-      checkWhitelist: true,
-    },
-    interpolation: {
+      detection: {
+        order: ['localStorage', 'navigator', 'htmlTag'],
+        lookupLocalStorage: 'userLocale',
+        caches: ['localStorage'],
+        checkWhitelist: true,
+      },
+      interpolation: {
       escapeValue: false,
-      formatSeparator: ',',
+        formatSeparator: ',',
     },
-    react: {
-      useSuspense: false,
-      wait: false,
-      transSupportBasicHtmlNodes: true,
-      transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'em', 'span'],
-    },
-    ns: ['translation'],
-    defaultNS: 'translation',
-    keySeparator: '.',
+      react: {
+        useSuspense: false,
+        wait: false,
+        transSupportBasicHtmlNodes: true,
+        transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'em', 'span'],
+      },
+      ns: ['translation'],
+      defaultNS: 'translation',
+      keySeparator: '.',
   });
 
 // ===== Enhanced Format Helpers =====

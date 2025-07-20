@@ -7,10 +7,10 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 // Connection configuration
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
+  port: process.env.DB_PORT || 5433,
   user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || 'new_password', // Replace this with your actual password when running
-  database: process.env.DB_NAME || 'scalevolt_store',
+  password: process.env.DB_PASSWORD || 'postgres', // Replace this with your actual password when running
+  database: process.env.DB_NAME || 'postgres',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { pool } = require('../../db/pool.cjs'); // Adjust path if needed
+const { pool } = require('../db/pool.cjs');
 
 // Get all cable products
 router.get('/', async (req, res) => {

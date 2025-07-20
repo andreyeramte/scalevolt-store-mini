@@ -1,7 +1,12 @@
 const express = require('express');
+const { body, param, validationResult } = require('express-validator');
 // Remove local pool import - will use the one from server
 const { buildSearchableText } = require('../utils/helpers.cjs');
 const { translateText, translateProduct, getTranslatedContent } = require('../utils/translationService.cjs');
+const authenticateJWT = require('../middleware/auth');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Mock data for when database is not available
 let mockProducts = [
@@ -57,8 +62,41 @@ let mockProducts = [
 
 const router = express.Router();
 
+// Multer setup for product images
+const productImageStorage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, '../uploads/products');
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    cb(null, `product-${req.params.id}-${Date.now()}${ext}`);
+  }
+});
+const imageUpload = multer({
+  storage: productImageStorage,
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed!'), false);
+    }
+    cb(null, true);
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB max
+});
+
 // Create a product
-router.post('/', async (req, res) => {
+router.post('/', authenticateJWT, [
+  body('name').notEmpty().withMessage('Name is required'),
+  body('price').isNumeric().withMessage('Price must be a number'),
+  body('description').notEmpty().withMessage('Description is required')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   const {
     name, price, description,
     name_ua, name_pl,
@@ -336,7 +374,14 @@ router.get('/:id', async (req, res) => {
 });
 
 // Update product
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateJWT, [
+  param('id').isInt().withMessage('ID must be an integer'),
+  body('price').optional().isNumeric().withMessage('Price must be a number'),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   const {
     name, price, description,
     name_ua, name_pl,
@@ -442,7 +487,13 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete product
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateJWT, [
+  param('id').isInt().withMessage('ID must be an integer')
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     // Get pool from the server context
     const pool = req.app.locals.pool;
@@ -584,6 +635,33 @@ router.post('/batch-auto-translate', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error batch auto-translating products');
+  }
+});
+
+// Upload product image
+router.post('/:id/image', authenticateJWT, imageUpload.single('image'), async (req, res) => {
+  const { id } = req.params;
+  const pool = req.app.locals.pool;
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image file uploaded' });
+  }
+  try {
+    // Save image path to DB
+    const imagePath = `/uploads/products/${req.file.filename}`;
+    const result = await pool.query('UPDATE products SET image = $1 WHERE id = $2 RETURNING *', [imagePath, id]);
+    if (!result.rows.length) {
+      // Remove file if product not found
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json({ imageUrl: imagePath, product: result.rows[0] });
+  } catch (err) {
+    // Remove file on error
+    if (req.file && fs.existsSync(req.file.path)) {
+      fs.unlinkSync(req.file.path);
+    }
+    console.error('Image upload error:', err);
+    res.status(500).json({ error: 'Image upload failed' });
   }
 });
 
