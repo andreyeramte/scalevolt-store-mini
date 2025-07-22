@@ -9,13 +9,13 @@
     "db:setup": "node setupDatabase.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "dependencies": {
     "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
+    "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
     "express": "^4.21.2",
     "express-validator": "^7.2.1",
     "fs": "^0.0.1-security",
@@ -23,7 +23,7 @@
     "morgan": "^1.10.1",
     "multer": "^1.4.5-lts.2",
     "path": "^0.12.7",
-    "pg": "^8.15.6"
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
