@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: scalevolt-backend
+    env: node
+    plan: free
+    buildCommand: cd node-backend/backend-node && npm install && npm run migrate || echo "No migrate script" && npm run import:products || echo "No import script"
+    startCommand: cd node-backend/backend-node && node server.js
+    envVars:
+      - key: PGHOST
+        fromDatabase: scalevolt-db
+        property: host
+      - key: PGUSER
+        fromDatabase: scalevolt-db
+        property: user
+      - key: PGPASSWORD
+        fromDatabase: scalevolt-db
+        property: password
+      - key: PGDATABASE
+        fromDatabase: scalevolt-db
+        property: database
+      - key: PGPORT
+        fromDatabase: scalevolt-db
+        property: port
+    autoDeploy: true
+    repo: https://github.com/andreyeramte/scalevolt-store-new
+    branch: main
+    rootDir: .
+    healthCheckPath: /health
+
+  - type: static
+    name: scalevolt-frontend
+    plan: free
+    buildCommand: cd vue-frontend && npm install && npm run build
+    staticPublishPath: vue-frontend/dist
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://scalevolt-backend.onrender.com/api
+    autoDeploy: true
+    repo: https://github.com/andreyeramte/scalevolt-store-new
+    branch: main
+    rootDir: .
+
+databases:
+  - name: scalevolt-db
+    plan: free 

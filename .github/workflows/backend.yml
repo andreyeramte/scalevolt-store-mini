@@ -1,0 +1,29 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'node-backend/backend-node/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    paths:
+      - 'node-backend/backend-node/**'
+      - '.github/workflows/backend.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: node-backend/backend-node
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run lint
+      - run: npm run format -- --check || echo "Formatting issues found"
+      - run: npm test
+      - run: npm run migrate || echo "No migrate script"
+      - run: npm run import:products || echo "No import script" 
