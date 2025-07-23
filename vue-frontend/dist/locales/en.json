@@ -1,0 +1,7 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "country": { "ukraine": "Ukraine", "poland": "Poland" },
+    "language": { "ukrainian": "Ukrainian", "polish": "Polish", "english": "English" }
+  }
+} 

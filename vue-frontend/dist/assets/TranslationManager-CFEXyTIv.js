@@ -1,0 +1,1 @@
+import{j as a}from"./index-Cov9520u.js";const s=()=>a.jsxs("div",{className:"container mx-auto px-4 py-8",children:[a.jsx("h1",{className:"text-3xl font-bold mb-6",children:"Translation Manager"}),a.jsx("p",{className:"text-gray-600",children:"Translation Manager View - Coming Soon"})]});export{s as default};

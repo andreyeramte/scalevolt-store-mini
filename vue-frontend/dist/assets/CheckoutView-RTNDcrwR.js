@@ -1,0 +1,465 @@
+import{b as Y,c as H,g as Q,d as Z,r as l,B as j,j as e}from"./index-Cov9520u.js";var U="basil",ee=function(t){return t===3?"v3":t},R="https://js.stripe.com",te="".concat(R,"/").concat(U,"/stripe.js"),re=/^https:\/\/js\.stripe\.com\/v3\/?(\?.*)?$/,se=/^https:\/\/js\.stripe\.com\/(v3|[a-z]+)\/stripe\.js(\?.*)?$/;var ne=function(t){return re.test(t)||se.test(t)},oe=function(){for(var t=document.querySelectorAll('script[src^="'.concat(R,'"]')),s=0;s<t.length;s++){var a=t[s];if(ne(a.src))return a}return null},O=function(t){var s="",a=document.createElement("script");a.src="".concat(te).concat(s);var n=document.head||document.body;if(!n)throw new Error("Expected document.body not to be null. Stripe.js requires a <body> element.");return n.appendChild(a),a},ie=function(t,s){!t||!t._registerWrapper||t._registerWrapper({name:"stripe-js",version:"7.4.0",startTime:s})},b=null,C=null,P=null,ae=function(t){return function(s){t(new Error("Failed to load Stripe.js",{cause:s}))}},de=function(t,s){return function(){window.Stripe?t(window.Stripe):s(new Error("Stripe.js not available"))}},ce=function(t){return b!==null?b:(b=new Promise(function(s,a){if(typeof window>"u"||typeof document>"u"){s(null);return}if(window.Stripe){s(window.Stripe);return}try{var n=oe();if(!(n&&t)){if(!n)n=O(t);else if(n&&P!==null&&C!==null){var d;n.removeEventListener("load",P),n.removeEventListener("error",C),(d=n.parentNode)===null||d===void 0||d.removeChild(n),n=O(t)}}P=de(s,a),C=ae(a),n.addEventListener("load",P),n.addEventListener("error",C)}catch(f){a(f);return}}),b.catch(function(s){return b=null,Promise.reject(s)}))},le=function(t,s,a){if(t===null)return null;var n=s[0],d=n.match(/^pk_test/),f=ee(t.version),v=U;d&&f!==v&&console.warn("Stripe.js@".concat(f," was loaded on the page, but @stripe/stripe-js@").concat("7.4.0"," expected Stripe.js@").concat(v,". This may result in unexpected behavior. For more information, see https://docs.stripe.com/sdks/stripejs-versioning"));var k=t.apply(void 0,s);return ie(k,a),k},N,_=!1,$=function(){return N||(N=ce(null).catch(function(t){return N=null,Promise.reject(t)}),N)};Promise.resolve().then(function(){return $()}).catch(function(c){_||console.warn(c)});var pe=function(){for(var t=arguments.length,s=new Array(t),a=0;a<t;a++)s[a]=arguments[a];_=!0;var n=Date.now();return $().then(function(d){return le(d,s,n)})};const me=()=>{const c=Y(),{t,i18n:s}=H(),a=Q(),{cartItems:n}=Z(),[d,f]=l.useState(1),[v,k]=l.useState([]),[T,D]=l.useState(-1),[i,E]=l.useState({firstName:"",lastName:"",email:"",phone:"",address:"",city:"",postalCode:"",country:s.language==="pl"?"Poland":"Ukraine",method:"standard"}),[x,A]=l.useState("card");l.useEffect(()=>{if(n.length===0){j.error(t("cart.emptyCartError","Your cart is empty")),c("/cart");return}const r=a.currentUser;if(r){const o=r.displayName?r.displayName.split(" "):["",""];E(p=>({...p,firstName:o[0]||"",lastName:o.slice(1).join(" ")||"",email:r.email||""}));const g=[{id:"addr1",label:"Home",type:"shipping",fullName:"Ivan Petrenko",street:"Khreshchatyk Street 12",apartment:"Apt 45",city:"Kyiv",postalCode:"01001",country:s.language==="pl"?"Poland":"Ukraine",phone:"+380991234567",isDefault:!0},{id:"addr2",label:"Office",type:"shipping",fullName:"Ivan Petrenko",street:"Business Center",apartment:"Floor 3, Office 302",city:"Kyiv",postalCode:"01004",country:s.language==="pl"?"Poland":"Ukraine",phone:"+380991234567",isDefault:!1}];k(g);const h=g.findIndex(p=>p.isDefault);h>=0&&D(h)}},[a.currentUser,n,s.language,c,t]);const u=l.useMemo(()=>n.reduce((r,o)=>r+o.price*o.quantity,0),[n]),B=l.useMemo(()=>n.reduce((r,o)=>r+o.quantity,0),[n]),I=l.useMemo(()=>u>5e3?0:200,[u]),M=l.useMemo(()=>u>1e4?0:350,[u]),S=l.useMemo(()=>i.method==="express"?M:I,[i.method,M,I]),w=l.useMemo(()=>u*.2,[u]),F=l.useMemo(()=>{let r=u+w+S;return x==="pod"&&(r+=50),r},[u,w,S,x]),y=r=>r.toLocaleString("en-US"),V=r=>{D(r);const o=v[r],g=o.fullName.split(" ");E(h=>({...h,firstName:g[0]||"",lastName:g.slice(1).join(" ")||"",phone:o.phone||"",address:`${o.street}, ${o.apartment}`,city:o.city||"",postalCode:o.postalCode||"",country:o.country||"Ukraine"}))},q=()=>{d<3&&(f(d+1),window.scrollTo(0,0))},L=()=>{d>1&&(f(d-1),window.scrollTo(0,0))},z=r=>{f(r),window.scrollTo(0,0)},G=()=>{c("/cart")},J=()=>i.method==="express"?`${t("delivery.expressDelivery","Express Delivery")} (1-2 ${t("delivery.days","days")})`:`${t("delivery.standardDelivery","Standard Delivery")} (3-5 ${t("delivery.days","days")})`,K=()=>{switch(x){case"card":return"Credit/Debit Card";case"transfer":return"Bank Transfer";case"pod":return"Pay on Delivery";default:return"Credit/Debit Card"}},W=async()=>{if(n.length===0){j.error(t("cart.emptyCartError","Cart is empty"));return}try{j.info("Processing your order...");const r=await pe("YOUR_PUBLISHABLE_KEY"),o={items:n.map(p=>({id:p.id,name:p.name,price:p.price,quantity:p.quantity})),shippingInfo:{...i},paymentMethod:x,totals:{subtotal:u,tax:w,shipping:S,total:F}},h=await(await fetch("http://localhost:4242/create-checkout-session",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(o)})).json();if(h.id)if(x==="card"){const p=await r.redirectToCheckout({sessionId:h.id});p.error&&j.error(p.error.message)}else localStorage.setItem("orderData",JSON.stringify(o)),c(`/checkout/success?orderId=${h.orderId}`);else h.url?window.location.href=h.url:j.error("Unable to process your order. Please try again.")}catch(r){console.error("Checkout error:",r),j.error("An error occurred during checkout. Please try again.")}},X=r=>{r.preventDefault(),q()},m=(r,o)=>{E(g=>({...g,[r]:o}))};return e.jsxs("div",{className:"checkout-view",children:[e.jsx("h1",{children:t("checkout.shippingAddress","Shipping Address")}),e.jsxs("div",{className:"checkout-container",children:[e.jsxs("div",{className:"checkout-steps",children:[e.jsxs("div",{className:`step ${d===1?"active":""}`,children:["1. ",t("checkout.shippingAddress","Shipping Address")]}),e.jsxs("div",{className:`step ${d===2?"active":""}`,children:["2. ",t("checkout.paymentMethod","Payment Method")]}),e.jsxs("div",{className:`step ${d===3?"active":""}`,children:["3. ",t("checkout.orderSummary","Order Summary")]})]}),d===1&&e.jsxs("div",{className:"checkout-section shipping-info",children:[e.jsx("h2",{children:t("checkout.shippingAddress","Shipping Address")}),v.length>0&&e.jsxs("div",{className:"saved-addresses",children:[e.jsx("h3",{children:t("profile.personal.addresses","Saved Addresses")}),e.jsx("div",{className:"address-selection",children:v.map((r,o)=>e.jsxs("div",{className:`address-option ${T===o?"selected":""}`,onClick:()=>V(o),children:[e.jsxs("div",{className:"address-info",children:[e.jsxs("div",{className:"address-name",children:[r.label,r.isDefault&&e.jsx("span",{className:"default-badge",children:t("profile.personal.default","Default")})]}),e.jsx("p",{children:r.fullName}),e.jsxs("p",{children:[r.street,", ",r.apartment]}),e.jsxs("p",{children:[r.city,", ",r.postalCode]}),e.jsx("p",{children:r.country}),e.jsx("p",{children:r.phone})]}),e.jsx("div",{className:"address-select",children:e.jsx("input",{type:"radio",id:`address-${o}`,name:"saved-address",checked:T===o,onChange:()=>{}})})]},o))}),e.jsx("div",{className:"or-separator",children:e.jsxs("span",{children:[t("common.or","or")," ",t("profile.personal.add_new_address","Add New Address")]})})]}),e.jsxs("form",{onSubmit:X,className:"shipping-form",children:[e.jsxs("div",{className:"form-row",children:[e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"firstName",children:t("auth.firstName","First Name")}),e.jsx("input",{type:"text",id:"firstName",value:i.firstName,onChange:r=>m("firstName",r.target.value),required:!0})]}),e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"lastName",children:t("auth.lastName","Last Name")}),e.jsx("input",{type:"text",id:"lastName",value:i.lastName,onChange:r=>m("lastName",r.target.value),required:!0})]})]}),e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"email",children:t("auth.email","Email")}),e.jsx("input",{type:"email",id:"email",value:i.email,onChange:r=>m("email",r.target.value),required:!0})]}),e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"phone",children:t("auth.phone","Phone")}),e.jsx("input",{type:"tel",id:"phone",value:i.phone,onChange:r=>m("phone",r.target.value),required:!0})]}),e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"address",children:t("profile.personal.street_address","Street Address")}),e.jsx("input",{type:"text",id:"address",value:i.address,onChange:r=>m("address",r.target.value),required:!0})]}),e.jsxs("div",{className:"form-row",children:[e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"city",children:t("profile.personal.city","City")}),e.jsx("input",{type:"text",id:"city",value:i.city,onChange:r=>m("city",r.target.value),required:!0})]}),e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"postalCode",children:t("profile.personal.postal_code","Postal Code")}),e.jsx("input",{type:"text",id:"postalCode",value:i.postalCode,onChange:r=>m("postalCode",r.target.value),required:!0})]})]}),e.jsxs("div",{className:"form-group",children:[e.jsx("label",{htmlFor:"country",children:t("profile.personal.country","Country")}),e.jsxs("select",{id:"country",value:i.country,onChange:r=>m("country",r.target.value),required:!0,children:[e.jsx("option",{value:"Ukraine",children:t("common.ukrainian","Ukraine")}),e.jsx("option",{value:"Poland",children:t("common.polish","Poland")}),e.jsx("option",{value:"Germany",children:"Germany"}),e.jsx("option",{value:"France",children:"France"}),e.jsx("option",{value:"Other",children:"Other"})]})]}),e.jsxs("div",{className:"form-group shipping-options",children:[e.jsx("h3",{children:t("checkout.shippingMethod","Shipping Method")}),e.jsxs("div",{className:"shipping-option",children:[e.jsx("input",{type:"radio",id:"standard",value:"standard",checked:i.method==="standard",onChange:r=>m("method",r.target.value)}),e.jsxs("label",{htmlFor:"standard",children:[e.jsxs("div",{className:"shipping-option-details",children:[e.jsx("span",{className:"option-name",children:t("delivery.standardDelivery","Standard Delivery")}),e.jsxs("span",{className:"option-time",children:["3-5 ",t("delivery.days","days")]})]}),e.jsxs("span",{className:"option-price",children:[y(I)," грн"]})]})]}),e.jsxs("div",{className:"shipping-option",children:[e.jsx("input",{type:"radio",id:"express",value:"express",checked:i.method==="express",onChange:r=>m("method",r.target.value)}),e.jsxs("label",{htmlFor:"express",children:[e.jsxs("div",{className:"shipping-option-details",children:[e.jsx("span",{className:"option-name",children:t("delivery.expressDelivery","Express Delivery")}),e.jsxs("span",{className:"option-time",children:["1-2 ",t("delivery.days","days")]})]}),e.jsxs("span",{className:"option-price",children:[y(M)," грн"]})]})]})]}),e.jsxs("div",{className:"form-buttons",children:[e.jsx("button",{type:"button",onClick:G,className:"back-button",children:t("cart.continueShopping","Continue Shopping")}),e.jsx("button",{type:"submit",className:"next-button",children:t("checkout.paymentMethod","Payment Method")})]})]})]}),d===2&&e.jsxs("div",{className:"checkout-section payment-info",children:[e.jsx("h2",{children:t("checkout.paymentMethod","Payment Method")}),e.jsxs("div",{className:"payment-options",children:[e.jsxs("div",{className:"payment-option",children:[e.jsx("input",{type:"radio",id:"card-payment",value:"card",checked:x==="card",onChange:r=>A(r.target.value)}),e.jsxs("label",{htmlFor:"card-payment",children:[e.jsx("span",{className:"option-name",children:"Credit/Debit Card"}),e.jsxs("div",{className:"card-icons",children:[e.jsx("span",{className:"card-icon",children:"Visa"}),e.jsx("span",{className:"card-icon",children:"Mastercard"})]})]})]}),e.jsxs("div",{className:"payment-option",children:[e.jsx("input",{type:"radio",id:"bank-transfer",value:"transfer",checked:x==="transfer",onChange:r=>A(r.target.value)}),e.jsx("label",{htmlFor:"bank-transfer",children:e.jsx("span",{className:"option-name",children:"Bank Transfer"})})]}),e.jsxs("div",{className:"payment-option",children:[e.jsx("input",{type:"radio",id:"pay-on-delivery",value:"pod",checked:x==="pod",onChange:r=>A(r.target.value)}),e.jsxs("label",{htmlFor:"pay-on-delivery",children:[e.jsx("span",{className:"option-name",children:"Pay on Delivery"}),e.jsx("span",{className:"option-price",children:"+50 грн"})]})]})]}),e.jsxs("div",{className:"form-buttons",children:[e.jsx("button",{type:"button",onClick:L,className:"back-button",children:t("checkout.shippingAddress","Shipping Address")}),e.jsx("button",{type:"button",onClick:q,className:"next-button",children:t("checkout.orderSummary","Order Summary")})]})]}),d===3&&e.jsxs("div",{className:"checkout-section order-review",children:[e.jsx("h2",{children:t("checkout.orderSummary","Order Summary")}),e.jsxs("div",{className:"review-section",children:[e.jsx("h3",{children:t("checkout.shippingAddress","Shipping Address")}),e.jsxs("div",{className:"review-info",children:[e.jsxs("p",{children:[i.firstName," ",i.lastName]}),e.jsx("p",{children:i.email}),e.jsx("p",{children:i.phone}),e.jsx("p",{children:i.address}),e.jsxs("p",{children:[i.city,", ",i.postalCode]}),e.jsx("p",{children:i.country}),e.jsxs("p",{children:[e.jsxs("strong",{children:[t("checkout.shippingMethod","Shipping Method"),":"]})," ",J()]})]}),e.jsx("button",{type:"button",onClick:()=>z(1),className:"edit-button",children:t("profile.personal.edit_address","Edit")})]}),e.jsxs("div",{className:"review-section",children:[e.jsx("h3",{children:t("checkout.paymentMethod","Payment Method")}),e.jsx("div",{className:"review-info",children:e.jsx("p",{children:e.jsx("strong",{children:K()})})}),e.jsx("button",{type:"button",onClick:()=>z(2),className:"edit-button",children:t("profile.personal.edit_address","Edit")})]}),e.jsxs("div",{className:"review-section",children:[e.jsx("h3",{children:t("cart.items","Items")}),e.jsx("div",{className:"order-items",children:n.map(r=>e.jsxs("div",{className:"review-item",children:[e.jsx("div",{className:"item-image",children:e.jsx("img",{src:r.image,alt:r.name})}),e.jsxs("div",{className:"item-details",children:[e.jsx("p",{className:"item-name",children:r.name}),e.jsxs("p",{className:"item-quantity",children:[t("product.quantity","Quantity"),": ",r.quantity]})]}),e.jsxs("p",{className:"item-price",children:[y(r.price*r.quantity)," грн"]})]},r.id))})]}),e.jsxs("div",{className:"form-buttons",children:[e.jsx("button",{type:"button",onClick:L,className:"back-button",children:t("checkout.paymentMethod","Payment Method")}),e.jsx("button",{type:"button",onClick:W,className:"checkout-button",children:t("checkout.placeOrder","Place Order")})]})]}),e.jsxs("div",{className:"order-summary",children:[e.jsx("h2",{children:t("cart.orderSummary","Order Summary")}),e.jsxs("div",{className:"summary-item",children:[e.jsxs("span",{children:[t("cart.items","Items")," (",B,"):"]}),e.jsxs("span",{children:[y(u)," грн"]})]}),e.jsxs("div",{className:"summary-item",children:[e.jsxs("span",{children:[t("cart.tax","Tax")," (20%):"]}),e.jsxs("span",{children:[y(w)," грн"]})]}),e.jsxs("div",{className:"summary-item",children:[e.jsxs("span",{children:[t("cart.shipping","Shipping"),":"]}),e.jsxs("span",{children:[y(S)," грн"]})]}),x==="pod"&&e.jsxs("div",{className:"summary-item",children:[e.jsx("span",{children:"Pay on Delivery Fee:"}),e.jsx("span",{children:"50 грн"})]}),e.jsx("hr",{}),e.jsxs("div",{className:"summary-total",children:[e.jsxs("span",{children:[t("cart.total","Total"),":"]}),e.jsxs("span",{children:[y(F)," грн"]})]})]})]}),e.jsx("style",{jsx:!0,children:`
+        /* Root Styles */
+        .checkout-view {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+          font-family: 'Inter', sans-serif;
+          color: #333;
+        }
+
+        h1 {
+          text-align: center;
+          margin-bottom: 40px;
+          font-size: 2rem;
+          font-weight: 600;
+        }
+
+        h2 {
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 20px;
+        }
+
+        h3 {
+          font-size: 1.2rem;
+          font-weight: 500;
+          margin-bottom: 15px;
+        }
+
+        /* Checkout Steps */
+        .checkout-steps {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 40px;
+          position: relative;
+        }
+
+        .checkout-steps::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background-color: #eee;
+          z-index: 1;
+        }
+
+        .step {
+          position: relative;
+          z-index: 2;
+          background-color: #fff;
+          padding: 10px 20px;
+          border-radius: 20px;
+          font-weight: 500;
+          color: #999;
+          border: 2px solid #eee;
+        }
+
+        .step.active {
+          color: #333;
+          border-color: #52c41a;
+          background-color: #f6ffed;
+        }
+
+        /* Checkout Container */
+        .checkout-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 30px;
+        }
+
+        .checkout-section {
+          flex: 2;
+          background-color: #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          padding: 30px;
+        }
+
+        /* Form Styles */
+        .form-row {
+          display: flex;
+          gap: 20px;
+        }
+
+        .form-group {
+          margin-bottom: 20px;
+          flex: 1;
+        }
+
+        label {
+          display: block;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+
+        input, select {
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+          outline: none;
+          border-color: #52c41a;
+          box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
+        }
+
+        /* Shipping Options */
+        .shipping-options {
+          margin-top: 30px;
+        }
+
+        .shipping-option {
+          margin-bottom: 15px;
+        }
+
+        .shipping-option input[type="radio"] {
+          position: absolute;
+          opacity: 0;
+        }
+
+        .shipping-option label {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .shipping-option input[type="radio"]:checked + label {
+          border-color: #52c41a;
+          background-color: #f6ffed;
+        }
+
+        .shipping-option-details {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .option-name {
+          font-weight: 600;
+        }
+
+        .option-time {
+          font-size: 0.9rem;
+          color: #666;
+        }
+
+        .option-price {
+          font-weight: 600;
+        }
+
+        /* Payment Options */
+        .payment-options {
+          margin-bottom: 30px;
+        }
+
+        .payment-option {
+          margin-bottom: 15px;
+        }
+
+        .payment-option input[type="radio"] {
+          position: absolute;
+          opacity: 0;
+        }
+
+        .payment-option label {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .payment-option input[type="radio"]:checked + label {
+          border-color: #52c41a;
+          background-color: #f6ffed;
+        }
+
+        .card-icons {
+          display: flex;
+          gap: 10px;
+        }
+
+        .card-icon {
+          font-size: 0.9rem;
+          color: #666;
+        }
+
+        /* Review Section */
+        .review-section {
+          margin-bottom: 30px;
+          position: relative;
+          padding: 20px;
+          border: 1px solid #eee;
+          border-radius: 8px;
+        }
+
+        .review-info p {
+          margin: 5px 0;
+        }
+
+        .edit-button {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: none;
+          border: none;
+          color: #1890ff;
+          cursor: pointer;
+          font-size: 0.9rem;
+        }
+
+        .order-items {
+          max-height: 300px;
+          overflow-y: auto;
+          margin-top: 15px;
+        }
+
+        .review-item {
+          display: flex;
+          align-items: center;
+          padding: 10px 0;
+          border-bottom: 1px solid #eee;
+        }
+
+        .item-image img {
+          width: 60px;
+          height: 60px;
+          object-fit: cover;
+          border-radius: 4px;
+        }
+
+        .item-details {
+          flex: 1;
+          margin-left: 15px;
+        }
+
+        .item-name {
+          font-weight: 500;
+        }
+
+        .item-quantity {
+          font-size: 0.9rem;
+          color: #666;
+        }
+
+        .item-price {
+          font-weight: 600;
+        }
+
+        /* Order Summary */
+        .order-summary {
+          flex: 1;
+          padding: 30px;
+          background-color: #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          align-self: flex-start;
+          position: sticky;
+          top: 20px;
+        }
+
+        .summary-item {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 15px;
+          font-size: 1rem;
+        }
+
+        .summary-total {
+          display: flex;
+          justify-content: space-between;
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin: 20px 0;
+        }
+
+        hr {
+          border: none;
+          border-top: 1px solid #eee;
+          margin: 20px 0;
+        }
+
+        /* Button Styles */
+        .form-buttons {
+          display: flex;
+          justify-content: space-between;
+          margin-top: 30px;
+        }
+
+        .back-button {
+          padding: 12px 24px;
+          background-color: #f5f5f5;
+          color: #333;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+          background-color: #e0e0e0;
+        }
+
+        .next-button, .checkout-button {
+          padding: 12px 24px;
+          background-color: #52c41a;
+          color: #ffffff;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 1rem;
+          font-weight: 500;
+          transition: background-color 0.2s ease;
+        }
+
+        .next-button:hover, .checkout-button:hover {
+          background-color: #41a516;
+        }
+
+        /* Saved Addresses Styles */
+        .saved-addresses {
+          margin-bottom: 30px;
+        }
+
+        .address-selection {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+
+        .address-option {
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          padding: 15px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .address-option:hover {
+          border-color: #52c41a;
+        }
+
+        .address-option.selected {
+          border-color: #52c41a;
+          background-color: #f6ffed;
+        }
+
+        .address-info {
+          flex: 1;
+        }
+
+        .address-info p {
+          margin: 5px 0;
+          font-size: 0.9rem;
+        }
+
+        .address-name {
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+
+        .default-badge {
+          background-color: #e7f5ff;
+          color: #0066cc;
+          font-size: 0.75rem;
+          padding: 2px 6px;
+          border-radius: 4px;
+          margin-left: 5px;
+        }
+
+        .address-select {
+          padding-top: 5px;
+        }
+
+        .or-separator {
+          position: relative;
+          text-align: center;
+          margin: 30px 0;
+        }
+
+        .or-separator::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background-color: #eee;
+        }
+
+        .or-separator span {
+          position: relative;
+          background-color: #fff;
+          padding: 0 15px;
+          color: #666;
+          font-size: 0.9rem;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+          .checkout-container {
+            flex-direction: column;
+          }
+          
+          .form-row {
+            flex-direction: column;
+            gap: 0;
+          }
+          
+          .order-summary {
+            position: static;
+            width: 100%;
+          }
+          
+          .address-selection {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 576px) {
+          h1 {
+            font-size: 1.75rem;
+          }
+          
+          .checkout-section, .order-summary {
+            padding: 20px;
+          }
+          
+          .checkout-steps {
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+          }
+          
+          .checkout-steps::before {
+            display: none;
+          }
+          
+          .form-buttons {
+            flex-direction: column;
+            gap: 10px;
+          }
+          
+          .back-button, .next-button, .checkout-button {
+            width: 100%;
+          }
+        }
+      `})]})};export{me as default};
