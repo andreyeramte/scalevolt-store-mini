@@ -1,20 +1,7 @@
 {
-  "translation": {
-    "common": {
-      "home": "Головна",
-      "categories": "Категорії",
-      "loading": "Завантаження..."
-    },
-    "error": {
-      "notFound": "Сторінка не знайдена",
-      "pageNotFoundMessage": "Вибачте, сторінка, яку ви шукаєте, не існує.",
-      "serverError": "Внутрішня помилка сервера",
-      "serverErrorMessage": "Щось пішло не так. Спробуйте пізніше.",
-      "forbidden": "Доступ заборонено",
-      "forbiddenMessage": "У вас немає прав для доступу до цієї сторінки.",
-      "somethingWrong": "Помилка",
-      "generalErrorMessage": "Виникла несподівана помилка.",
-      "chatNotAvailable": "Чат наразі недоступний."
-    }
+  "common": {
+    "loading": "Завантаження...",
+    "country": { "ukraine": "Україна", "poland": "Польща" },
+    "language": { "ukrainian": "Українська", "polish": "Польська", "english": "Англійська" }
   }
 } 

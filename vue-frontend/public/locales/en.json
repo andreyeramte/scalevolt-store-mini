@@ -1,20 +1,7 @@
 {
-  "translation": {
-    "common": {
-      "home": "Home",
-      "categories": "Categories",
-      "loading": "Loading..."
-    },
-    "error": {
-      "notFound": "Page not found",
-      "pageNotFoundMessage": "Sorry, the page you are looking for does not exist.",
-      "serverError": "Internal server error",
-      "serverErrorMessage": "Something went wrong. Please try again later.",
-      "forbidden": "Access denied",
-      "forbiddenMessage": "You do not have permission to access this page.",
-      "somethingWrong": "Error",
-      "generalErrorMessage": "An unexpected error occurred.",
-      "chatNotAvailable": "Chat is currently unavailable."
-    }
+  "common": {
+    "loading": "Loading...",
+    "country": { "ukraine": "Ukraine", "poland": "Poland" },
+    "language": { "ukrainian": "Ukrainian", "polish": "Polish", "english": "English" }
   }
 } 
