@@ -5,8 +5,10 @@
  * TODO: Integrate with a translation service like Google Translate or DeepL
  */
 
+const axios = require('axios');
+
 /**
- * Translates a single piece of text
+ * Translates a single piece of text using Google Translate API
  * @param {string} text
  * @param {string} targetLanguage
  * @param {string} sourceLanguage
@@ -17,13 +19,29 @@ async function translateText(text, targetLanguage, sourceLanguage = 'en') {
     if (!text || targetLanguage === sourceLanguage) {
       return text;
     }
-    
-    // For now, return the original text
-    // TODO: Integrate with translation service
-    console.log(`Translation requested: ${text} (${sourceLanguage} -> ${targetLanguage})`);
+    const apiKey = process.env.GOOGLE_TRANSLATE_API_KEY;
+    if (!apiKey) {
+      console.warn('No Google Translate API key set. Returning original text.');
+      return text;
+    }
+    const response = await axios.post(
+      `https://translation.googleapis.com/language/translate/v2`,
+      {},
+      {
+        params: {
+          q: text,
+          target: targetLanguage,
+          source: sourceLanguage,
+          key: apiKey,
+        },
+      }
+    );
+    if (response.data && response.data.data && response.data.data.translations && response.data.data.translations[0]) {
+      return response.data.data.translations[0].translatedText;
+    }
     return text;
   } catch (err) {
-    console.error('Translation error:', err);
+    console.error('Translation error:', err.response?.data || err.message);
     return text;
   }
 }
@@ -37,10 +55,16 @@ async function translateText(text, targetLanguage, sourceLanguage = 'en') {
  */
 async function translateProduct(product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en') {
   try {
-    // For now, return the original product
-    // TODO: Integrate with translation service
-    console.log(`Product translation requested for languages: ${targetLanguages.join(', ')}`);
-    return product;
+    const translated = { ...product };
+    for (const lang of targetLanguages) {
+      if (product.name) {
+        translated[`name_${lang}`] = await translateText(product.name, lang, sourceLanguage);
+      }
+      if (product.description) {
+        translated[`description_${lang}`] = await translateText(product.description, lang, sourceLanguage);
+      }
+    }
+    return translated;
   } catch (err) {
     console.error('Product translation error:', err);
     return product;

@@ -6,7 +6,7 @@ import Header from './Header';
 import Footer from './Footer';
 import SearchBar from '../SearchBar/SearchBar';
 import useProductsStore from '../../stores/products';
-import usePageTitle from '../../hooks/usePageTitle';
+import usePageTitle from '../../Hooks/usePageTitle';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../firebase';
 import useUserStore from '../../stores/user';

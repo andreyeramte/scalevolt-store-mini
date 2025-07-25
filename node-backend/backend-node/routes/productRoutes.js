@@ -95,7 +95,7 @@ router.post('/', authenticateJWT, [
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ success: false, error: 'Validation error', details: errors.array() });
   }
   const {
     name, price, description,
@@ -157,7 +157,7 @@ router.post('/', authenticateJWT, [
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error creating product');
+    res.status(500).json({ success: false, error: 'Error creating product', details: err.message });
   }
 });
 
@@ -364,12 +364,12 @@ router.get('/:id', async (req, res) => {
     }
 
     if (!result.rows.length) {
-      return res.status(404).send('Product not found');
+      return res.status(404).json({ success: false, error: 'Product not found' });
     }
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error fetching product');
+    res.status(500).json({ success: false, error: 'Error fetching product', details: err.message });
   }
 });
 
@@ -380,7 +380,7 @@ router.put('/:id', authenticateJWT, [
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ success: false, error: 'Validation error', details: errors.array() });
   }
   const {
     name, price, description,
@@ -427,7 +427,7 @@ router.put('/:id', authenticateJWT, [
     }
 
     const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [id]);
-    if (!rows.length) return res.status(404).send('Product not found');
+    if (!rows.length) return res.status(404).json({ success: false, error: 'Product not found' });
 
     let product = { ...rows[0] };
     if (name !== undefined)        product.name = name;
@@ -482,7 +482,7 @@ router.put('/:id', authenticateJWT, [
     return res.json(updateRes.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error updating product');
+    res.status(500).json({ success: false, error: 'Error updating product', details: err.message });
   }
 });
 
@@ -492,7 +492,7 @@ router.delete('/:id', authenticateJWT, [
 ], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ success: false, error: 'Validation error', details: errors.array() });
   }
   try {
     // Get pool from the server context
@@ -509,11 +509,11 @@ router.delete('/:id', authenticateJWT, [
     }
 
     const { rows } = await pool.query('DELETE FROM products WHERE id = $1 RETURNING *', [req.params.id]);
-    if (!rows.length) return res.status(404).send('Product not found');
+    if (!rows.length) return res.status(404).json({ success: false, error: 'Product not found' });
     res.sendStatus(204);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error deleting product');
+    res.status(500).json({ success: false, error: 'Error deleting product', details: err.message });
   }
 });
 
@@ -540,7 +540,7 @@ router.post('/:id/auto-translate', async (req, res) => {
     }
 
     const { rows } = await pool.query('SELECT * FROM products WHERE id = $1', [req.params.id]);
-    if (!rows.length) return res.status(404).send('Product not found');
+    if (!rows.length) return res.status(404).json({ success: false, error: 'Product not found' });
 
     const translated = await translateProduct(rows[0]);
 
@@ -566,7 +566,7 @@ router.post('/:id/auto-translate', async (req, res) => {
     return res.json(upd.rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error auto-translating product');
+    res.status(500).json({ success: false, error: 'Error auto-translating product', details: err.message });
   }
 });
 
@@ -634,7 +634,7 @@ router.post('/batch-auto-translate', async (req, res) => {
     res.json({ results });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error batch auto-translating products');
+    res.status(500).json({ success: false, error: 'Error batch auto-translating products', details: err.message });
   }
 });
 

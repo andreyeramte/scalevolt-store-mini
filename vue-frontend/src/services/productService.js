@@ -3,10 +3,7 @@ import axios from "axios";
 import qs from "qs";
 
 // Combine the API_URL definitions
-const API_URL =
-  typeof process !== "undefined" && process.env && process.env.VUE_APP_API_URL
-    ? process.env.VUE_APP_API_URL
-    : "http://localhost:3002/api";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 // Create one service object that combines all methods
 const productService = {
   async getProducts(params = {}) {

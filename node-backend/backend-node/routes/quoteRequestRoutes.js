@@ -43,9 +43,7 @@ router.post('/', async (req, res) => {
 
     // Якщо знайдено дублікат, відповідаємо з відповідним повідомленням
     if (duplicateCheck.rows.length > 0) {
-      return res.status(409).json({
-        message: 'Ви вже надіслали запит на цей продукт. Наші менеджери зв\'яжуться з вами найближчим часом.'
-      });
+      return res.status(409).json({ success: false, error: 'Duplicate request', message: 'Ви вже надіслали запит на цей продукт. Наші менеджери зв\'яжуться з вами найближчим часом.' });
     }
 
     // Створення нового запиту в базі даних
@@ -87,10 +85,7 @@ router.post('/', async (req, res) => {
     
   } catch (err) {
     console.error('Помилка створення запиту:', err);
-    res.status(500).json({
-      message: 'Сталася помилка при обробці запиту',
-      error: err.message
-    });
+    res.status(500).json({ success: false, error: 'Сталася помилка при обробці запиту', details: err.message });
   }
 });
 
@@ -103,10 +98,7 @@ router.get('/', async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error('Помилка отримання запитів:', err);
-    res.status(500).json({
-      message: 'Сталася помилка при отриманні запитів',
-      error: err.message
-    });
+    res.status(500).json({ success: false, error: 'Сталася помилка при отриманні запитів', details: err.message });
   }
 });
 

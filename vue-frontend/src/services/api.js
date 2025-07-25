@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Hardcode the API base URL since there's no .env in the frontend
-const API_BASE_URL = 'http://localhost:3002/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
 
 /**
  * Translates text using the backend API

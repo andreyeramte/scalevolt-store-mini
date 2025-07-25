@@ -29,7 +29,7 @@ const CategoryPromotionBox = ({ category }) => {
   const getImageUrl = (promotion) => {
     const imageData = promotion.attributes.image.data;
     if (!imageData || !imageData.attributes || !imageData.attributes.url) return '';
-    return `http://localhost:1337${imageData.attributes.url}`;
+    return `${import.meta.env.VITE_API_URL.replace(/\/api$/, '')}${imageData.attributes.url}`;
   };
 
   // Equivalent to Vue's created() hook

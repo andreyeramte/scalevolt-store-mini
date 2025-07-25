@@ -12,17 +12,17 @@
       const { text, targetLanguage, sourceLanguage = 'en' } = req.body;
       
       if (!text || targetLanguage === sourceLanguage) {
-        return res.json({ translatedText: text });
+        return res.json({ success: true, translatedText: text });
       }
       
       // For now, return the original text
       // TODO: Integrate with translation service
       console.log(`Translation requested: ${text} (${sourceLanguage} -> ${targetLanguage})`);
       
-      res.json({ translatedText: text });
+      res.json({ success: true, translatedText: text });
     } catch (error) {
       console.error('Translation error:', error);
-      res.status(500).json({ error: 'Translation failed' });
+      res.status(500).json({ success: false, error: 'Translation failed', details: error.message });
     }
   });
 
@@ -32,17 +32,17 @@
       const { product, targetLanguages = ['ua', 'pl'], sourceLanguage = 'en' } = req.body;
       
       if (!product) {
-        return res.status(400).json({ error: 'Product is required' });
+        return res.status(400).json({ success: false, error: 'Product is required' });
       }
       
       // For now, return the original product
       // TODO: Integrate with translation service
       console.log(`Product translation requested for languages: ${targetLanguages.join(', ')}`);
       
-      res.json(product);
+      res.json({ success: true, product });
     } catch (error) {
       console.error('Product translation error:', error);
-      res.status(500).json({ error: 'Product translation failed' });
+      res.status(500).json({ success: false, error: 'Product translation failed', details: error.message });
     }
   });
 

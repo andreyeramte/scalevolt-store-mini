@@ -26,7 +26,8 @@ const ProductDetail = () => {
   const getAbsoluteImageUrl = (imageData) => {
     if (!imageData || !imageData.attributes || !imageData.attributes.url) return '';
     const baseUrl = window.location.origin;
-    const imagePath = `http://localhost:1337${imageData.attributes.url}`;
+    const apiBase = import.meta.env.VITE_API_URL?.replace(/\/api$/, '') || 'http://localhost:1337';
+    const imagePath = `${apiBase}${imageData.attributes.url}`;
     // In production, adjust this to your domain
     return imagePath.replace('http://localhost:1337', baseUrl);
   };

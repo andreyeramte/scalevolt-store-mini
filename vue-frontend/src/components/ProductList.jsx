@@ -1,7 +1,7 @@
 // FILE: src/services/productService.js
 
 // API configuration
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:1337';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:1337';
 
 class ProductService {
   constructor() {

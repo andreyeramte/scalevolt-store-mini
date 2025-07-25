@@ -54,7 +54,7 @@ const upload = multer({
 router.post('/validate', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No file uploaded' });
+      return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
     
     // Read the Excel file
@@ -74,10 +74,7 @@ router.post('/validate', upload.single('file'), async (req, res) => {
     if (!products || products.length === 0) {
       // Clean up file
       fs.unlinkSync(req.file.path);
-      return res.status(400).json({ 
-        success: false, 
-        message: 'No data found in the Excel file' 
-      });
+      return res.status(400).json({ success: false, error: 'No data found in the Excel file' });
     }
     
     // Get first few rows as sample data
@@ -135,7 +132,8 @@ router.post('/validate', upload.single('file'), async (req, res) => {
     
     return res.status(500).json({ 
       success: false, 
-      message: `Validation failed: ${error.message}` 
+      error: 'Validation failed',
+      details: error.message 
     });
   }
 });
