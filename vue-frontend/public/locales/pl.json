@@ -3,5 +3,93 @@
     "loading": "Ładowanie...",
     "country": { "ukraine": "Ukraina", "poland": "Polska" },
     "language": { "ukrainian": "Ukraiński", "polish": "Polski", "english": "Angielski" }
+  },
+  "legal": {
+    "privacyPolicy": "Polityka prywatności"
+  },
+  "categories": {
+    "evChargers": {
+      "title": "Urządzenia ładowania i komponenty dla pojazdów elektrycznych",
+      "subtitle": "Szybkie i niezawodne stacje ładowania dla pojazdów elektrycznych"
+    },
+    "solarSystems": {
+      "title": "Domowe i komercyjne systemy słoneczne",
+      "subtitle": "Kompletne rozwiązania słoneczne dla domów i firm"
+    },
+    "newCategories": {
+      "title": "Odkryj nowe kategorie",
+      "subtitle": "Innowacyjne rozwiązania dla Twoich potrzeb"
+    }
+  },
+  "products": {
+    "noProducts": "Nie znaleziono produktów",
+    "noProductsDescription": "Nie mogliśmy znaleźć produktów w tej kategorii."
+  },
+  "product": {
+    "inStock": "W magazynie",
+    "outOfStock": "Brak w magazynie",
+    "addToCart": "Dodaj do koszyka"
+  },
+  "privacy": {
+    "introduction": {
+      "title": "Wprowadzenie",
+      "text": "SCALEVOLT chroni Twoją prywatność i dane osobowe. Ta Polityka prywatności wyjaśnia, jak zbieramy, używamy i chronimy Twoje informacje."
+    },
+    "dataCollection": {
+      "title": "Zbieranie danych",
+      "text": "Zbieramy następujące rodzaje informacji:",
+      "personalInfo": "Informacje osobiste (imię, adres, dane kontaktowe)",
+      "contactInfo": "Informacje kontaktowe (telefon, e-mail)",
+      "paymentInfo": "Informacje płatnicze (do przetwarzania zamówień)",
+      "usageData": "Dane o korzystaniu z witryny i produktów"
+    },
+    "dataUsage": {
+      "title": "Używanie danych",
+      "text": "Twoje dane są używane do:",
+      "processing": "Przetwarzania zamówień i świadczenia usług",
+      "communication": "Komunikacji z Tobą w sprawie zamówień i wsparcia",
+      "improvement": "Ulepszania naszych produktów i usług",
+      "legal": "Wypełniania zobowiązań prawnych"
+    },
+    "dataSharing": {
+      "title": "Udostępnianie danych",
+      "text": "Możemy udostępniać Twoje dane:",
+      "serviceProviders": "Dostawcom usług (dostawa, wsparcie)",
+      "paymentProcessors": "Procesorom płatności do przetwarzania płatności",
+      "legalRequirements": "Zgodnie z wymaganiami prawnymi",
+      "businessTransfer": "W przypadku zmiany własności firmy"
+    },
+    "dataSecurity": {
+      "title": "Bezpieczeństwo danych",
+      "text": "Wdrażamy odpowiednie środki techniczne i organizacyjne w celu ochrony Twoich danych osobowych przed nieautoryzowanym dostępem, zmianą, ujawnieniem lub zniszczeniem."
+    },
+    "cookies": {
+      "title": "Pliki cookie",
+      "text": "Nasza strona internetowa używa plików cookie w celu poprawy Twojego doświadczenia. Możesz zarządzać ustawieniami plików cookie w swojej przeglądarce."
+    },
+    "userRights": {
+      "title": "Prawa użytkownika",
+      "text": "Masz prawo do:",
+      "access": "Dostępu do swoich danych osobowych",
+      "correction": "Poprawiania nieprawidłowych danych",
+      "deletion": "Usuwania swoich danych",
+      "portability": "Przenoszenia swoich danych",
+      "objection": "Wnoszenia sprzeciwu wobec przetwarzania danych"
+    },
+    "contact": {
+      "title": "Informacje kontaktowe",
+      "text": "W przypadku pytań dotyczących tej Polityki prywatności skontaktuj się z nami:",
+      "email": "E-mail",
+      "address": "Adres",
+      "companyAddress": "123 Business Street, Warsaw, Poland"
+    },
+    "changes": {
+      "title": "Zmiany w Polityce",
+      "text": "Możemy okresowo aktualizować tę Politykę prywatności. Zmiany wchodzą w życie od momentu ich opublikowania na naszej stronie internetowej."
+    },
+    "effectiveDate": {
+      "title": "Data wejścia w życie",
+      "text": "Ta Polityka prywatności wchodzi w życie z dniem 1 stycznia 2025 roku."
+    }
   }
 } 

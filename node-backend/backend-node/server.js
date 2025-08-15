@@ -5,8 +5,17 @@ const dotenv     = require('dotenv');
 const path       = require('path');
 const bodyParser = require('body-parser');
 const fs         = require('fs');
-const { Pool }   = require('pg');
 const morgan     = require('morgan');
+
+// Performance optimizations
+const {
+  apiLimiter,
+  searchLimiter,
+  corsOptions,
+  compressionOptions,
+  performanceMonitor,
+  optimizeDatabasePool
+} = require('./config/performance');
 
 // Load .env from current directory
 dotenv.config({ path: path.resolve(__dirname, '.env') });
@@ -15,52 +24,69 @@ const app = express();
 const cableRoutes = require('./routes/cables');
 const authRoutes = require('./routes/authRoutes');
 
-// Database connection
+// Import database configuration
+const { initializeDatabase, getPool, isConnected } = require('./config/database');
+
+// Initialize database connection
 let pool = null;
 
-try {
-  pool = new Pool({
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    database: process.env.PGDATABASE,
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-  });
-  
-  // Test the connection
-  pool.query('SELECT NOW()', (err, res) => {
-    if (err) {
-      console.error('❌ Database connection failed:', err);
-      console.log('⚠️  Running in mock mode - database not connected');
-      pool = null;
+// Initialize database
+initializeDatabase()
+  .then((success) => {
+    if (success) {
+      pool = getPool();
+      // Optimize database pool
+      optimizeDatabasePool(pool);
+      console.log('✅ Database initialized successfully');
     } else {
-      console.log('✅ Database connected successfully');
-      console.log('📅 Database time:', res.rows[0].now);
+      console.log('⚠️  Running in mock mode - database not connected');
     }
+  })
+  .catch((error) => {
+    console.error('❌ Database initialization failed:', error);
+    console.log('⚠️  Running in mock mode - database not connected');
   });
-  
-} catch (err) {
-  console.error('❌ Database connection failed:', err);
-  console.log('⚠️  Running in mock mode - database not connected');
-  pool = null;
-}
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
 
 // Make pool available to routes
 app.locals.pool = pool;
 
 const productRoutes   = require('./routes/productRoutes');
 const translateRoutes = require('./routes/translateRoutes');
+const chatbotRoutes   = require('./routes/chatbotRoutes');
+const searchRoutes    = require('./routes/searchRoutes');
 
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+// Performance middleware
+app.use(performanceMonitor);
+
+// CORS configuration
+app.use(cors({
+  origin: ['http://localhost:5177', 'http://localhost:5178', 'http://localhost:5179', 'http://localhost:5180'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
+app.use(express.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
-// mount your APIs
-app.use('/api/products', productRoutes);
-app.use('/api/translate', translateRoutes);
-app.use('/api/cables', cableRoutes);
-app.use('/api/auth', authRoutes);
+// mount your APIs with rate limiting
+app.use('/api/products', apiLimiter, productRoutes);
+app.use('/api/translate', apiLimiter, translateRoutes);
+app.use('/api/cables', apiLimiter, cableRoutes);
+app.use('/api/auth', apiLimiter, authRoutes);
+app.use('/api/chatbot', apiLimiter, chatbotRoutes);
+app.use('/api/search', apiLimiter, searchRoutes);
 
 // Add a simple test route
 app.get('/api/test', (req, res) => {
@@ -83,12 +109,34 @@ app.get('/', (req, res) => {
 });
 
 // health check
-app.get('/health', (req, res) => {
-  res.json({
-    status:    'ok',
-    timestamp: new Date(),
-    database:  pool ? 'connected' : 'disconnected (mock mode)'
-  });
+app.get('/health', async (req, res) => {
+  try {
+    // Test database connection
+    if (pool) {
+      const result = await pool.query('SELECT 1 as test');
+      res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        database: 'connected',
+        message: 'ScaleVolt API is running'
+      });
+    } else {
+      res.json({ 
+        status: 'OK', 
+        timestamp: new Date().toISOString(),
+        database: 'disconnected (mock mode)',
+        message: 'ScaleVolt API is running in mock mode'
+      });
+    }
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(500).json({ 
+      status: 'ERROR', 
+      timestamp: new Date().toISOString(),
+      database: 'disconnected',
+      error: error.message
+    });
+  }
 });
 
 // Ensure users table exists

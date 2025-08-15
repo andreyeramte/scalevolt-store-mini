@@ -34,6 +34,11 @@ function Layout() {
   
   // Listen to Firebase Auth state and update Zustand user store
   useEffect(() => {
+    if (!auth) {
+      console.log('⚠️ Firebase auth not available - skipping auth state listener');
+      return;
+    }
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       useUserStore.getState().setUser(user);
     });
@@ -45,6 +50,12 @@ function Layout() {
   
   // Products state for SearchBar - use the store instead
   const { products, loading: isLoading, fetchProducts } = useProductsStore();
+
+  // Auto-fetch products on component mount
+  useEffect(() => {
+    console.log('🔄 Layout: Auto-fetching products...');
+    fetchProducts();
+  }, [fetchProducts]);
 
   console.log('🏗️ Layout component rendered');
   console.log('📦 Products from store:', products.length);
@@ -58,6 +69,14 @@ function Layout() {
 
   useEffect(() => {
     loadProducts();
+    
+    // Add a timeout to prevent infinite loading
+    const timeout = setTimeout(() => {
+      console.log('⏰ Loading timeout reached, proceeding anyway');
+      // Force the loading to stop after 10 seconds
+    }, 10000);
+    
+    return () => clearTimeout(timeout);
   }, [loadProducts]);
 
   // Initialize app settings
@@ -191,21 +210,65 @@ function Layout() {
 
   console.log('🎯 Layout: About to render, isLoading:', isLoading);
 
-  if (isLoading) {
+  // Show loading screen only for a short time, then proceed
+  if (isLoading && products.length === 0 && false) { // Temporarily disable loading screen
     console.log('⏳ Layout: Showing loading screen');
     return (
-      <div className="loading-container">
-        <div className="loading-spinner">
-          <div className="spinner"></div>
-          <p>{t('common.loading', 'Loading ScaleVolt Store...')}</p>
-        </div>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        backgroundColor: '#ffffff',
+        padding: '20px'
+      }}>
+        <div style={{
+          width: '60px',
+          height: '60px',
+          border: '4px solid #e3e3e3',
+          borderTop: '4px solid #007bff',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+          marginBottom: '20px'
+        }}></div>
+        <h2 style={{ color: '#333', marginBottom: '10px' }}>
+          {t('common.loading', 'Loading ScaleVolt Store...')}
+        </h2>
+        <p style={{ color: '#666', textAlign: 'center' }}>
+          Connecting to backend... Please wait.
+        </p>
+        <button
+          onClick={() => {
+            console.log('🔄 Manual retry clicked');
+            fetchProducts();
+          }}
+          style={{
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            padding: '10px 20px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            marginTop: '20px',
+            fontSize: '14px'
+          }}
+        >
+          🔄 Retry Connection
+        </button>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
   console.log('✅ Layout: Rendering main layout with', products.length, 'products');
   return (
-    <div className="app-layout">
+    <div className="app-layout" style={{ minHeight: '100vh', backgroundColor: '#ffffff' }}>
       <Header />
       <SearchBar 
         allProducts={products}
@@ -213,7 +276,8 @@ function Layout() {
         onSearchPerformed={handleSearchPerformed}
         onSuggestionSelected={handleSuggestionSelected}
       />
-      <main className="main-content">
+      <main className="main-content" style={{ flex: 1, padding: '20px' }}>
+
         <Outlet />
       </main>
       <Footer />

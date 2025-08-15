@@ -1,0 +1,431 @@
+/* ===== MOBILE RESPONSIVE UTILITIES ===== */
+
+/* Mobile-first responsive utilities */
+.mobile-hidden {
+  display: none;
+}
+
+.mobile-only {
+  display: block;
+}
+
+.text-center-mobile {
+  text-align: center;
+}
+
+.mobile-margin {
+  margin: var(--spacing-sm);
+}
+
+.mobile-padding {
+  padding: var(--spacing-sm);
+}
+
+/* Touch-friendly improvements */
+.touch-friendly {
+  min-height: 44px;
+  min-width: 44px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Responsive grid utilities */
+.grid-mobile {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-sm);
+}
+
+.grid-tablet {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+}
+
+.grid-desktop {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+/* Responsive flex utilities */
+.flex-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.flex-tablet {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.flex-desktop {
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-lg);
+}
+
+/* Responsive text utilities */
+.text-mobile {
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+}
+
+.text-tablet {
+  font-size: var(--font-size-body);
+  line-height: 1.5;
+}
+
+.text-desktop {
+  font-size: var(--font-size-body);
+  line-height: 1.6;
+}
+
+/* Responsive spacing utilities */
+.spacing-mobile {
+  margin: var(--spacing-xs);
+  padding: var(--spacing-xs);
+}
+
+.spacing-tablet {
+  margin: var(--spacing-sm);
+  padding: var(--spacing-sm);
+}
+
+.spacing-desktop {
+  margin: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+/* ===== BREAKPOINT-SPECIFIC STYLES ===== */
+
+/* Extra Small Mobile (320px and up) */
+@media (max-width: 479px) {
+  .mobile-hidden {
+    display: none;
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+  
+  .text-center-mobile {
+    text-align: center;
+  }
+  
+  .grid-mobile {
+    grid-template-columns: 1fr;
+  }
+  
+  .flex-mobile {
+    flex-direction: column;
+  }
+  
+  .text-mobile {
+    font-size: var(--font-size-small);
+  }
+  
+  .spacing-mobile {
+    margin: var(--spacing-xs);
+    padding: var(--spacing-xs);
+  }
+}
+
+/* Small Mobile (480px and up) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .grid-tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .flex-tablet {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .text-tablet {
+    font-size: var(--font-size-body);
+  }
+  
+  .spacing-tablet {
+    margin: var(--spacing-sm);
+    padding: var(--spacing-sm);
+  }
+}
+
+/* Medium Mobile (768px and up) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mobile-hidden {
+    display: block;
+  }
+  
+  .mobile-only {
+    display: none;
+  }
+  
+  .text-center-mobile {
+    text-align: left;
+  }
+  
+  .grid-desktop {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .flex-desktop {
+    flex-direction: row;
+  }
+  
+  .text-desktop {
+    font-size: var(--font-size-body);
+  }
+  
+  .spacing-desktop {
+    margin: var(--spacing-md);
+    padding: var(--spacing-md);
+  }
+}
+
+/* Desktop (1024px and up) */
+@media (min-width: 1024px) {
+  .grid-desktop {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+/* ===== COMPONENT-SPECIFIC MOBILE STYLES ===== */
+
+/* Product cards mobile optimization */
+.product-card-mobile {
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--spacing-sm);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card-mobile:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-image-mobile {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: var(--spacing-sm);
+}
+
+.product-title-mobile {
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  line-height: 1.3;
+  margin: 0;
+  padding: 0;
+}
+
+/* Button mobile optimization */
+.button-mobile {
+  min-height: 44px;
+  min-width: 44px;
+  padding: clamp(12px, 3vw, 15px) clamp(24px, 6vw, 30px);
+  font-size: var(--font-size-body);
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-mobile:hover {
+  transform: scale(1.05);
+}
+
+/* Form elements mobile optimization */
+.input-mobile {
+  font-size: 16px; /* Prevents zoom on iOS */
+  padding: 12px;
+  min-height: 44px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-mobile:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+  border-color: #007bff;
+}
+
+/* Navigation mobile optimization */
+.nav-mobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item-mobile {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .product-card-mobile {
+    border: 2px solid #000;
+  }
+  
+  .button-mobile {
+    border: 2px solid #000;
+  }
+  
+  .input-mobile {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .product-card-mobile,
+  .button-mobile,
+  .nav-item-mobile {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* Optimize rendering performance */
+.product-card-mobile,
+.button-mobile,
+.nav-item-mobile {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Optimize scrolling performance */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ===== MOBILE-SPECIFIC FIXES ===== */
+
+/* Fix for iOS Safari viewport issues */
+@supports (-webkit-touch-callout: none) {
+  .mobile-container {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Fix for Android Chrome address bar */
+@media screen and (max-height: 400px) {
+  .mobile-container {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* Fix for mobile keyboard */
+@media screen and (max-height: 500px) {
+  .mobile-container {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Responsive visibility */
+.hide-mobile {
+  display: none;
+}
+
+.show-mobile {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block;
+  }
+  
+  .show-mobile {
+    display: none;
+  }
+}
+
+/* Responsive text alignment */
+.text-left-mobile {
+  text-align: left;
+}
+
+.text-center-mobile {
+  text-align: center;
+}
+
+.text-right-mobile {
+  text-align: right;
+}
+
+@media (min-width: 768px) {
+  .text-left-mobile {
+    text-align: left;
+  }
+  
+  .text-center-mobile {
+    text-align: center;
+  }
+  
+  .text-right-mobile {
+    text-align: right;
+  }
+}
+
+/* Responsive spacing */
+.m-0-mobile { margin: 0; }
+.m-1-mobile { margin: var(--spacing-xs); }
+.m-2-mobile { margin: var(--spacing-sm); }
+.m-3-mobile { margin: var(--spacing-md); }
+.m-4-mobile { margin: var(--spacing-lg); }
+
+.p-0-mobile { padding: 0; }
+.p-1-mobile { padding: var(--spacing-xs); }
+.p-2-mobile { padding: var(--spacing-sm); }
+.p-3-mobile { padding: var(--spacing-md); }
+.p-4-mobile { padding: var(--spacing-lg); }
+
+@media (min-width: 768px) {
+  .m-0-mobile { margin: 0; }
+  .m-1-mobile { margin: var(--spacing-sm); }
+  .m-2-mobile { margin: var(--spacing-md); }
+  .m-3-mobile { margin: var(--spacing-lg); }
+  .m-4-mobile { margin: var(--spacing-xl); }
+  
+  .p-0-mobile { padding: 0; }
+  .p-1-mobile { padding: var(--spacing-sm); }
+  .p-2-mobile { padding: var(--spacing-md); }
+  .p-3-mobile { padding: var(--spacing-lg); }
+  .p-4-mobile { padding: var(--spacing-xl); }
+}

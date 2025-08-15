@@ -4,15 +4,15 @@ FROM node:20-alpine
 # Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files and install dependencies (including devDependencies for nodemon)
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
 # Copy the rest of the app
 COPY . .
 
 # Expose the backend port
-EXPOSE 3002
+EXPOSE 4242
 
-# Start the server
-CMD ["node", "server.js"]
+# Start the server in development mode
+CMD ["npm", "start"]

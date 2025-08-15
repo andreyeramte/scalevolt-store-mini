@@ -24,64 +24,8 @@ const HomeView = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Mock data (same as your Vue component)
-  const moks = [
-    {
-      id: 14,
-      documentId: "oy4o1x84z31mc2e05p7n69cv",
-      createdAt: "2025-04-01T12:15:36.782Z",
-      updatedAt: "2025-04-01T16:10:08.020Z",
-      publishedAt: "2025-04-01T16:10:08.029Z",
-      name: "homeView.solarPanels",
-      slug: "solar-panels",
-      image: "/images/HomeView/solar-farm.png",
-    },
-    {
-      id: 15,
-      documentId: "k8cymlf3kc9pil83n129njqk",
-      createdAt: "2025-04-01T12:15:51.690Z",
-      updatedAt: "2025-04-01T16:10:18.971Z",
-      publishedAt: "2025-04-01T16:10:18.978Z",
-      name: "homeView.batteries",
-      slug: "batteries",
-      image: "/images/HomeView/solar-battery.png",
-    },
-    {
-      id: 16,
-      documentId: "kdn2s5lmyxhtdrpa84fewre1",
-      createdAt: "2025-04-01T12:16:13.132Z",
-      updatedAt: "2025-04-01T16:10:49.808Z",
-      publishedAt: "2025-04-01T16:10:49.817Z",
-      name: "homeView.inverters",
-      slug: "inverters",
-      image: "/images/HomeView/інвертер.png",
-    },
-    {
-      id: 17,
-      documentId: "eu3drvd6vsicxxdztfz2ibia",
-      createdAt: "2025-04-01T14:41:57.149Z",
-      updatedAt: "2025-04-01T16:11:00.521Z",
-      publishedAt: "2025-04-01T16:11:00.526Z",
-      name: "homeView.solarSets",
-      slug: "Sets-of-solar-power-plants",
-      image: "/images/HomeView/комплект-сонячних.png",
-    },
-    {
-      id: 18,
-      documentId: "r1x51mh7tvppbi2g5sr7fa6k",
-      createdAt: "2025-04-01T14:42:39.377Z",
-      updatedAt: "2025-04-01T16:11:10.566Z",
-      publishedAt: "2025-04-01T16:11:10.573Z",
-      name: "homeView.mountingSystems",
-      slug: "mounting-systems",
-      image: "/images/HomeView/solar-mount-system.png",
-    },
-  ];
-  
-  const [solarisCategories, setSolarisCategories] = useState(moks);
-
-  // Computed values (converted from Vue computed properties)
-  const solarSystemItems = useMemo(() => [
+  // Mock data for categories
+  const solarCategories = [
     {
       id: 1,
       name: t("homeView.solarPanels"),
@@ -107,14 +51,14 @@ const HomeView = () => {
       image: "/images/HomeView/комплект-сонячних.png",
     },
     {
-      id: 6,
+      id: 5,
       name: t("homeView.mountingSystems"),
       slug: "mounting-systems",
       image: "/images/HomeView/solar-mount-system.png",
     },
-  ], [t]);
+  ];
 
-  const evChargerItems = useMemo(() => [
+  const evChargerItems = [
     {
       id: 1,
       name: t("homeView.dcChargingStations"),
@@ -133,9 +77,9 @@ const HomeView = () => {
       slug: "portable-charging-devices",
       image: "/images/HomeView/ev-charger-city.png",
     },
-  ], [t]);
+  ];
 
-  const newCategories = useMemo(() => [
+  const newCategories = [
     {
       id: 1,
       name: t("homeView.portablePowerStation"),
@@ -160,9 +104,9 @@ const HomeView = () => {
       slug: "cables-wires",
       image: "/images/HomeView/Electrical-cables-and-wires.jpg",
     },
-  ], [t]);
+  ];
 
-  const categories = useMemo(() => [
+  const categories = [
     {
       id: 1,
       name: t("homeView.generators"),
@@ -187,43 +131,32 @@ const HomeView = () => {
       slug: "lifts-and-cranes",
       image: "/images/Categories/rent/lifts.png",
     },
-  ], [t]);
+  ];
 
-  const carouselSlides = useMemo(() => [
-    {
-      type: "gif",
-      src: "/videos/carousel/Self-Sustaining-Smart-Home.gif",
-      title: t("homeView.solarPanels"),
-      description: t("homeView.carousel.solarPanelsDesc"),
-    },
-    {
-      type: "gif",
-      src: "/videos/carousel/ev.chargers.gif",
-      title: t("homeView.evChargersComponents"),
-      description: t("homeView.carousel.evChargersDesc"),
-    },
-    {
-      type: "gif",
-      src: "/videos/carousel/portable.panels.gif",
-      title: t("homeView.portableSolarPanels"),
-      description: t("homeView.carousel.portablePanelsDesc"),
-    },
-  ], [t]);
-
-  const minSlidesForLoop = 4; // For slidesPerView=1, Swiper needs at least 4 for loop mode
-
-  // Methods converted from Vue
-  const getCategoryRoute = (slug) => {
-    return `/${slug.toLowerCase().replace(/ /g, "-")}`;
-  };
-
+  // Methods
   const handleCategoryClick = (slug) => {
-    navigate(`/${region}/${slug.toLowerCase().replace(/ /g, '-')}`);
+    // Map specific categories to new consistent routes
+    const categoryMap = {
+      'solar-panels': 'solar-systems',
+      'batteries': 'solar-systems',
+      'inverters': 'solar-systems',
+      'Sets-of-solar-power-plants': 'solar-systems',
+      'mounting-systems': 'solar-systems',
+      'dc-charging-stations': 'ev-chargers',
+      'ac-charging-stations': 'ev-chargers',
+      'portable-charging-devices': 'ev-chargers',
+      'Портативна електростанція': 'new-categories',
+      'charging': 'new-categories',
+      'portable-solar-panels': 'new-categories',
+      'cables-wires': 'new-categories'
+    };
+    
+    const mappedSlug = categoryMap[slug] || slug.toLowerCase().replace(/ /g, '-');
+    navigate(`/${region}/${mappedSlug}`);
   };
 
   const fetchAds = async () => {
     try {
-      // Your ad fetching logic here
       console.log("Fetching ads...");
     } catch (error) {
       console.error("Error fetching ads:", error);
@@ -241,7 +174,6 @@ const HomeView = () => {
 
   const fetchProducts = async () => {
     try {
-      // Your product fetching logic here
       console.log("Fetching products...");
       setLoading(false);
     } catch (error) {
@@ -250,455 +182,461 @@ const HomeView = () => {
     }
   };
 
-  // Effects (converted from Vue mounted)
+  // Effects
   useEffect(() => {
-    // Uncomment these when you have the services ready
-    // fetchAds();
-    // fetchPromotionCategories();
-    // fetchProducts();
-  }, []);
-
-  // Initialize Intercom (if needed)
-  useEffect(() => {
-    // You can initialize Intercom here if needed
-    // window.Intercom && window.Intercom('boot', { app_id: 'mm6ivt97' });
+    fetchAds();
+    fetchPromotionCategories();
+    fetchProducts();
   }, []);
 
   return (
-    <div className="home-view">
+    <div style={{ paddingTop: '80px', backgroundColor: 'white', minHeight: '100vh' }}>
+      {/* Hero Carousel Section */}
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 15px', marginBottom: '40px' }}>
+        <section style={{ marginBottom: '40px' }}>
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={0}
+            slidesPerView={1}
+            navigation
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 5000, disableOnInteraction: false }}
+            loop={true}
+            style={{
+              borderRadius: '15px',
+              overflow: 'hidden',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+            }}
+          >
+            <SwiperSlide>
+              <div style={{
+                position: 'relative',
+                height: 'clamp(300px, 50vh, 400px)',
+                backgroundColor: '#f8f9fa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  padding: 'clamp(20px, 4vw, 40px)'
+                }}>
+                  <h1 style={{ 
+                    fontSize: 'var(--font-size-h1)', 
+                    marginBottom: 'var(--spacing-md)', 
+                    fontWeight: 'bold',
+                    lineHeight: '1.2'
+                  }}>
+                    {t("homeView.heroTitle", "ScaleVolt Store")}
+                  </h1>
+                  <p style={{ 
+                    fontSize: 'var(--font-size-body)', 
+                    marginBottom: 'var(--spacing-lg)', 
+                    opacity: 0.9,
+                    lineHeight: '1.4'
+                  }}>
+                    {t("homeView.heroSubtitle", "Your trusted partner for solar energy solutions")}
+                  </p>
+                  <button
+                    onClick={() => navigate(`/${region}/products`)}
+                    style={{
+                      backgroundColor: 'white',
+                      color: '#667eea',
+                      border: 'none',
+                      padding: 'clamp(12px, 3vw, 15px) clamp(24px, 6vw, 30px)',
+                      borderRadius: '25px',
+                      fontSize: 'var(--font-size-body)',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      transition: 'transform 0.3s ease',
+                      minHeight: '44px',
+                      minWidth: '120px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    {t("homeView.shopNow", "Shop Now")}
+                  </button>
+                </div>
+              </div>
+            </SwiperSlide>
+            
+            <SwiperSlide>
+              <div style={{
+                position: 'relative',
+                height: 'clamp(300px, 50vh, 400px)',
+                backgroundColor: '#f8f9fa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  padding: 'clamp(20px, 4vw, 40px)'
+                }}>
+                  <h1 style={{ 
+                    fontSize: 'var(--font-size-h1)', 
+                    marginBottom: 'var(--spacing-md)', 
+                    fontWeight: 'bold',
+                    lineHeight: '1.2'
+                  }}>
+                    {t("homeView.evChargingTitle", "EV Charging Solutions")}
+                  </h1>
+                  <p style={{ 
+                    fontSize: 'var(--font-size-body)', 
+                    marginBottom: 'var(--spacing-lg)', 
+                    opacity: 0.9,
+                    lineHeight: '1.4'
+                  }}>
+                    {t("homeView.evChargingSubtitle", "Fast and reliable electric vehicle charging stations")}
+                  </p>
+                  <button
+                    onClick={() => navigate(`/${region}/ev-chargers`)}
+                    style={{
+                      backgroundColor: 'white',
+                      color: '#f5576c',
+                      border: 'none',
+                      padding: 'clamp(12px, 3vw, 15px) clamp(24px, 6vw, 30px)',
+                      borderRadius: '25px',
+                      fontSize: 'var(--font-size-body)',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      transition: 'transform 0.3s ease',
+                      minHeight: '44px',
+                      minWidth: '120px'
+                    }}
+                    onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                  >
+                    {t("homeView.learnMore", "Learn More")}
+                  </button>
+                </div>
+              </div>
+            </SwiperSlide>
+            
+            <SwiperSlide>
+              <div style={{
+                position: 'relative',
+                height: '400px',
+                backgroundColor: '#f8f9fa',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+              }}>
+                <div style={{
+                  textAlign: 'center',
+                  color: 'white',
+                  padding: '40px'
+                }}>
+                  <h1 style={{ fontSize: '2.5rem', marginBottom: '20px', fontWeight: 'bold' }}>
+                    {t("homeView.solarTitle", "Solar Energy Systems")}
+                  </h1>
+                  <p style={{ fontSize: '1.2rem', marginBottom: '30px', opacity: 0.9 }}>
+                    {t("homeView.solarSubtitle", "Complete solar solutions for homes and businesses")}
+                  </p>
+                                     <button
+                     onClick={() => navigate(`/${region}/solar-systems`)}
+                     style={{
+                       backgroundColor: 'white',
+                       color: '#4facfe',
+                       border: 'none',
+                       padding: '15px 30px',
+                       borderRadius: '25px',
+                       fontSize: '1.1rem',
+                       fontWeight: 'bold',
+                       cursor: 'pointer',
+                       transition: 'transform 0.3s ease'
+                     }}
+                     onMouseEnter={(e) => e.target.style.transform = 'scale(1.05)'}
+                     onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
+                   >
+                     {t("homeView.exploreSolar", "Explore Solar")}
+                   </button>
+                </div>
+              </div>
+            </SwiperSlide>
+          </Swiper>
+        </section>
+      </div>
+
       {/* Residential & Commercial Solar System Section */}
-      <div className="page-container">
-        <section className="product-segment">
-          <div className="section-header">
-            <h2>{t("homeView.residentialCommercialSolar")}</h2>
+      <div style={{ 
+        maxWidth: 'var(--container-max-width)', 
+        margin: '0 auto', 
+        padding: '0 var(--spacing-sm)' 
+      }}>
+        <section style={{ 
+          marginBottom: 'var(--spacing-xl)',
+          padding: 'var(--spacing-sm) 0'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            padding: 'var(--spacing-md) 0',
+            marginBottom: 'var(--spacing-md)'
+          }}>
+            <h2 style={{ 
+              color: '#333', 
+              fontSize: 'var(--font-size-h3)',
+              margin: 0,
+              fontWeight: '600'
+            }}>{t("homeView.residentialCommercialSolar")}</h2>
           </div>
-          <div className="product-segment-grid">
-            {solarisCategories.map((item) => (
+          <div style={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: 'var(--spacing-md)',
+            padding: 'var(--spacing-sm) 0'
+          }}>
+            {solarCategories.map((item) => (
               <div
                 key={item.id}
-                className="product-segment-card promo-box"
+                style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  padding: 'var(--spacing-sm)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  minHeight: '200px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
                 onClick={() => handleCategoryClick(item.slug)}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.02)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                }}
               >
-                <img src={item.image} alt={item.name} />
-                <h3>{t(item.name)}</h3>
+                <img 
+                  src={item.image} 
+                  alt={item.name} 
+                  style={{
+                    width: '100%',
+                    height: '120px',
+                    objectFit: 'cover',
+                    marginBottom: 'var(--spacing-sm)',
+                    borderRadius: '8px'
+                  }}
+                />
+                <h3 style={{ 
+                  fontSize: 'var(--font-size-body)', 
+                  color: '#333', 
+                  margin: 0, 
+                  padding: 0,
+                  fontWeight: '500',
+                  lineHeight: '1.3'
+                }}>{item.name}</h3>
               </div>
             ))}
           </div>
         </section>
-      </div>
 
-      {/* EV Chargers & Components Section */}
-      <div className="page-container">
-        <section className="product-segment">
-          <div className="section-header">
-            <h2>{t("homeView.evChargersComponents")}</h2>
+        {/* EV Chargers & Components Section */}
+        <section style={{ 
+          marginBottom: 'var(--spacing-xl)',
+          padding: 'var(--spacing-sm) 0'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center', 
+            padding: 'var(--spacing-md) 0',
+            marginBottom: 'var(--spacing-md)'
+          }}>
+            <h2 style={{ 
+              color: '#333', 
+              fontSize: 'var(--font-size-h3)',
+              margin: 0,
+              fontWeight: '600'
+            }}>{t("homeView.evChargersComponents")}</h2>
           </div>
-          <div className="product-segment-grid">
+          <div style={{ 
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: 'var(--spacing-md)',
+            padding: 'var(--spacing-sm) 0'
+          }}>
             {evChargerItems.map((item) => (
               <div
                 key={item.id}
-                className="product-segment-card promo-box"
+                style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  padding: 'var(--spacing-sm)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  minHeight: '200px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between'
+                }}
                 onClick={() => handleCategoryClick(item.slug)}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.02)';
+                  e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                }}
               >
-                <img src={item.image} alt={item.name} />
-                <h3>{item.name}</h3>
+                <img 
+                  src={item.image} 
+                  alt={item.name} 
+                  style={{
+                    width: '100%',
+                    height: '120px',
+                    objectFit: 'cover',
+                    marginBottom: 'var(--spacing-sm)',
+                    borderRadius: '8px'
+                  }}
+                />
+                <h3 style={{ 
+                  fontSize: 'var(--font-size-body)', 
+                  color: '#333', 
+                  margin: 0, 
+                  padding: 0,
+                  fontWeight: '500',
+                  lineHeight: '1.3'
+                }}>{item.name}</h3>
               </div>
             ))}
           </div>
         </section>
-      </div>
 
-      {/* Carousel Section */}
-      <div className="page-container">
-        <section className="carousel-section">
-          {carouselSlides.length > 0 ? (
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
-              slidesPerView={1}
-              loop={carouselSlides.length >= minSlidesForLoop}
-              autoplay={{ delay: 5000, disableOnInteraction: false }}
-              navigation
-              pagination
-              className="carousel-container"
-            >
-              {carouselSlides.map((slide, index) => (
-                <SwiperSlide key={index}>
-                  {slide.type === 'video' ? (
-                    <video
-                      src={slide.src}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="carousel-video"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    <img src={slide.src} alt={slide.title} />
-                  )}
-                  <div className="slide-content">
-                    <h2>{slide.title}</h2>
-                    <p>{slide.description}</p>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          ) : (
-            <div style={{textAlign: 'center', padding: '2rem', color: '#888'}}>
-              No slides available
-            </div>
-          )}
-        </section>
-      </div>
-
-      {/* Explore New Category Section */}
-      <div className="page-container">
-        <section className="new-category-section">
-          <div className="section-header">
-            <h2>{t("homeView.exploreNewCategories")}</h2>
+        {/* Explore New Category Section */}
+        <section style={{ marginBottom: '40px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0' }}>
+            <h2 style={{ color: '#333', fontSize: '17px' }}>{t("homeView.exploreNewCategories")}</h2>
           </div>
-          <div className="new-category-grid">
+          <div style={{ 
+            display: 'flex', 
+            gap: '20px', 
+            flexWrap: 'wrap' 
+          }}>
             {newCategories.map((newCategory) => (
               <div
                 key={newCategory.id}
-                className="new-category-card promo-box"
+                style={{
+                  backgroundColor: 'white',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                  padding: '10px',
+                  boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                  flex: '1 1 200px',
+                }}
                 onClick={() => handleCategoryClick(newCategory.slug)}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.03)';
+                  e.target.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                  e.target.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
+                }}
               >
-                <img src={newCategory.image} alt={newCategory.name} />
-                <h3>{newCategory.name}</h3>
+                <img 
+                  src={newCategory.image} 
+                  alt={newCategory.name} 
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    maxHeight: '150px',
+                    objectFit: 'contain',
+                    margin: '0 auto',
+                    borderBottom: '1px solid #e0e0e0',
+                    paddingBottom: '10px',
+                  }}
+                />
+                <h3 style={{ marginTop: '10px', fontSize: '18px', color: '#333' }}>{newCategory.name}</h3>
               </div>
             ))}
           </div>
         </section>
-      </div>
 
-      {/* Category Section */}
-      <div className="page-container">
-        <section className="category-section">
-          <div className="section-header">
-            <h2>{t("homeView.rental")}</h2>
+        {/* Category Section */}
+        <section style={{ marginBottom: '40px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 0' }}>
+            <h2 style={{ color: '#333', fontSize: '17px' }}>{t("homeView.rental")}</h2>
             <button 
-              className="see-all-button"
+              style={{
+                backgroundColor: '#ff4f5a',
+                color: '#fff',
+                border: 'none',
+                padding: '10px 20px',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                textDecoration: 'none',
+                fontSize: '14px',
+              }}
               onClick={() => navigate(`/${region}/categories`)}
             >
               {t("homeView.seeAll")}
             </button>
           </div>
-          <div className="categories-grid">
-            {categories.length === 0 ? (
-              <div>No categories found</div>
-            ) : (
-              categories.map((category) => (
-                <div
-                  key={category.id}
-                  className="category-card promo-box"
-                  onClick={() => handleCategoryClick(category.slug)}
-                >
-                  <img src={category.image} alt={category.name} />
-                  <h3>{category.name}</h3>
-                </div>
-              ))
-            )}
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
+            gap: '20px' 
+          }}>
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                style={{
+                  backgroundColor: '#f9f9f9',
+                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  textAlign: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s ease',
+                }}
+                onClick={() => handleCategoryClick(category.slug)}
+                onMouseEnter={(e) => {
+                  e.target.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.transform = 'scale(1)';
+                }}
+              >
+                <img 
+                  src={category.image} 
+                  alt={category.name} 
+                  style={{
+                    width: '100%',
+                    height: '150px',
+                    objectFit: 'cover',
+                  }}
+                />
+                <h3 style={{ fontSize: '16px', color: '#333', margin: '10px 0' }}>{category.name}</h3>
+              </div>
+            ))}
           </div>
         </section>
       </div>
-
-      <style>{`
-        /* All your original CSS styles - EXACTLY the same */
-        .home-view {
-          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-          background-color: white;
-          margin: 0;
-          padding: 0;
-          padding-top: 80px;
-        }
-
-        .page-container {
-          width: 100%;
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 0 15px;
-          box-sizing: border-box;
-        }
-
-        .top-grid-section {
-          padding: 20px;
-          background-color: #f0f4f8;
-        }
-
-        .grid-container {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 20px;
-          margin: 0;
-          padding: 5px 5px;
-        }
-
-        @media (max-width: 768px) {
-          .grid-container {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .carousel-section {
-          position: relative;
-          width: 100%;
-          height: 400px;
-          margin-bottom: 40px;
-        }
-
-        .carousel-container {
-          width: 100%;
-          height: 100%;
-        }
-
-        .carousel-container img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-
-        .carousel-media {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-
-        .carousel-video {
-          object-position: center;
-          background-color: #000;
-        }
-
-        .swiper-slide {
-          height: 400px;
-          overflow: hidden;
-          position: relative;
-        }
-
-        .slide-content {
-          position: absolute;
-          bottom: 30px;
-          left: 30px;
-          max-width: 60%;
-          color: #fff;
-          background: rgba(0, 0, 0, 0.6);
-          padding: 20px;
-          border-radius: 8px;
-          z-index: 10;
-        }
-
-        .slide-content h2 {
-          font-size: 24px;
-          margin-bottom: 10px;
-          font-weight: 600;
-        }
-
-        .slide-content p {
-          font-size: 16px;
-          line-height: 1.4;
-        }
-
-        .swiper-button-next,
-        .swiper-button-prev {
-          color: #fff;
-        }
-
-        .swiper-pagination-bullet {
-          background: rgba(255, 255, 255, 0.7);
-        }
-
-        .swiper-pagination-bullet-active {
-          background: #fff;
-        }
-
-        .section-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 0;
-        }
-
-        .section-header h2 {
-          color: #333;
-          font-size: 17px;
-        }
-
-        .new-category-section,
-        .category-section {
-          padding: 40px 0px;
-        }
-
-        .new-category-grid {
-          display: flex;
-          gap: 20px;
-          flex-wrap: wrap;
-        }
-
-        .new-category-card,
-        .category-card {
-          background-color: white;
-          border: 1px solid #e0e0e0;
-          border-radius: 10px;
-          overflow: hidden;
-          text-align: center;
-          cursor: pointer;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          padding: 10px;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          flex: 1 1 200px;
-        }
-
-        .new-category-card img,
-        .category-card img {
-          display: block;
-          width: 100%;
-          max-height: 150px;
-          object-fit: contain;
-          margin: 0 auto;
-          border-bottom: 1px solid #e0e0e0;
-          padding-bottom: 10px;
-        }
-
-        .new-category-card h3,
-        .category-card h3 {
-          margin-top: 10px;
-          font-size: 18px;
-          color: #333;
-        }
-
-        .new-category-card:hover,
-        .category-card:hover,
-        .promo-box:hover {
-          transform: scale(1.03);
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .categories-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-          gap: 20px;
-        }
-
-        .category-card {
-          background-color: #f9f9f9;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          overflow: hidden;
-          text-align: center;
-          cursor: pointer;
-          transition: transform 0.3s ease;
-        }
-
-        .category-card:hover {
-          transform: scale(1.05);
-        }
-
-        .promo-box {
-          background-color: white;
-          border: 1px solid #e0e0e0;
-          border-radius: 10px;
-          overflow: hidden;
-          text-align: center;
-          cursor: pointer;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-          text-decoration: none;
-          color: inherit;
-        }
-
-        .promo-box img {
-          width: 100%;
-          height: 150px;
-          object-fit: cover;
-          border-bottom: 1px solid #e0e0e0;
-        }
-
-        .promo-box h3 {
-          font-size: 16px;
-          color: #333;
-          margin: 10px 0;
-        }
-
-        .new-category-card,
-        .category-card {
-          display: block;
-          text-decoration: none;
-          color: inherit;
-        }
-
-        .see-all-button {
-          background-color: #ff4f5a;
-          color: #fff;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 5px;
-          cursor: pointer;
-          text-decoration: none;
-          font-size: 14px;
-        }
-
-        .see-all-button:hover {
-          background-color: #e04350;
-        }
-
-        .product-segment-grid,
-        .new-category-grid,
-        .categories-grid {
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          gap: 15px;
-          justify-content: center;
-          padding: 10px 0;
-        }
-
-        .product-segment-card {
-          flex: 0 0 auto;
-          width: 200px;
-          min-height: 280px;
-          box-sizing: border-box;
-          text-decoration: none;
-          color: inherit;
-          background-color: white;
-          border: 1px solid #e0e0e0;
-          border-radius: 10px;
-          overflow: hidden;
-          text-align: center;
-          cursor: pointer;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          padding: 10px;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-segment-card img {
-          width: 100%;
-          height: 150px;
-          object-fit: cover;
-          margin-bottom: 10px;
-          border-bottom: 1px solid #e0e0e0;
-        }
-
-        .product-segment-card h3 {
-          font-size: 16px;
-          color: #333;
-          margin: 0;
-          padding: 0;
-        }
-
-        .product-segment-card:hover {
-          transform: scale(1.03);
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        .new-category-card.promo-box img,
-        .category-card.promo-box img {
-          object-fit: contain !important;
-          height: auto !important;
-          max-height: 150px !important;
-        }
-      `}</style>
     </div>
   );
 };

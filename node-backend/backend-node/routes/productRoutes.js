@@ -163,81 +163,52 @@ router.post('/', authenticateJWT, [
 
 // Get all products
 router.get('/', async (req, res) => {
-  const lang = req.query.lang || 'en';
-
   try {
+    console.log('GET /api/products called');
+    
     // Get pool from the server context
     const pool = req.app.locals.pool;
     
-    console.log('GET /api/products called. pool:', pool);
-    console.log('Mock products length:', mockProducts.length);
-    
     if (!pool) {
-      console.log('Entering mock mode branch');
-      // Mock mode - return mock products
-      let products = [...mockProducts];
-      console.log('Products before date conversion:', products.length);
-      
-      // Convert Date objects to ISO strings for serialization
-      products = products.map(p => ({
+      console.log('⚠️ Database not connected, returning mock products');
+      // Return mock products as fallback
+      const products = mockProducts.map(p => ({
         ...p,
         created_at: p.created_at instanceof Date ? p.created_at.toISOString() : p.created_at,
         updated_at: p.updated_at instanceof Date ? p.updated_at.toISOString() : p.updated_at
       }));
-      console.log('Products after date conversion:', products.length);
-      console.log('First product:', products[0]);
       
-      // Apply language filtering if needed
-      if (lang === 'ua') {
-        products = products.map(p => ({
-          ...p,
-          name: p.name_ua || p.name,
-          description: p.description_ua || p.description
-        }));
-      } else if (lang === 'pl') {
-        products = products.map(p => ({
-          ...p,
-          name: p.name_pl || p.name,
-          description: p.description_pl || p.description
-        }));
-      }
-      
-      console.log('About to return products:', products.length);
+      console.log('Returning mock products:', products.length);
       return res.json(products);
     }
 
-    console.log('Entering database mode branch');
-    let result;
-    if (lang === 'ua') {
-      result = await pool.query(`
-        SELECT
-          id,
-          COALESCE(name_ua, name) AS name,
-          price,
-          COALESCE(description_ua, description) AS description,
-          created_at,
-          updated_at
-        FROM products
-      `);
-    } else if (lang === 'pl') {
-      result = await pool.query(`
-        SELECT
-          id,
-          COALESCE(name_pl, name) AS name,
-          price,
-          COALESCE(description_pl, description) AS description,
-          created_at,
-          updated_at
-        FROM products
-      `);
-    } else {
-      result = await pool.query('SELECT * FROM products');
-    }
+    // Query real database
+    const result = await pool.query(`
+      SELECT 
+        id, sku, name, name_ua, name_pl, 
+        description, description_ua, description_pl,
+        price, stock_quantity, brand, model,
+        category_id, is_active, is_featured,
+        created_at, updated_at
+      FROM products 
+      WHERE is_active = true 
+      ORDER BY name ASC
+    `);
+    
+    console.log('✅ Database query successful, returning', result.rows.length, 'products');
     res.json(result.rows);
   } catch (err) {
-    console.error('Error in /api/products:', err);
+    console.error('❌ Error in /api/products:', err);
     console.error('Error stack:', err.stack);
-    res.status(500).send('Error fetching products');
+    
+    // Fallback to mock products on error
+    console.log('🔄 Falling back to mock products');
+    const products = mockProducts.map(p => ({
+      ...p,
+      created_at: p.created_at instanceof Date ? p.created_at.toISOString() : p.created_at,
+      updated_at: p.updated_at instanceof Date ? p.updated_at.toISOString() : p.updated_at
+    }));
+    res.json(products);
   }
 });
 

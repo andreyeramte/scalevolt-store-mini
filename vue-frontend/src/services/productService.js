@@ -3,7 +3,7 @@ import axios from "axios";
 import qs from "qs";
 
 // Combine the API_URL definitions
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4242/api';
 // Create one service object that combines all methods
 const productService = {
   async getProducts(params = {}) {

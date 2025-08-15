@@ -2,6 +2,7 @@
   "dependencies": {
     "@intercom/messenger-js-sdk": "^0.0.14",
     "@maxmind/geoip2-node": "^6.0.0",
+    "@supabase/supabase-js": "^2.54.0",
     "@vueuse/head": "^2.0.0",
     "axios": "^1.8.4",
     "chalk": "^5.4.1",

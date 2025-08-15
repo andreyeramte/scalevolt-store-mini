@@ -90,8 +90,8 @@ const useProductsStore = create((set, get) => ({
     set({ loading: true, error: null });
     
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
-      console.log('📡 Making API call to http://localhost:3002/api/products');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4242/api';
+      console.log('📡 Making API call to http://localhost:4242/api/products');
       const response = await fetch(`${API_URL}/products`);
       console.log('📥 Response status:', response.status);
       
@@ -121,7 +121,7 @@ const useProductsStore = create((set, get) => ({
   fetchProductById: async (id) => {
     set({ loading: true, error: null });
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4242/api';
       const response = await fetch(`${API_URL}/products/${id}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

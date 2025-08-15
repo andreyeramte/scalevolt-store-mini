@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import useUserStore from '../../stores/user';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import LanguageSelector from '../LanguageSelector/LanguageSelector';
 import './Header.css';
 // You'll need to convert your SearchBar component to React
 // import SearchBar from './SearchBar';
@@ -377,7 +378,7 @@ const Header = () => {
               </button>
             </div>
             <div className="logo-container">
-              <Link to="/">
+              <Link to={`/${region}`}>
                 <img src="/images/header/scalevolt-logo.png" alt="Scalevolt Logo" className="logo" />
               </Link>
             </div>
@@ -385,6 +386,11 @@ const Header = () => {
           
           {/* Right: Icons */}
           <div className="mobile-right-group">
+            {/* Language Selector */}
+            <div className="mobile-language-selector">
+              <LanguageSelector />
+            </div>
+            
             {/* Profile */}
             <div className="mobile-icon">
               {!user ? (
@@ -442,7 +448,7 @@ const Header = () => {
               </button>
             </div>
             <div className="logo-container">
-              <Link to="/">
+              <Link to={`/${region}`}>
                 <img src="/images/header/scalevolt-logo.png" alt="Scalevolt Logo" className="logo" />
               </Link>
             </div>
@@ -470,6 +476,9 @@ const Header = () => {
 
           <div className="right-section">
             <div className="user-controls">
+              <div className="language-selector">
+                <LanguageSelector />
+              </div>
               <div className="cart-icon">
                 <Link to={`/${region}/cart`}>
                   <img src="/images/header/cart.svg" alt="Cart" />
@@ -762,30 +771,7 @@ const Header = () => {
                 </div>
               )}
 
-              {/* Tesla-style language selector at bottom */}
-              <div className="tesla-language-selector">
-                <div className="language-selector-item" onClick={() => selectRegion('pl')}>
-                  <div className="globe-icon-container">
-                    <img src="/images/header/globe-icon.svg" alt="Region Icon" className="globe-icon" />
-                  </div>
-                  <div className="language-info">
-                    <div className="country-name">{t('common.country.poland', 'Poland')}</div>
-                    <div className="language-name">{t('common.language.polish', 'Polish')}</div>
-                  </div>
-                  <div className={`selector-indicator ${currentLocale === 'pl' ? 'active' : ''}`}></div>
-                </div>
-                
-                <div className="language-selector-item" onClick={() => selectRegion('ua')}>
-                  <div className="globe-icon-container">
-                    <img src="/images/header/globe-icon.svg" alt="Region Icon" className="globe-icon" />
-                  </div>
-                  <div className="language-info">
-                    <div className="country-name">{t('common.country.ukraine', 'Ukraine')}</div>
-                    <div className="language-name">{t('common.language.ukrainian', 'Ukrainian')}</div>
-                  </div>
-                  <div className={`selector-indicator ${currentLocale === 'ua' ? 'active' : ''}`}></div>
-                </div>
-              </div>
+              {/* Removed language selector from burger menu - only kept in header */}
             </div>
           </div>
         </div>

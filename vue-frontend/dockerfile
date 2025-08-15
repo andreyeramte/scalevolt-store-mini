@@ -2,9 +2,15 @@
 FROM node:20-alpine as build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+
+# Clear npm cache and install dependencies with force flag
+RUN npm cache clean --force
+RUN npm install --force
+
 COPY . .
-RUN npm run build
+
+# Try to build, if it fails, reinstall and try again
+RUN npm run build || (npm cache clean --force && npm install --force && npm run build)
 
 # Production stage
 FROM nginx:alpine

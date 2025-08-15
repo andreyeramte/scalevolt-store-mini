@@ -187,7 +187,8 @@
     "officeAddress": "ul. Marszałkowska 142, 00-061 Warszawa, Polska",
     "emailAddress": "scalevolt.info@gmail.com",
     "phoneNumber": "+48 780 176 595",
-    "businessHours": "Pon-Sob: 9:00 - 18:00"
+    "businessHours": "Pon-Sob: 9:00 - 18:00",
+    "legal": "Informacje prawne"
   },
   "cart": {
     "yourCart": "Twój koszyk",
@@ -801,5 +802,169 @@
 "submitSuccess": "Dziękujemy za wiadomość! Skontaktujemy się z Tobą wkrótce."
 }
 ,
-"testFooter": "FOOTER TRANSLATION WORKS PL"
+"testFooter": "FOOTER TRANSLATION WORKS PL",
+"legal": {
+  "terms": {
+    "title": "Warunki korzystania",
+    "subtitle": "Ostatnia aktualizacja: Sierpień 2024",
+    "acceptance": {
+      "title": "1. Akceptacja warunków",
+      "content": "Uzyskując dostęp do strony internetowej ScaleVolt Store i korzystając z niej, akceptujesz i zgadzasz się być związany warunkami i postanowieniami niniejszej umowy. Jeśli nie zgadzasz się przestrzegać powyższego, prosimy nie korzystać z tej usługi."
+    },
+    "use": {
+      "title": "2. Licencja użytkowania",
+      "content": "Zezwolenie jest udzielane na tymczasowe pobranie jednej kopii materiałów (informacji lub oprogramowania) na stronie internetowej ScaleVolt Store wyłącznie do osobistego, niekomercyjnego tymczasowego przeglądania. Jest to udzielenie licencji, a nie przeniesienie tytułu własności, i na mocy tej licencji nie możesz:",
+      "restriction1": "modyfikować lub kopiować materiały",
+      "restriction2": "używać materiałów do celów komercyjnych lub do publicznego wyświetlania",
+      "restriction3": "próbować inżynierii wstecznej jakiegokolwiek oprogramowania zawartego na stronie internetowej",
+      "restriction4": "usuwać jakiekolwiek prawa autorskie lub inne oznaczenia własności z materiałów"
+    },
+    "products": {
+      "title": "3. Produkty i usługi",
+      "content": "ScaleVolt Store świadczy produkty energii słonecznej, stacje ładowania pojazdów elektrycznych i powiązane usługi. Wszystkie produkty podlegają dostępności i mogą zostać wycofane bez uprzedzenia. Specyfikacje produktów i ceny mogą ulegać zmianom."
+    },
+    "orders": {
+      "title": "4. Zamówienia i płatności",
+      "content": "Składając zamówienie, potwierdzasz, że wszystkie podane informacje są dokładne i kompletne. Zastrzegamy sobie prawo odmowy lub anulowania zamówień według naszego uznania. Płatność jest wymagana w momencie składania zamówienia."
+    },
+    "warranty": {
+      "title": "5. Gwarancja i zwroty",
+      "content": "Produkty są objęte gwarancją producenta zgodnie z określonymi warunkami. Zwroty są akceptowane w ciągu 30 dni dla nieużywanych przedmiotów w oryginalnym opakowaniu. Wadliwe przedmioty zostaną wymienione lub zwrócone zgodnie z warunkami gwarancji."
+    },
+    "privacy": {
+      "title": "6. Prywatność i ochrona danych",
+      "content": "Twoja prywatność jest dla nas ważna. Prosimy o zapoznanie się z naszą Polityką prywatności, która również reguluje korzystanie ze strony internetowej, aby zrozumieć nasze praktyki dotyczące gromadzenia i wykorzystywania Twoich danych osobowych."
+    },
+    "liability": {
+      "title": "7. Ograniczenie odpowiedzialności",
+      "content": "W żadnym przypadku ScaleVolt Store lub jego dostawcy nie ponoszą odpowiedzialności za jakiekolwiek szkody (w tym, bez ograniczeń, szkody za utratę danych lub zysków, lub z powodu przerwania działalności) wynikające z korzystania lub niemożności korzystania z materiałów na naszej stronie internetowej."
+    },
+    "changes": {
+      "title": "8. Zmiany warunków",
+      "content": "ScaleVolt Store może w dowolnym momencie zmienić te warunki korzystania bez uprzedzenia. Korzystając z tej strony internetowej, zgadzasz się być związany aktualną wersją tych Warunków korzystania."
+    },
+    "contact": {
+      "title": "9. Informacje kontaktowe",
+      "content": "Jeśli masz pytania dotyczące tych Warunków korzystania, prosimy o kontakt:"
+    },
+    "footer": "Korzystając z naszej strony internetowej, potwierdzasz, że przeczytałeś i zrozumiałeś te Warunki korzystania i zgadzasz się być nimi związany."
+  }
+},
+"privacy": {
+  "title": "Polityka prywatności",
+  "subtitle": "Ostatnia aktualizacja: Sierpień 2024",
+  "introduction": {
+    "title": "1. Wprowadzenie",
+    "content": "ScaleVolt Store ('my', 'nas' lub 'nasz') zobowiązuje się chronić Twoją prywatność. Ta Polityka prywatności wyjaśnia, w jaki sposób gromadzimy, wykorzystujemy, ujawniamy i chronimy Twoje informacje podczas odwiedzania naszej strony internetowej i korzystania z naszych usług."
+  },
+  "collection": {
+    "title": "2. Informacje, które gromadzimy",
+    "personal": {
+      "title": "Dane osobowe",
+      "content": "Możemy gromadzić dane osobowe, które dobrowolnie nam przekazujesz, gdy:",
+      "item1": "Tworzysz konto lub rejestrujesz się na naszej stronie internetowej",
+      "item2": "Składasz zamówienia na produkty lub usługi",
+      "item3": "Kontaktujesz się z naszym zespołem obsługi klienta",
+      "item4": "Zapisujesz się na nasz newsletter lub komunikaty marketingowe"
+    },
+    "automatic": {
+      "title": "Informacje gromadzone automatycznie",
+      "content": "Automatycznie gromadzimy pewne informacje podczas odwiedzania naszej strony internetowej, w tym:",
+      "item1": "Adres IP i dane lokalizacji",
+      "item2": "Typ i wersję przeglądarki",
+      "item3": "Odwiedzone strony i czas spędzony na każdej stronie",
+      "item4": "Informacje o urządzeniu i systemie operacyjnym"
+    }
+  },
+  "use": {
+    "title": "3. Jak wykorzystujemy Twoje informacje",
+    "content": "Wykorzystujemy informacje, które gromadzimy, aby:",
+    "item1": "Przetwarzać i realizować Twoje zamówienia",
+    "item2": "Świadczyć obsługę klienta i odpowiadać na zapytania",
+    "item3": "Wysyłać ważne aktualizacje dotyczące Twoich zamówień",
+    "item4": "Ulepszać naszą stronę internetową i usługi",
+    "item5": "Wysyłać komunikaty marketingowe (za Twoją zgodą)",
+    "item6": "Przestrzegać zobowiązań prawnych"
+  },
+  "sharing": {
+    "title": "4. Udostępnianie i ujawnianie informacji",
+    "content": "Nie sprzedajemy, nie wymieniamy ani nie przekazujemy Twoich danych osobowych stronom trzecim, z wyjątkiem następujących okoliczności:",
+    "item1": "Za Twoją wyraźną zgodą",
+    "item2": "Do przetwarzania płatności (procesory płatności)",
+    "item3": "Do realizacji zamówień (partnerzy dostaw)",
+    "item4": "Do przestrzegania wymogów prawnych",
+    "item5": "Do ochrony naszych praw i bezpieczeństwa"
+  },
+  "security": {
+    "title": "5. Bezpieczeństwo danych",
+    "content": "Wdrażamy odpowiednie techniczne i organizacyjne środki bezpieczeństwa w celu ochrony Twoich danych osobowych przed nieautoryzowanym dostępem, zmianą, ujawnieniem lub zniszczeniem. Jednak żadna metoda transmisji przez Internet nie jest w 100% bezpieczna."
+  },
+  "cookies": {
+    "title": "6. Pliki cookie i technologie śledzenia",
+    "content": "Używamy plików cookie i podobnych technologii śledzenia w celu poprawy Twojego doświadczenia przeglądania, analizy ruchu na stronie internetowej i zrozumienia, skąd pochodzą nasi odwiedzający. Możesz kontrolować ustawienia plików cookie przez preferencje przeglądarki."
+  },
+  "rights": {
+    "title": "7. Twoje prawa",
+    "content": "Masz prawo:",
+    "item1": "Uzyskać dostęp do swoich danych osobowych",
+    "item2": "Poprawić niedokładne informacje",
+    "item3": "Poprosić o usunięcie swoich danych",
+    "item4": "Zrezygnować z komunikatów marketingowych",
+    "item5": "Złożyć skargę do organów nadzorczych"
+  },
+  "children": {
+    "title": "8. Prywatność dzieci",
+    "content": "Nasza strona internetowa nie jest przeznaczona dla dzieci poniżej 13 roku życia. Świadomie nie gromadzimy danych osobowych od dzieci poniżej 13 roku życia. Jeśli jesteś rodzicem lub opiekunem i uważasz, że Twoje dziecko przekazało nam dane osobowe, prosimy o kontakt."
+  },
+  "changes": {
+    "title": "9. Zmiany tej polityki",
+    "content": "Możemy od czasu do czasu aktualizować tę Politykę prywatności. Powiadomimy Cię o wszelkich zmianach, publikując nową Politykę prywatności na tej stronie i aktualizując datę 'Ostatnia aktualizacja'."
+  },
+  "contact": {
+    "title": "10. Skontaktuj się z nami",
+    "content": "Jeśli masz pytania dotyczące tej Polityki prywatności, prosimy o kontakt:"
+  },
+  "footer": "Korzystając z naszej strony internetowej, wyrażasz zgodę na gromadzenie i wykorzystywanie informacji zgodnie z niniejszą Polityką prywatności."
+},
+"faq": {
+  "title": "Często zadawane pytania",
+  "subtitle": "Znajdź odpowiedzi na najczęściej zadawane pytania dotyczące naszych produktów i usług",
+  "shipping": {
+    "question": "Ile czasu zajmuje dostawa?",
+    "answer": "Dostawa zazwyczaj zajmuje 3-5 dni roboczych dla zamówień krajowych i 7-14 dni dla zamówień międzynarodowych. Dostępne są ekspresowe opcje dostawy dla szybszej dostawy."
+  },
+  "warranty": {
+    "question": "Jaka jest Twoja polityka gwarancyjna?",
+    "answer": "Oferujemy standardową 2-letnią gwarancję na wszystkie produkty. Dostępne są rozszerzone opcje gwarancyjne za dodatkową opłatą. Prosimy o kontakt z naszym zespołem wsparcia w sprawach gwarancyjnych."
+  },
+  "returns": {
+    "question": "Czy mogę zwrócić mój zakup?",
+    "answer": "Tak, akceptujemy zwroty w ciągu 30 dni od zakupu dla nieużywanych przedmiotów w oryginalnym opakowaniu. Koszty dostawy przy zwrocie są odpowiedzialnością klienta, chyba że przedmiot jest wadliwy."
+  },
+  "installation": {
+    "question": "Czy świadczycie usługi instalacji?",
+    "answer": "Tak, oferujemy profesjonalne usługi instalacji dla paneli słonecznych i stacji ładowania pojazdów elektrycznych. Nasi certyfikowani technicy zapewniają prawidłową instalację i konfigurację."
+  },
+  "payment": {
+    "question": "Jakie metody płatności akceptujecie?",
+    "answer": "Akceptujemy wszystkie główne karty kredytowe, PayPal, przelewy bankowe i gotówkę przy dostawie dla lokalnych zamówień. Dostępne są również opcje finansowania dla większych zakupów."
+  },
+  "support": {
+    "question": "Jak mogę uzyskać wsparcie techniczne?",
+    "answer": "Nasz zespół wsparcia technicznego jest dostępny przez telefon, e-mail i czat na żywo w godzinach pracy. Oferujemy również kompleksową dokumentację i samouczki wideo dla wszystkich produktów."
+  },
+      "contact": {
+      "title": "Nadal masz pytania?",
+      "subtitle": "Nasz zespół obsługi klienta jest tutaj, aby pomóc Ci z wszelkimi pytaniami lub problemami.",
+      "email": "Wsparcie e-mail",
+      "phone": "Zadzwoń do nas"
+    }
+  },
+  "delivery": {
+    "pageSubtitle": "Kompleksowe informacje o naszej polityce dostawy, gwarancji i zwrotów",
+    "needHelp": "Potrzebujesz pomocy?",
+    "contactSupport": "Nasz zespół obsługi klienta jest tutaj, aby pomóc Ci z wszelkimi pytaniami dotyczącymi dostawy, gwarancji lub zwrotów.",
+    "contactEmail": "Wsparcie e-mail",
+    "contactPhone": "Zadzwoń do nas"
+  }
 }

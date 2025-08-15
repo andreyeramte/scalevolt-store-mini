@@ -23,6 +23,18 @@ const Footer = () => {
       : '+380 96 747 79 13';
   };
   
+  const getAddressByLocale = () => {
+    return currentLocale === 'pl' 
+      ? 'ul. Marszałkowska 142, 00-061 Warszawa, Polska'
+      : 'просп. Валерія Лобановського 56 офіс, Київ, 01001, Україна';
+  };
+  
+  const getBusinessHoursByLocale = () => {
+    return currentLocale === 'pl' 
+      ? 'Pon-Sob: 9:00 - 18:00'
+      : 'Пн-Сб: 9:00 - 18:00';
+  };
+  
   // Debug info
   useEffect(() => {
     console.log('Footer mounted with locale:', currentLocale);
@@ -72,13 +84,10 @@ const Footer = () => {
 
         {/* Contact Information Section */}
         <div className="footer-section">
-          <h3>{currentLocale === 'pl' ? 'Informacje kontaktowe' : 'Контактна інформація'}</h3>
+          <h3>{t('footer.contactInfo')}</h3>
           <ul>
             <li>
-              {currentLocale === 'pl' 
-                ? 'ul. Marszałkowska 142, 00-061 Warszawa, Polska'
-                : 'просп. Валерія Лобановского 56 офіс, Київ, 01001, Україна'
-              }
+              {getAddressByLocale()}
             </li>
             <li>
               <a href={`mailto:${getEmailByLocale()}`}>
@@ -90,7 +99,7 @@ const Footer = () => {
                 {getPhoneByLocale()}
               </a>
             </li>
-            {currentLocale !== 'pl' && <li>Пн-Сб: 9:00 - 18:00</li>}
+            <li>{getBusinessHoursByLocale()}</li>
             {/* Telegram for Ukrainian locale only */}
             {currentLocale === 'uk' && (
               <li className="social-contact-item">
@@ -118,39 +127,39 @@ const Footer = () => {
 
         {/* Support Section */}
         <div className="footer-section">
-          <h3>{currentLocale === 'pl' ? 'Wsparcie' : 'Підтримка'}</h3>
+          <h3>{t('footer.support')}</h3>
           <ul>
             <li>
               <Link to={`/${region}/faq`}>
-                {currentLocale === 'pl' ? 'Pytania i odpowiedzi' : 'Запитання й відповіді'}
+                {t('footer.faq')}
               </Link>
             </li>
             <li>
               <Link to={`/${region}/delivery-warranty-returns`}>
-                {currentLocale === 'pl' ? 'Dostawa, Gwarancja i Zwroty' : 'Доставка, Гарантія та Повернення'}
+                {t('delivery.pageTitle')}
               </Link>
             </li>
             <li>
               <Link to={`/${region}/privacy-policy`}>
-                {currentLocale === 'pl' ? 'Polityka prywatności' : 'Політика конфіденційності'}
+                {t('footer.privacy')}
               </Link>
             </li>
-            <li><span className="footer-link-disabled">{currentLocale === 'pl' ? 'Obsługa klienta' : 'Підтримка клієнтів'}</span></li>
+            <li><span className="footer-link-disabled">{t('footer.customerSupport')}</span></li>
           </ul>
         </div>
 
         {/* Legal Section */}
         <div className="footer-section">
-          <h3>{currentLocale === 'pl' ? 'Informacje prawne' : 'Юридична інформація'}</h3>
+          <h3>{t('footer.legal')}</h3>
           <ul>
             <li>
               <Link to={`/${region}/legal-terms`}>
-                {currentLocale === 'pl' ? 'Warunki korzystania' : 'Умови використання'}
+                {t('footer.terms')}
               </Link>
             </li>
             <li>
               <Link to={`/${region}/privacy-policy`}>
-                {currentLocale === 'pl' ? 'Polityka prywatności' : 'Політика конфіденційності'}
+                {t('footer.privacy')}
               </Link>
             </li>
           </ul>
@@ -158,7 +167,7 @@ const Footer = () => {
 
         {/* Social Media & Apps */}
         <div className="footer-section">
-          <h3>{currentLocale === 'pl' ? 'Obserwuj nas' : 'Слідкуйте за нами'}</h3>
+          <h3>{t('footer.followUs')}</h3>
           <div className="social-icons">
             <a href="#" aria-label="Telegram">
               <img src="/images/Footer/telegram-icon.svg" alt="Telegram" />

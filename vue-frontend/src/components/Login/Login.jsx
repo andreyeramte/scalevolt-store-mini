@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css'; // or use Login.module.css if you prefer CSS Modules
 
 export default function Login() {
-  // Replace these with your actual auth logic:
-  const signInWithProvider = (provider) => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Temporary mock login function
+  const signInWithProvider = async (provider) => {
+    setIsLoading(true);
     console.log(`Signing in with ${provider}`);
-    // e.g. auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Mock successful login
+    localStorage.setItem('user', JSON.stringify({
+      id: 'mock-user-123',
+      email: 'user@example.com',
+      name: 'Demo User',
+      provider: provider
+    }));
+    
+    setIsLoading(false);
+    
+    // Navigate to home page
+    navigate('/ua');
+    
+    // Show success message
+    alert(`Successfully logged in with ${provider}! (This is a demo - no real authentication)`);
   };
 
   return (
@@ -17,23 +40,27 @@ export default function Login() {
         <button
           onClick={() => signInWithProvider('google')}
           className="login-button google"
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.7 : 1 }}
         >
           <img
             src="/Login/google-login-icon.svg"
             alt="Google Icon"
           />
-          Continue with Google
+          {isLoading ? 'Signing in...' : 'Continue with Google'}
         </button>
 
         <button
           onClick={() => signInWithProvider('apple')}
           className="login-button apple"
+          disabled={isLoading}
+          style={{ opacity: isLoading ? 0.7 : 1 }}
         >
           <img
             src="/Login/apple-login-icon.svg"
             alt="Apple Icon"
           />
-          Continue with Apple
+          {isLoading ? 'Signing in...' : 'Continue with Apple'}
         </button>
       </div>
 

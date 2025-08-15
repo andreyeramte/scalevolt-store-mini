@@ -1,0 +1,111 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "country": { "ukraine": "Ukraine", "poland": "Poland" },
+    "language": { "ukrainian": "Ukrainian", "polish": "Polish", "english": "English" }
+  },
+  "legal": {
+    "privacyPolicy": "Privacy Policy"
+  },
+  "categories": {
+    "evChargers": {
+      "title": "EV Charging Devices and Components",
+      "subtitle": "Fast and reliable charging stations for electric vehicles"
+    },
+    "solarSystems": {
+      "title": "Residential and Commercial Solar Systems",
+      "subtitle": "Complete solar solutions for homes and businesses"
+    },
+    "newCategories": {
+      "title": "Explore New Categories",
+      "subtitle": "Innovative solutions for your needs"
+    }
+  },
+  "products": {
+    "noProducts": "No products found",
+    "noProductsDescription": "We couldn't find any products in this category."
+  },
+  "product": {
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "addToCart": "Add to Cart"
+  },
+  "privacy": {
+    "introduction": {
+      "title": "Introduction",
+      "text": "SCALEVOLT protects your privacy and personal data. This Privacy Policy explains how we collect, use, and protect your information."
+    },
+    "dataCollection": {
+      "title": "Data Collection",
+      "text": "We collect the following types of information:",
+      "personalInfo": "Personal information (name, address, contact details)",
+      "contactInfo": "Contact information (phone, email)",
+      "paymentInfo": "Payment information (for order processing)",
+      "usageData": "Website and product usage data"
+    },
+    "dataUsage": {
+      "title": "Data Usage",
+      "text": "Your data is used for:",
+      "processing": "Processing orders and providing services",
+      "communication": "Communicating with you about orders and support",
+      "improvement": "Improving our products and services",
+      "legal": "Fulfilling legal obligations"
+    },
+    "dataSharing": {
+      "title": "Data Sharing",
+      "text": "We may share your data with:",
+      "serviceProviders": "Service providers (delivery, support)",
+      "paymentProcessors": "Payment processors for payment processing",
+      "legalRequirements": "According to legal requirements",
+      "businessTransfer": "In case of company ownership change"
+    },
+    "dataSecurity": {
+      "title": "Data Security",
+      "text": "We implement appropriate technical and organizational measures to protect your personal data from unauthorized access, alteration, disclosure, or destruction."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "Our website uses cookies to improve your experience. You can manage cookie settings in your browser."
+    },
+    "userRights": {
+      "title": "User Rights",
+      "text": "You have the right to:",
+      "access": "Access your personal data",
+      "correction": "Correct inaccurate data",
+      "deletion": "Delete your data",
+      "portability": "Transfer your data",
+      "objection": "Object to data processing"
+    },
+    "contact": {
+      "title": "Contact Information",
+      "text": "For questions about this Privacy Policy, contact us:",
+      "email": "Email",
+      "address": "Address",
+      "companyAddress": "123 Business Street, Warsaw, Poland"
+    },
+    "changes": {
+      "title": "Changes to Policy",
+      "text": "We may periodically update this Privacy Policy. Changes take effect from the moment they are published on our website."
+    },
+    "effectiveDate": {
+      "title": "Effective Date",
+      "text": "This Privacy Policy takes effect from January 1, 2025."
+    }
+  },
+  "chatbot": {
+    "welcome": "Hello! I'm your ScaleVolt AI assistant. I can help you with:",
+    "title": "ScaleVolt AI Assistant",
+    "toggle": "Toggle chat",
+    "close": "Close chat",
+    "inputPlaceholder": "Type your message...",
+    "typing": "AI is typing...",
+    "error": "Sorry, I'm having trouble right now. Please try again or contact our support team.",
+    "recommendedProducts": "Recommended Products:",
+    "suggestions": {
+      "products": "Browse products",
+      "installation": "Installation help",
+      "quote": "Get a quote",
+      "support": "Technical support"
+    }
+  }
+} 

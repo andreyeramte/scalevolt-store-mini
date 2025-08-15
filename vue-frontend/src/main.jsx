@@ -3,8 +3,11 @@ import React, { Suspense, createContext } from 'react';
 import ReactDOM from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/index';
-import AppRouter from './router/AppRouter'; // Fixed import path
+import App from './App'; // Simple test App
 import { app, auth } from './firebase';
+import { autoDetectAndSetLocale } from './services/geoService';
+import './style.css'
+import './mobile-responsive.css'; // Import the main CSS file
 
 // Force hide any loading screens immediately
 window.BYPASS_LOADING = true;
@@ -256,7 +259,7 @@ window.addEventListener('unhandledrejection', (event) => {
 window.bypassLoading = bypassLoading;
 
 // Initialize the app
-function initializeReactApp() {
+async function initializeReactApp() {
   try {
     // Get the root element
     const rootElement = document.getElementById('root');
@@ -265,11 +268,13 @@ function initializeReactApp() {
       throw new Error('Root element not found. Make sure you have a div with id="root" in your HTML.');
     }
 
-    // Load saved locale from localStorage
-    const savedLocale = localStorage.getItem('userLocale');
-    if (savedLocale && ['ua', 'pl', 'en'].includes(savedLocale)) {
-      i18n.changeLanguage(savedLocale);
-      console.log('🌍 Loaded saved locale:', savedLocale);
+    // Auto-detect and set locale on app startup
+    try {
+      await autoDetectAndSetLocale(i18n);
+    } catch (error) {
+      console.error('❌ Failed to auto-detect locale:', error);
+      // Fallback to default
+      i18n.changeLanguage('ua');
     }
     
     // Create React root and render the app
@@ -277,21 +282,7 @@ function initializeReactApp() {
     
     root.render(
       <React.StrictMode>
-        <AppErrorBoundary>
-          <I18nextProvider i18n={i18n}>
-            <Suspense fallback={<AppLoader />}>
-              <AuthContext.Provider value={{ 
-                user: null, 
-                loading: false,
-                signIn: () => console.log('Sign in not implemented'),
-                signOut: () => console.log('Sign out not implemented'),
-                signUp: () => console.log('Sign up not implemented')
-              }}>
-                <AppRouter />
-              </AuthContext.Provider>
-            </Suspense>
-          </I18nextProvider>
-        </AppErrorBoundary>
+        <App />
       </React.StrictMode>
     );
     

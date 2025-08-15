@@ -49,6 +49,14 @@ const ProductRental = lazy(() => import('../views/ProductRental'));
 const CustomerCases = lazy(() => import('../views/CustomerCases'));
 const FAQView = lazy(() => import('../views/FAQView'));
 const TranslationManager = lazy(() => import('../views/admin/TranslationManager'));
+const AdminDashboard = lazy(() => import('../views/admin/AdminDashboard'));
+const ProductManagement = lazy(() => import('../views/admin/ProductManagement'));
+const AdminLogin = lazy(() => import('../views/admin/AdminLogin'));
+
+// New consistent category pages
+const EVChargersView = lazy(() => import('../views/Products/EVChargersView'));
+const SolarSystemsView = lazy(() => import('../views/Products/SolarSystemsView'));
+const NewCategoriesView = lazy(() => import('../views/Products/NewCategoriesView'));
 
 // Utils
 import { detectUserLocation, getLanguageFromCountry } from '../utils/locationDetector';
@@ -265,6 +273,35 @@ const router = createBrowserRouter([
     path: "/",
     element: <Navigate to={`/${DEFAULT_REGION}`} replace />,
   },
+  // Global admin routes (outside region structure)
+  {
+    path: "/admin/login",
+    element: withLazyLoading(AdminLogin)(),
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        {withLazyLoading(AdminDashboard)()}
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/products",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        {withLazyLoading(ProductManagement)()}
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/admin/translations",
+    element: (
+      <ProtectedRoute requireAuth={true}>
+        {withLazyLoading(TranslationManager)()}
+      </ProtectedRoute>
+    ),
+  },
   {
     path: "/:region",
     element: <RegionLayout />,
@@ -324,6 +361,26 @@ const router = createBrowserRouter([
       
       // Admin routes
       {
+        path: "admin/login",
+        element: withLazyLoading(AdminLogin)(),
+      },
+      {
+        path: "admin",
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            {withLazyLoading(AdminDashboard)()}
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "admin/products",
+        element: (
+          <ProtectedRoute requireAuth={true}>
+            {withLazyLoading(ProductManagement)()}
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "admin/translations",
         element: (
           <ProtectedRoute requireAuth={true}>
@@ -344,6 +401,20 @@ const router = createBrowserRouter([
       {
         path: "портативна-електростанція",
         element: withLazyLoading(PortablePowerStationView)(),
+      },
+      
+      // New consistent category routes
+      {
+        path: "ev-chargers",
+        element: withLazyLoading(EVChargersView)(),
+      },
+      {
+        path: "solar-systems",
+        element: withLazyLoading(SolarSystemsView)(),
+      },
+      {
+        path: "new-categories",
+        element: withLazyLoading(NewCategoriesView)(),
       },
       
       // Authentication routes
@@ -457,6 +528,8 @@ const router = createBrowserRouter([
         path: "faq",
         element: withLazyLoading(FAQView)(),
       },
+      
+
       
       // Error handling
       {

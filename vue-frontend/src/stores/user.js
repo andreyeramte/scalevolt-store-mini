@@ -1,6 +1,6 @@
-import create from 'zustand';
+import { create } from 'zustand';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebase';
+import { auth } from '../firebase';
 
 const useUserStore = create((set, get) => ({
   user: null,

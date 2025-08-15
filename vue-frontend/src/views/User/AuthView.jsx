@@ -92,6 +92,13 @@ const AuthView = () => {
     setIsLoading(true);
 
     try {
+      // Check if Firebase auth is available
+      if (!auth) {
+        setError('Authentication service not available. Please try again later.');
+        setIsLoading(false);
+        return;
+      }
+
       // For registration, verify passwords match
       if (!isLogin && formData.password !== formData.confirmPassword) {
         setError(t('register.passwordMismatch'));
@@ -142,6 +149,13 @@ const AuthView = () => {
     setIsLoading(true);
     
     try {
+      // Check if Firebase auth is available
+      if (!auth) {
+        setError('Authentication service not available. Please try again later.');
+        setIsLoading(false);
+        return;
+      }
+
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
@@ -162,6 +176,13 @@ const AuthView = () => {
     setIsLoading(true);
     
     try {
+      // Check if Firebase auth is available
+      if (!auth) {
+        setError('Authentication service not available. Please try again later.');
+        setIsLoading(false);
+        return;
+      }
+
       const provider = new OAuthProvider('apple.com');
       const result = await signInWithPopup(auth, provider);
       
@@ -187,6 +208,13 @@ const AuthView = () => {
     setIsLoading(true);
 
     try {
+      // Check if Firebase auth is available
+      if (!auth) {
+        setError('Authentication service not available. Please try again later.');
+        setIsLoading(false);
+        return;
+      }
+
       await sendPasswordResetEmail(auth, formData.email);
       alert(t('login.resetEmailSent'));
     } catch (error) {

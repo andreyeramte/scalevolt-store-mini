@@ -55,39 +55,28 @@ const CategoryView = ({ categoryName = '', currentPath = '', categoryId = null }
     'homeView.liftsAndCranes'
   ];
 
-  // Mock products (replace with your actual mock data import)
-  const mockProducts = [
-    {
-      id: 1,
-      name: 'Дизельний генератор 50кВт',
-      type: 'Генератори',
-      price: 25000,
-      image: '/images/generator-1.jpg',
-      brand: 'ScaleVolt',
-      rentalPrices: { day: 150, week: 800, month: 2500 }
-    },
-    {
-      id: 2,
-      name: 'Промисловий генератор 150кВт',
-      type: 'Промислові генератори для важких навантажень (100 кВт+)',
-      price: 85000,
-      image: '/images/generator-2.jpg',
-      brand: 'ScaleVolt Pro',
-      rentalPrices: { day: 350, week: 2000, month: 7500 }
-    }
-  ];
-
-  // Mock product service (replace with your actual service)
+  // Product service - using real API
   const productService = {
     getProducts: async (options = {}) => {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      return {
-        data: {
-          data: mockProducts // For category ID response structure
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4242/api';
+        const response = await fetch(`${API_URL}/products`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      };
+        
+        const data = await response.json();
+        return { data: { data } };
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        return { data: { data: [] } };
+      }
     }
   };
 
@@ -152,26 +141,8 @@ const CategoryView = ({ categoryName = '', currentPath = '', categoryId = null }
         console.warn('API fetch failed, falling back to mock products', apiError);
       }
 
-      // Fallback to mock data with rental information
-      const mockFilteredProducts = mockProducts
-        .filter(product => 
-          product.type === databaseType || 
-          product.type?.toLowerCase() === databaseType.toLowerCase()
-        )
-        .map(product => {
-          const isRental = rentalCategoryKeys.includes(typeKey);
-          return {
-            ...product,
-            isRentalItem: isRental,
-            rentalPrices: isRental ? (product.rentalPrices || {
-              day: 150,
-              week: 300,
-              month: 600
-            }) : {}
-          };
-        });
-      
-      setProducts(mockFilteredProducts);
+      // API failed, set empty products
+      setProducts([]);
     } catch (error) {
       console.error('Error fetching products by type:', error);
       setProducts([]);

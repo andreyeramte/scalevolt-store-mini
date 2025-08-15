@@ -1,293 +1,117 @@
 // FILE: src/App.jsx
-import React from 'react';
+import React, { Suspense } from 'react';
 import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n/index';
 import AppRouter from './router/AppRouter';
-import i18n from './i18n';
+import AIChatbot from './components/Chatbot/AIChatbot';
 
-// This is your main App component that wraps everything
+// Simple loading spinner
+const LoadingSpinner = () => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '100vh',
+    backgroundColor: '#f8f9fa',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
+  }}>
+    <div style={{
+      width: '60px',
+      height: '60px',
+      border: '4px solid #e3e3e3',
+      borderTop: '4px solid #007bff',
+      borderRadius: '50%',
+      animation: 'spin 1s linear infinite',
+      marginBottom: '1.5rem'
+    }}></div>
+    <h2 style={{ color: '#333', fontSize: '1.5rem', marginBottom: '0.5rem', fontWeight: '600' }}>
+      ScaleVolt Store
+    </h2>
+    <p style={{ color: '#6c757d', fontSize: '14px', margin: 0 }}>
+      Loading your energy solutions...
+    </p>
+    <style>{`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `}</style>
+  </div>
+);
+
+// Error boundary for safety
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('🚨 App Error:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh',
+          padding: '20px',
+          textAlign: 'center',
+          backgroundColor: '#f8f9fa',
+          fontFamily: 'system-ui, -apple-system, sans-serif'
+        }}>
+          <div style={{
+            maxWidth: '600px',
+            background: 'white',
+            padding: '2rem',
+            borderRadius: '8px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+          }}>
+            <h1 style={{ color: '#dc3545', marginBottom: '1rem', fontSize: '1.5rem' }}>
+              ⚠️ Something went wrong
+            </h1>
+            <p style={{ color: '#6c757d', marginBottom: '1.5rem', fontSize: '1rem' }}>
+              ScaleVolt Store encountered an error. Please try refreshing the page.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: '12px 24px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                fontSize: '14px',
+                fontWeight: '500'
+              }}
+            >
+              🔄 Refresh Page
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   return (
-    <I18nextProvider i18n={i18n}>
-      <div className="App">
-        <AppRouter />
-        
-        {/* Global styles */}
-        <style jsx global>{`
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
-
-          html, body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #333;
-            background-color: #ffffff;
-          }
-
-          #root {
-            min-height: 100vh;
-          }
-
-          .App {
-            min-height: 100vh;
-            width: 100%;
-          }
-
-          /* Container utilities */
-          .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-          }
-
-          /* Responsive utilities */
-          @media (max-width: 768px) {
-            .container {
-              padding: 0 15px;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .container {
-              padding: 0 10px;
-            }
-          }
-
-          /* Common utility classes */
-          .text-center {
-            text-align: center;
-          }
-
-          .text-left {
-            text-align: left;
-          }
-
-          .text-right {
-            text-align: right;
-          }
-
-          .mt-1 { margin-top: 0.25rem; }
-          .mt-2 { margin-top: 0.5rem; }
-          .mt-3 { margin-top: 0.75rem; }
-          .mt-4 { margin-top: 1rem; }
-          .mt-5 { margin-top: 1.25rem; }
-
-          .mb-1 { margin-bottom: 0.25rem; }
-          .mb-2 { margin-bottom: 0.5rem; }
-          .mb-3 { margin-bottom: 0.75rem; }
-          .mb-4 { margin-bottom: 1rem; }
-          .mb-5 { margin-bottom: 1.25rem; }
-
-          .p-1 { padding: 0.25rem; }
-          .p-2 { padding: 0.5rem; }
-          .p-3 { padding: 0.75rem; }
-          .p-4 { padding: 1rem; }
-          .p-5 { padding: 1.25rem; }
-
-          .d-flex {
-            display: flex;
-          }
-
-          .d-block {
-            display: block;
-          }
-
-          .d-none {
-            display: none;
-          }
-
-          .justify-center {
-            justify-content: center;
-          }
-
-          .justify-between {
-            justify-content: space-between;
-          }
-
-          .align-center {
-            align-items: center;
-          }
-
-          .flex-column {
-            flex-direction: column;
-          }
-
-          .flex-wrap {
-            flex-wrap: wrap;
-          }
-
-          .w-100 {
-            width: 100%;
-          }
-
-          .h-100 {
-            height: 100%;
-          }
-
-          /* Button styles */
-          .btn {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-            text-decoration: none;
-            text-align: center;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
-          }
-
-          .btn:hover {
-            opacity: 0.9;
-          }
-
-          .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: #fff;
-          }
-
-          .btn-secondary {
-            background-color: #6c757d;
-            border-color: #6c757d;
-            color: #fff;
-          }
-
-          .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
-            color: #fff;
-          }
-
-          .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-            color: #fff;
-          }
-
-          /* Form styles */
-          .form-control {
-            display: block;
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #495057;
-            background-color: #fff;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-          }
-
-          .form-control:focus {
-            color: #495057;
-            background-color: #fff;
-            border-color: #80bdff;
-            outline: 0;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-          }
-
-          .form-group {
-            margin-bottom: 1rem;
-          }
-
-          .form-label {
-            display: inline-block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-          }
-
-          /* Card styles */
-          .card {
-            background: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-          }
-
-          .card-header {
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 0;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-          }
-
-          .card-body {
-            padding: 1.25rem;
-          }
-
-          .card-footer {
-            padding: 0.75rem 1.25rem;
-            background-color: #f8f9fa;
-            border-top: 1px solid #dee2e6;
-          }
-
-          /* Alert styles */
-          .alert {
-            padding: 0.75rem 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid transparent;
-            border-radius: 0.25rem;
-          }
-
-          .alert-success {
-            color: #155724;
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-          }
-
-          .alert-danger {
-            color: #721c24;
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-          }
-
-          .alert-warning {
-            color: #856404;
-            background-color: #fff3cd;
-            border-color: #ffeaa7;
-          }
-
-          .alert-info {
-            color: #0c5460;
-            background-color: #d1ecf1;
-            border-color: #bee5eb;
-          }
-
-          /* Loading animation */
-          .loading-dots {
-            display: inline-block;
-          }
-
-          .loading-dots:after {
-            content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
-          }
-
-          @keyframes dots {
-            0%, 20% {
-              color: rgba(0, 0, 0, 0);
-              text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
-            }
-            40% {
-              color: black;
-              text-shadow: 0.25em 0 0 rgba(0, 0, 0, 0), 0.5em 0 0 rgba(0, 0, 0, 0);
-            }
-            60% {
-              text-shadow: 0.25em 0 0 black, 0.5em 0 0 rgba(0, 0, 0, 0);
-            }
-            80%, 100% {
-              text-shadow: 0.25em 0 0 black, 0.5em 0 0 black;
-            }
-          }
-        `}</style>
-      </div>
-    </I18nextProvider>
+    <ErrorBoundary>
+      <I18nextProvider i18n={i18n}>
+        <Suspense fallback={<LoadingSpinner />}>
+          <AppRouter />
+          <AIChatbot />
+        </Suspense>
+      </I18nextProvider>
+    </ErrorBoundary>
   );
 }
 

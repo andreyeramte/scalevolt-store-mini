@@ -4,13 +4,12 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import ua from './locales/ua.json';
 import pl from './locales/pl.json';
-// Optionally, add en.json if you have it
-// import en from './locales/en.json';
+import en from './locales/en.json';
 
 const resources = {
   ua: { translation: ua },
   pl: { translation: pl },
-  // en: { translation: en },
+  en: { translation: en },
 };
 
 const defaultLocale = 'ua';
