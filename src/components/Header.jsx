@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useCart } from '../contexts/CartContext.jsx'
-import LanguageSelector from './LanguageSelector'
+import LanguageSwitcher from './LanguageSwitcher'
 import DropdownMenu from './DropdownMenu'
 
 function Header() {
@@ -56,7 +56,7 @@ function Header() {
               <span>🌍 {t('header.freeDelivery')}</span>
               <span>📞 {t('header.phone')}</span>
             </div>
-            <LanguageSelector />
+            <LanguageSwitcher />
           </div>
         </div>
 
@@ -106,7 +106,7 @@ function Header() {
             <div className="flex items-center space-x-4 md:space-x-6">
               {/* Language Selector - Mobile */}
               <div className="md:hidden">
-                <LanguageSelector />
+                <LanguageSwitcher />
               </div>
 
               {/* User Account */}

@@ -5,9 +5,12 @@ import { useCart } from '../contexts/CartContext.jsx'
 import InstallationModal from './InstallationModal'
 
 function ProductCard({ product }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { addToCart } = useCart()
   const [showInstallationModal, setShowInstallationModal] = useState(false)
+  
+  // Get the current language
+  const currentLang = i18n.language
 
   const handleAddToCart = () => {
     addToCart(product)
@@ -22,8 +25,8 @@ function ProductCard({ product }) {
         <div className="relative h-40 sm:h-48 overflow-hidden">
           <Link to={`/products/${product.id}`}>
             <img
-              src={product.image || '/images/HomeView/solar-panel.png'}
-              alt={product.name}
+              src={product.images?.[0] || '/images/HomeView/solar-panel.png'}
+              alt={product[`name_${currentLang}`] || product.name_en || product.name}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               onError={(e) => {
                 e.target.src = '/images/HomeView/solar-panel.png'
@@ -34,11 +37,11 @@ function ProductCard({ product }) {
           {/* Stock Badge */}
           <div className="absolute top-2 right-2 sm:top-3 sm:right-3">
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              product.stock > 0 
+              product.in_stock 
                 ? 'bg-green-100 text-green-800' 
                 : 'bg-red-100 text-red-800'
             }`}>
-              {product.stock > 0 ? `${product.stock} in stock` : t('product.outOfStock')}
+              {product.in_stock ? t('product.inStock') : t('product.outOfStock')}
             </span>
           </div>
         </div>
@@ -49,7 +52,7 @@ function ProductCard({ product }) {
           <div className="mb-3 sm:mb-4">
             <Link to={`/products/${product.id}`}>
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 group-hover:text-green-600 transition-colors duration-200 line-clamp-2">
-                {product.name}
+                {product[`name_${currentLang}`] || product.name_en || product.name}
               </h3>
             </Link>
             
@@ -73,9 +76,9 @@ function ProductCard({ product }) {
               </div>
             )}
             
-            {product.description && (
+            {product[`description_${currentLang}`] && (
               <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-3 sm:mb-4">
-                {product.description}
+                {product[`description_${currentLang}`]}
               </p>
             )}
           </div>
@@ -85,10 +88,10 @@ function ProductCard({ product }) {
             {/* Add to Cart Button */}
             <button
               onClick={handleAddToCart}
-              disabled={product.stock <= 0}
+              disabled={!product.in_stock}
               className="w-full bg-green-600 text-white py-2.5 sm:py-3 px-3 sm:px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
             >
-              {product.stock > 0 ? t('product.addToCart') : t('product.outOfStock')}
+              {product.in_stock ? t('product.addToCart') : t('product.outOfStock')}
             </button>
             
             {/* Order Installation Button */}

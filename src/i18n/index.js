@@ -1,12 +1,10 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import en from './locales/en.json'
-import ua from './locales/ua.json'
 import pl from './locales/pl.json'
 
 const resources = {
   en: { translation: en },
-  ua: { translation: ua },
   pl: { translation: pl },
 }
 
@@ -14,8 +12,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en',
-    fallbackLng: 'en',
+    lng: 'pl', // Default language is Polish
+    fallbackLng: 'pl',
+    supportedLngs: ['en', 'pl'], // Only support EN and PL
     interpolation: { escapeValue: false },
     keySeparator: false,
   })

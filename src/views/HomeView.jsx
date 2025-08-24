@@ -5,6 +5,7 @@ import ProductGrid from '../components/ProductGrid'
 import Swiper from '../components/Swiper'
 import AdBox from '../components/AdBox'
 import CategoryPromotionBox from '../components/CategoryPromotionBox'
+import supabaseService from '../services/supabaseService'
 
 function HomeView() {
   const { t } = useTranslation()
@@ -77,11 +78,8 @@ function HomeView() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch('/api/products')
-      if (!response.ok) {
-        throw new Error('Failed to fetch products')
-      }
-      const data = await response.json()
+      // Fetch only the 3 mini products from Supabase
+      const data = await supabaseService.getMiniProducts()
       setProducts(data)
     } catch (err) {
       setError(err.message)
