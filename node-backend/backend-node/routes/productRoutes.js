@@ -8,57 +8,83 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Mock data for when database is not available
+// Mock data for when database is not available - Mini Launch Products Only
 let mockProducts = [
   {
-    id: 1,
-    name: 'Solar Panel 100W',
-    description: 'High efficiency solar panel for residential use',
-    price: 150.00,
-    stock: 10,
-    category: 'solar-panels',
-    brand: 'ScaleVolt',
-    sku: 'SP-100W-001',
-    available_regions: ['PL', 'UA'],
+    id: 'mini-solar-panel-001',
+    name_en: 'Portable Solar Panel 100W',
+    name_pl: 'Przenośny Panel Słoneczny 100W',
+    description_en: 'High-efficiency portable solar panel perfect for camping, RVs, and emergency power needs. Lightweight and foldable design with built-in kickstand.',
+    description_pl: 'Wysokowydajny przenośny panel słoneczny idealny do kempingu, kamperów i awaryjnych potrzeb energetycznych. Lekka i składana konstrukcja ze wbudowaną podpórką.',
+    price: 299.99,
+    currency: 'EUR',
+    category: 'portable-solar',
+    images: [
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&h=300&fit=crop'
+    ],
+    specs: {
+      power: '100W',
+      voltage: '12V',
+      efficiency: '22%',
+      weight: '2.5kg',
+      dimensions: '1200 x 540 x 25mm'
+    },
+    in_stock: true,
+    featured: true,
+    available_regions: ['PL', 'EN'],
     created_at: new Date(),
     updated_at: new Date()
   },
   {
-    id: 2,
-    name: 'Battery Pack 24V 100Ah',
-    description: 'Lithium battery pack for solar systems',
-    price: 800.00,
-    stock: 5,
-    category: 'batteries',
-    brand: 'ScaleVolt',
-    sku: 'BP-24V-100Ah-001',
-    available_regions: ['PL', 'UA'],
+    id: 'mini-power-station-001',
+    name_en: 'Portable Power Station 1000Wh',
+    name_pl: 'Przenośna Stacja Energetyczna 1000Wh',
+    description_en: 'Compact and powerful portable power station with 1000Wh capacity. Features multiple output ports, fast charging, and LCD display for easy monitoring.',
+    description_pl: 'Kompaktowa i wydajna przenośna stacja energetyczna o pojemności 1000Wh. Posiada wiele portów wyjściowych, szybkie ładowanie i wyświetlacz LCD do łatwego monitorowania.',
+    price: 899.99,
+    currency: 'EUR',
+    category: 'portable-power',
+    images: [
+      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=300&fit=crop'
+    ],
+    specs: {
+      capacity: '1000Wh',
+      output_power: '1000W',
+      ports: 'AC, DC, USB-C, USB-A',
+      weight: '8.5kg',
+      dimensions: '300 x 200 x 150mm'
+    },
+    in_stock: true,
+    featured: true,
+    available_regions: ['PL', 'EN'],
     created_at: new Date(),
     updated_at: new Date()
   },
   {
-    id: 3,
-    name: 'Inverter 1000W Pure Sine Wave',
-    description: 'Pure sine wave inverter for sensitive electronics',
-    price: 300.00,
-    stock: 8,
-    category: 'inverters',
-    brand: 'ScaleVolt',
-    sku: 'INV-1000W-001',
-    available_regions: ['PL', 'UA'],
-    created_at: new Date(),
-    updated_at: new Date()
-  },
-  {
-    id: 4,
-    name: 'EV Charging Station Level 2',
-    description: 'Level 2 electric vehicle charging station',
-    price: 1200.00,
-    stock: 3,
-    category: 'ev-chargers',
-    brand: 'ScaleVolt',
-    sku: 'EV-L2-001',
-    available_regions: ['PL', 'UA'],
+    id: 'mini-powerwall-001',
+    name_en: 'Home Battery Pack 10kWh',
+    name_pl: 'Domowy Pakiet Baterii 10kWh',
+    description_en: 'Professional home energy storage solution with 10kWh capacity. Seamlessly integrates with solar panels and provides backup power during outages.',
+    description_pl: 'Profesjonalne rozwiązanie do magazynowania energii domowej o pojemności 10kWh. Bezproblemowo integruje się z panelami słonecznymi i zapewnia zasilanie awaryjne podczas przerw.',
+    price: 4999.99,
+    currency: 'EUR',
+    category: 'home-battery',
+    images: [
+      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/products/photo-1621905252507-b35492cc74b4?w=400&h=300&fit=crop'
+    ],
+    specs: {
+      capacity: '10kWh',
+      voltage: '48V',
+      cycles: '6000+',
+      warranty: '10 years',
+      installation: 'Wall-mounted'
+    },
+    in_stock: true,
+    featured: true,
+    available_regions: ['PL', 'EN'],
     created_at: new Date(),
     updated_at: new Date()
   }

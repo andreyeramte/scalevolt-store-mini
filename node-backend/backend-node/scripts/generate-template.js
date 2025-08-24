@@ -3,51 +3,58 @@ const xlsx = require('xlsx');
 const path = require('path');
 const fs = require('fs');
 
-// Create a sample product data structure
+// Create a sample product data structure - Mini Launch Products Only
 const sampleProducts = [
   {
-    SKU: 'SAMPLE-001',
-    Title: 'Sample Product 1',
-    DefaultName: 'Sample Product One',
-    Price: 99.99,
-    OriginalPrice: 129.99,
-    Image: 'https://example.com/image1.jpg',
-    Images: JSON.stringify(['https://example.com/image1_1.jpg', 'https://example.com/image1_2.jpg']),
-    Brand: 'Sample Brand',
-    Type: 'Electronics',
-    Model: 'SB-X100',
-    Quantity: '1 piece',
-    Stock: 25,
-    Weight: 1.5,
-    Dimensions: '10 x 5 x 2 inches',
-    Color: 'Black',
-    Material: 'Plastic',
-    Features: 'Waterproof, Shockproof',
-    Specifications: 'Power: 5V, Battery: 3000mAh',
-    Installation: 'Yes',
-    Warranty: '1 Year Manufacturer Warranty'
+    id: 'mini-solar-panel-001',
+    name_en: 'Portable Solar Panel 100W',
+    name_pl: 'Przenośny Panel Słoneczny 100W',
+    description_en: 'High-efficiency portable solar panel perfect for camping, RVs, and emergency power needs.',
+    description_pl: 'Wysokowydajny przenośny panel słoneczny idealny do kempingu, kamperów i awaryjnych potrzeb energetycznych.',
+    price: 299.99,
+    currency: 'EUR',
+    category: 'portable-solar',
+    images: JSON.stringify([
+      'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=400&h=300&fit=crop'
+    ]),
+    specs: 'Power: 100W, Voltage: 12V, Efficiency: 22%',
+    in_stock: true,
+    featured: true
   },
   {
-    SKU: 'SAMPLE-002',
-    Title: 'Sample Product 2',
-    DefaultName: 'Sample Product Two',
-    Price: 49.99,
-    OriginalPrice: 59.99,
-    Image: 'https://example.com/image2.jpg',
-    Images: JSON.stringify(['https://example.com/image2_1.jpg', 'https://example.com/image2_2.jpg']),
-    Brand: 'Another Brand',
-    Type: 'Accessories',
-    Model: 'AB-Y200',
-    Quantity: '1 piece',
-    Stock: 50,
-    Weight: 0.5,
-    Dimensions: '5 x 3 x 1 inches',
-    Color: 'White',
-    Material: 'Metal',
-    Features: 'Compact, Lightweight',
-    Specifications: 'Capacity: 32GB, Speed: 100MB/s',
-    Installation: 'No',
-    Warranty: '6 Month Limited Warranty'
+    id: 'mini-power-station-001',
+    name_en: 'Portable Power Station 1000Wh',
+    name_pl: 'Przenośna Stacja Energetyczna 1000Wh',
+    description_en: 'Compact and powerful portable power station with 1000Wh capacity.',
+    description_pl: 'Kompaktowa i wydajna przenośna stacja energetyczna o pojemności 1000Wh.',
+    price: 899.99,
+    currency: 'EUR',
+    category: 'portable-power',
+    images: JSON.stringify([
+      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=300&fit=crop'
+    ]),
+    specs: 'Capacity: 1000Wh, Output Power: 1000W, Ports: AC, DC, USB-C, USB-A',
+    in_stock: true,
+    featured: true
+  },
+  {
+    id: 'mini-powerwall-001',
+    name_en: 'Home Battery Pack 10kWh',
+    name_pl: 'Domowy Pakiet Baterii 10kWh',
+    description_en: 'Professional home energy storage solution with 10kWh capacity.',
+    description_pl: 'Profesjonalne rozwiązanie do magazynowania energii domowej o pojemności 10kWh.',
+    price: 4999.99,
+    currency: 'EUR',
+    category: 'home-battery',
+    images: JSON.stringify([
+      'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=300&fit=crop',
+      'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400&h=300&fit=crop'
+    ]),
+    specs: 'Capacity: 10kWh, Voltage: 48V, Cycles: 6000+, Warranty: 10 years',
+    in_stock: true,
+    featured: true
   }
 ];
 

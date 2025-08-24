@@ -1,276 +1,221 @@
 # ScaleVolt Store - Mini Launch Version
 
-A minimal e-commerce store focused on renewable energy products, built with React and Supabase.
+A minimal e-commerce store for solar and renewable energy products, designed for quick deployment.
 
-## 🎯 Features
+## 🚀 Features
 
 - **3 Core Products**: Portable Solar Panel, Portable Power Station, Home Battery Pack
-- **Bilingual Support**: English (EN) and Polish (PL) with Polish as default
-- **Supabase Integration**: Real-time product data from Supabase database
+- **Bilingual Support**: English (EN) and Polish (PL) languages
+- **Supabase Integration**: Modern database backend
 - **Responsive Design**: Mobile-first approach with Tailwind CSS
-- **Language Switcher**: Easy toggle between EN/PL languages
-- **Cart Management**: Add products to cart functionality
+- **React 19**: Latest React with modern hooks and patterns
 
-## 🚀 Quick Start
+## 📦 Products Included
 
-### Prerequisites
+1. **Portable Solar Panel 100W** - €299.99
+   - High-efficiency portable solar panel
+   - Perfect for camping, RVs, and emergency power
+   - Lightweight and foldable design
+
+2. **Portable Power Station 1000Wh** - €899.99
+   - Compact and powerful portable power station
+   - Multiple output ports and fast charging
+   - LCD display for easy monitoring
+
+3. **Home Battery Pack 10kWh** - €4,999.99
+   - Professional home energy storage solution
+   - Seamlessly integrates with solar panels
+   - Provides backup power during outages
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 19, Vite, Tailwind CSS
+- **Backend**: Node.js, Express
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Deployment**: Vercel (Frontend), Render (Backend)
+
+## 📋 Prerequisites
 
 - Node.js 18+ 
 - npm or yarn
-- Supabase account and project
-- Git
+- Supabase account
+- Vercel account (for frontend deployment)
+- Render account (for backend deployment)
+
+## 🚀 Quick Start
 
 ### 1. Clone and Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/andreyeramte/scalevolt-store-new.git
-cd scalevolt-store-new
-
-# Switch to mini-launch branch
-git checkout mini-launch
-
-# Install dependencies
+git clone https://github.com/andreyeramte/scalevolt-store-mini.git
+cd scalevolt-store-mini
 npm install
 ```
 
 ### 2. Environment Configuration
 
 ```bash
-# Copy the example environment file
-cp env.mini.example .env
+# Copy environment template
+cp .env.mini.example .env
 
 # Edit .env with your actual values
-nano .env
+# Required: SUPABASE_URL, SUPABASE_ANON_KEY
 ```
 
-**Required Environment Variables:**
-```env
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-### 3. Supabase Setup
-
-1. **Create Supabase Project**
-   - Go to [supabase.com](https://supabase.com)
-   - Create new project
-   - Note down your project URL and anon key
-
-2. **Create Products Table**
-   ```sql
-   CREATE TABLE products (
-     id TEXT PRIMARY KEY,
-     name_en TEXT NOT NULL,
-     name_pl TEXT NOT NULL,
-     description_en TEXT,
-     description_pl TEXT,
-     price DECIMAL(10,2) NOT NULL,
-     currency TEXT DEFAULT 'EUR',
-     category TEXT,
-     images TEXT[],
-     specs JSONB,
-     in_stock BOOLEAN DEFAULT true,
-     featured BOOLEAN DEFAULT false,
-     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-   );
-   ```
-
-3. **Seed Products**
-   ```bash
-   # Install backend dependencies
-   cd node-backend
-   npm install
-   
-   # Set backend environment variables
-   cp env.mini.example .env
-   # Add SUPABASE_URL and SUPABASE_ANON_KEY to .env
-   
-   # Run the seeding script
-   node db/seed-mini-products.js
-   ```
-
-### 4. Run Locally
+### 3. Seed Products to Supabase
 
 ```bash
-# Frontend (from root directory)
+# Run the database seeding script
+node db/seed-mini-products.js
+```
+
+### 4. Start Development
+
+```bash
+# Frontend (Vite)
 npm run dev
 
-# Backend (from node-backend directory)
-cd node-backend
+# Backend (in separate terminal)
+cd node-backend/backend-node
+npm install
 npm start
 ```
 
-Visit `http://localhost:5173` to see your store!
+## 🌐 Local Development
 
-## 🌐 Language Support
+### Frontend
+- **URL**: http://localhost:5173
+- **Default Language**: Polish (PL)
+- **Language Switch**: EN/PL toggle available
 
-The mini-launch version supports two languages:
+### Backend API
+- **URL**: http://localhost:3001
+- **Endpoints**: `/api/products`, `/api/search`, etc.
 
-- **Polish (PL)**: Default language
-- **English (EN)**: Secondary language
+## 🗄️ Database Setup
 
-Users can switch languages using the language switcher in the header.
+### Supabase Configuration
 
-## 📦 Product Structure
+1. Create a new Supabase project
+2. Go to SQL Editor and run the schema from `db/schema.sql`
+3. Update your `.env` file with Supabase credentials
+4. Run the seeding script: `node db/seed-mini-products.js`
 
-Each product includes:
+### Database Schema
 
-```json
-{
-  "id": "unique-product-id",
-  "name_en": "English Name",
-  "name_pl": "Polish Name", 
-  "description_en": "English Description",
-  "description_pl": "Polish Description",
-  "price": 299.99,
-  "currency": "EUR",
-  "category": "portable-solar",
-  "images": ["image1.jpg", "image2.jpg"],
-  "specs": { "power": "100W", "voltage": "12V" },
-  "in_stock": true,
-  "featured": true
-}
-```
+The products table includes:
+- `id`, `name_en`, `name_pl`, `description_en`, `description_pl`
+- `price`, `currency`, `category`, `images`, `specs`
+- `in_stock`, `featured`, `created_at`, `updated_at`
 
 ## 🚀 Deployment
 
-### Frontend (Vercel)
+### Frontend to Vercel
 
-1. **Connect Repository**
-   - Go to [vercel.com](https://vercel.com)
+1. **Connect Repository**:
+   - Go to [Vercel](https://vercel.com)
    - Import your GitHub repository
-   - Select the `mini-launch` branch
+   - Set build command: `npm run build`
+   - Set output directory: `dist`
 
-2. **Environment Variables**
+2. **Environment Variables**:
    - Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
-   - Set `VITE_API_URL` to your backend URL
+   - Redeploy after adding variables
 
-3. **Build Settings**
-   - Framework Preset: Vite
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
+### Backend to Render
 
-4. **Deploy**
-   - Click Deploy
-   - Your store will be live at `https://your-project.vercel.app`
-
-### Backend (Render)
-
-1. **Create Web Service**
-   - Go to [render.com](https://render.com)
+1. **Create Web Service**:
+   - Go to [Render](https://render.com)
    - Create new Web Service
    - Connect your GitHub repository
+   - Set root directory: `node-backend/backend-node`
 
-2. **Environment Variables**
-   ```env
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
-   NODE_ENV=production
-   PORT=10000
-   ```
+2. **Environment Variables**:
+   - Add all backend environment variables
+   - Set build command: `npm install`
+   - Set start command: `npm start`
 
-3. **Build Settings**
-   - Build Command: `npm install`
-   - Start Command: `npm start`
-   - Root Directory: `node-backend`
+3. **Update Frontend**:
+   - Update `API_BASE_URL` in frontend to point to Render URL
 
-4. **Deploy**
-   - Click Create Web Service
-   - Your API will be live at `https://your-service.onrender.com`
+## 🔧 Configuration
 
-## 🧪 Testing
+### Language Settings
+
+- **Default**: Polish (PL)
+- **Supported**: English (EN), Polish (PL)
+- **Switch**: Use language selector in header
+
+### Product Management
+
+- Products are stored in Supabase
+- Fallback to local data if Supabase unavailable
+- Easy to add/modify products via Supabase dashboard
+
+## 📱 Testing
 
 ### Local Testing
 
-1. **Language Switch**
-   - Verify EN/PL switching works
-   - Check that product names/descriptions change
-   - Ensure language preference is saved
-
-2. **Product Loading**
-   - Verify 3 products load from Supabase
-   - Check images display correctly
-   - Test product details page
-
-3. **Cart Functionality**
-   - Add products to cart
-   - Verify cart count updates
-   - Test cart page navigation
+1. **Product Display**: Verify all 3 products show correctly
+2. **Language Switch**: Test EN/PL language switching
+3. **Responsive Design**: Test on mobile and desktop
+4. **API Endpoints**: Test backend routes
 
 ### Build Testing
 
 ```bash
 # Test production build
 npm run build
-
-# Preview build locally
 npm run preview
 ```
 
-## 🔧 Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Products Not Loading**
-   - Check Supabase credentials in `.env`
+1. **Supabase Connection Failed**:
+   - Verify environment variables
+   - Check Supabase project status
+   - Ensure database schema is created
+
+2. **Products Not Loading**:
+   - Check Supabase connection
    - Verify products table exists
    - Run seeding script again
 
-2. **Language Not Switching**
-   - Clear browser localStorage
-   - Check i18n configuration
-   - Verify translation files
-
-3. **Build Errors**
-   - Check Node.js version (18+)
+3. **Build Errors**:
    - Clear node_modules and reinstall
-   - Verify all imports are correct
+   - Check Node.js version (18+ required)
+   - Verify all dependencies are installed
 
-### Debug Mode
+### Support
 
-Enable debug logging by adding to `.env`:
-```env
-VITE_DEBUG=true
-```
+- Check Supabase logs in dashboard
+- Review browser console for frontend errors
+- Check backend logs in Render dashboard
 
-## 📱 Mobile Responsiveness
+## 📈 Next Steps
 
-The store is fully responsive and tested on:
-- Desktop (1200px+)
-- Tablet (768px - 1199px)
-- Mobile (320px - 767px)
+After successful mini launch:
 
-## 🔒 Security Notes
-
-- Supabase anon key is safe for client-side use
-- No sensitive data is exposed
-- API endpoints are protected by CORS
-- Environment variables are properly prefixed with `VITE_`
-
-## 📈 Future Enhancements
-
-Potential additions for full launch:
-- User authentication
-- Payment processing
-- Order management
-- Admin panel
-- Analytics tracking
-- SEO optimization
-
-## 🤝 Support
-
-For issues or questions:
-1. Check this README
-2. Review Supabase documentation
-3. Check Vercel/Render deployment logs
-4. Open GitHub issue
+1. **Add More Products**: Expand product catalog
+2. **User Authentication**: Implement user accounts
+3. **Shopping Cart**: Add cart functionality
+4. **Payment Integration**: Add Stripe checkout
+5. **Analytics**: Add tracking and analytics
+6. **SEO Optimization**: Improve search engine visibility
 
 ## 📄 License
 
 This project is licensed under the ISC License.
 
+## 🤝 Contributing
+
+This is a mini launch version. For contributions to the main project, please refer to the main ScaleVolt Store repository.
+
 ---
 
-**Happy Launching! 🚀**
+**Ready for Launch! 🚀**
+
+Your minimal e-commerce store is now configured and ready for deployment to Vercel and Render.
