@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useRegion } from '../contexts/RegionContext.jsx'
 import ProductGrid from '../components/ProductGrid'
 import SearchBar from '../components/SearchBar'
 import CategoryFilter from '../components/CategoryFilter'
+import supabaseService from '../services/supabaseService'
 
 function ProductsView() {
   const { t } = useTranslation()
-  const { region } = useRegion()
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
@@ -36,12 +35,8 @@ function ProductsView() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const url = region ? `/api/products?region=${region}` : '/api/products'
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error('Failed to fetch products')
-      }
-      const data = await response.json()
+      // Fetch only the 3 mini products from Supabase
+      const data = await supabaseService.getMiniProducts()
       setProducts(data)
     } catch (err) {
       setError(err.message)
