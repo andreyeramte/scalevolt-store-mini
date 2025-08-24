@@ -3,7 +3,6 @@
     "@intercom/messenger-js-sdk": "^0.0.14",
     "@maxmind/geoip2-node": "^6.0.0",
     "@supabase/supabase-js": "^2.54.0",
-    "@vueuse/head": "^2.0.0",
     "axios": "^1.8.4",
     "chalk": "^5.4.1",
     "cloudinary": "^2.7.0",
@@ -28,15 +27,25 @@
     "react-dom": "^19.1.0",
     "react-i18next": "^15.5.2",
     "react-router-dom": "^7.6.1",
+    "sharp": "^0.34.3",
     "stripe": "^17.7.0",
-    "vue-i18n": "^11.1.3",
     "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.7",
+    "vite": "^5.4.10"
   },
   "name": "scalevoltstore_laptop",
   "version": "1.0.0",
-  "description": "This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.",
+  "description": "ScaleVolt Store - Modern React e-commerce application for solar and renewable energy products",
   "main": "eslint.config.js",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

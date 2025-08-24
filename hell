@@ -1,0 +1,21 @@
+[33mcommit 539e1c2b71c2f2f0c0949877142252cd35bcd6f6[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: andreyeramte <andri.rraa@gmail.com>
+Date:   Sun Aug 17 18:08:01 2025 +0200
+
+    ✨ Add comprehensive backend services: Stripe payments, Resend email, Cloudinary, SEO, Analytics, Sentry monitoring, Cron jobs, Cart management, and enhanced search functionality
+
+node-backend/backend-node/env.example
+node-backend/backend-node/package-lock.json
+node-backend/backend-node/package.json
+node-backend/backend-node/services/analyticsService.js
+node-backend/backend-node/services/cartService.js
+node-backend/backend-node/services/cloudinary.js
+node-backend/backend-node/services/cronService.js
+node-backend/backend-node/services/emailService.js
+node-backend/backend-node/services/searchService.js
+node-backend/backend-node/services/sentryService.js
+node-backend/backend-node/services/seoService.js
+node-backend/backend-node/services/stripe.js
+node-backend/backend-node/test-cloudinary.js
+package-lock.json
+package.json

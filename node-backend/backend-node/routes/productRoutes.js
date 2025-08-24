@@ -19,6 +19,7 @@ let mockProducts = [
     category: 'solar-panels',
     brand: 'ScaleVolt',
     sku: 'SP-100W-001',
+    available_regions: ['PL', 'UA'],
     created_at: new Date(),
     updated_at: new Date()
   },
@@ -31,6 +32,7 @@ let mockProducts = [
     category: 'batteries',
     brand: 'ScaleVolt',
     sku: 'BP-24V-100Ah-001',
+    available_regions: ['PL', 'UA'],
     created_at: new Date(),
     updated_at: new Date()
   },
@@ -43,6 +45,7 @@ let mockProducts = [
     category: 'inverters',
     brand: 'ScaleVolt',
     sku: 'INV-1000W-001',
+    available_regions: ['PL', 'UA'],
     created_at: new Date(),
     updated_at: new Date()
   },
@@ -55,6 +58,7 @@ let mockProducts = [
     category: 'ev-chargers',
     brand: 'ScaleVolt',
     sku: 'EV-L2-001',
+    available_regions: ['PL', 'UA'],
     created_at: new Date(),
     updated_at: new Date()
   }
@@ -166,49 +170,84 @@ router.get('/', async (req, res) => {
   try {
     console.log('GET /api/products called');
     
-    // Get pool from the server context
-    const pool = req.app.locals.pool;
+    // Get region from request (set by middleware)
+    const region = req.region || req.query.region || 'PL';
+    console.log(`🌍 Filtering products for region: ${region}`);
     
-    if (!pool) {
-      console.log('⚠️ Database not connected, returning mock products');
-      // Return mock products as fallback
-      const products = mockProducts.map(p => ({
+    // Get Supabase from the server context
+    const supabase = req.app.locals.supabase;
+    const supabaseConnected = req.app.locals.supabaseConnected;
+    
+    if (!supabase || !supabaseConnected) {
+      console.log('⚠️ Supabase not connected, returning mock products');
+      // Return mock products as fallback with region filtering
+      let products = mockProducts;
+      
+      // Filter by region if available_regions is set
+      if (region && region !== 'ALL') {
+        products = products.filter(p => 
+          !p.available_regions || 
+          p.available_regions.length === 0 || 
+          p.available_regions.includes(region)
+        );
+      }
+      
+      const filteredProducts = products.map(p => ({
         ...p,
         created_at: p.created_at instanceof Date ? p.created_at.toISOString() : p.created_at,
         updated_at: p.updated_at instanceof Date ? p.updated_at.toISOString() : p.updated_at
       }));
       
-      console.log('Returning mock products:', products.length);
-      return res.json(products);
+      console.log(`Returning ${filteredProducts.length} mock products for region ${region}`);
+      return res.json(filteredProducts);
     }
 
-    // Query real database
-    const result = await pool.query(`
-      SELECT 
-        id, sku, name, name_ua, name_pl, 
-        description, description_ua, description_pl,
-        price, stock_quantity, brand, model,
-        category_id, is_active, is_featured,
-        created_at, updated_at
-      FROM products 
-      WHERE is_active = true 
-      ORDER BY name ASC
-    `);
+    // Build Supabase query with region filtering
+    let query = supabase
+      .from('products')
+      .select('*')
+      .eq('is_active', true);
     
-    console.log('✅ Database query successful, returning', result.rows.length, 'products');
-    res.json(result.rows);
+    // Apply region filtering
+    if (region && region !== 'ALL') {
+      // Filter by available_regions: either NULL/empty (available everywhere) or contains current region
+      query = query.or(`available_regions.is.null,available_regions.eq.{},available_regions.cs.{${region}}`);
+    }
+    
+    // Execute query
+    const { data, error } = await query.order('name', { ascending: true });
+    
+    if (error) {
+      console.error('❌ Supabase query error:', error);
+      throw error;
+    }
+    
+    console.log(`✅ Supabase query successful, returning ${data.length} products for region ${region}`);
+    res.json(data);
   } catch (err) {
     console.error('❌ Error in /api/products:', err);
     console.error('Error stack:', err.stack);
     
     // Fallback to mock products on error
     console.log('🔄 Falling back to mock products');
-    const products = mockProducts.map(p => ({
+    const region = req.region || req.query.region || 'PL';
+    
+    let products = mockProducts;
+    if (region && region !== 'ALL') {
+      products = products.filter(p => 
+        !p.available_regions || 
+        p.available_regions.length === 0 || 
+        p.available_regions.includes(region)
+      );
+    }
+    
+    const filteredProducts = products.map(p => ({
       ...p,
       created_at: p.created_at instanceof Date ? p.created_at.toISOString() : p.created_at,
       updated_at: p.updated_at instanceof Date ? p.updated_at.toISOString() : p.updated_at
     }));
-    res.json(products);
+    
+    res.json(filteredProducts);
   }
 });
 
@@ -216,6 +255,7 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
   const query = (req.query.q || '').trim().toLowerCase();
   const lang = req.query.lang || 'en';
+  const region = req.region || req.query.region || 'PL';
 
   try {
     // Get pool from the server context
@@ -224,6 +264,15 @@ router.get('/search', async (req, res) => {
     if (!pool) {
       // Mock mode - filter mock products
       let products = [...mockProducts];
+      
+      // Apply region filtering first
+      if (region && region !== 'ALL') {
+        products = products.filter(p => 
+          !p.available_regions || 
+          p.available_regions.length === 0 || 
+          p.available_regions.includes(region)
+        );
+      }
       
       if (query) {
         products = products.filter(p => 
@@ -251,6 +300,71 @@ router.get('/search', async (req, res) => {
       return res.json(products.slice(0, 20));
     }
 
+    // Get Supabase from the server context
+    const supabase = req.app.locals.supabase;
+    const supabaseConnected = req.app.locals.supabaseConnected;
+    
+    if (supabase && supabaseConnected) {
+      // Supabase mode with region filtering
+      let supabaseQuery = supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true);
+      
+      // Apply region filtering
+      if (region && region !== 'ALL') {
+        // Filter by available_regions: either NULL/empty (available everywhere) or contains current region
+        supabaseQuery = supabaseQuery.or(`available_regions.is.null,available_regions.eq.{},available_regions.cs.{${region}}`);
+      }
+      
+      // Apply search filtering
+      if (query) {
+        // For now, we'll filter client-side since Supabase full-text search setup may vary
+        // In production, you'd want to use proper full-text search with region filtering
+        const { data, error } = await supabaseQuery;
+        if (error) throw error;
+        
+        let filteredProducts = data.filter(p => 
+          p.name.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query) ||
+          (p.brand && p.brand.toLowerCase().includes(query))
+        );
+        
+        // Apply language filtering
+        filteredProducts = filteredProducts.map(prod => {
+          if (lang === 'ua') {
+            prod.name = prod.name_ua || prod.name;
+            prod.description = prod.description_ua || prod.description;
+          } else if (lang === 'pl') {
+            prod.name = prod.name_pl || prod.name;
+            prod.description = prod.description_pl || prod.description;
+          }
+          return prod;
+        });
+        
+        return res.json(filteredProducts.slice(0, 20));
+      } else {
+        // No search query, just get products for region
+        const { data, error } = await supabaseQuery.order('name', { ascending: true }).limit(20);
+        if (error) throw error;
+        
+        // Apply language filtering
+        let rows = data.map(prod => {
+          if (lang === 'ua') {
+            prod.name = prod.name_ua || prod.name;
+            prod.description = prod.description_ua || prod.description;
+          } else if (lang === 'pl') {
+            prod.name = prod.name_pl || prod.name;
+            prod.description = prod.description_pl || prod.description;
+          }
+          return prod;
+        });
+        
+        return res.json(rows);
+      }
+    }
+    
+    // Fallback to pool query (legacy)
     let result;
     if (!query) {
       result = await pool.query('SELECT * FROM products ORDER BY name ASC LIMIT 20');

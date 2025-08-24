@@ -1,7 +1,0 @@
-{
-  "common": {
-    "loading": "Завантаження...",
-    "country": { "ukraine": "Україна", "poland": "Польща" },
-    "language": { "ukrainian": "Українська", "polish": "Польська", "english": "Англійська" }
-  }
-} 

@@ -13,8 +13,7 @@ const {
   searchLimiter,
   corsOptions,
   compressionOptions,
-  performanceMonitor,
-  optimizeDatabasePool
+  performanceMonitor
 } = require('./config/performance');
 
 // Load .env from current directory
@@ -24,28 +23,43 @@ const app = express();
 const cableRoutes = require('./routes/cables');
 const authRoutes = require('./routes/authRoutes');
 
-// Import database configuration
-const { initializeDatabase, getPool, isConnected } = require('./config/database');
+// Import Supabase configuration
+const { supabase, db, utils } = require('./config/supabase');
 
-// Initialize database connection
-let pool = null;
+// Initialize Supabase connection
+let supabaseConnected = false;
 
-// Initialize database
-initializeDatabase()
-  .then((success) => {
-    if (success) {
-      pool = getPool();
-      // Optimize database pool
-      optimizeDatabasePool(pool);
-      console.log('✅ Database initialized successfully');
+// Initialize Supabase
+async function initializeSupabase() {
+  try {
+    console.log('🔧 Initializing Supabase connection...');
+    
+    // Test the connection
+    const connectionTest = await utils.testConnection();
+    if (connectionTest.connected) {
+      supabaseConnected = true;
+      console.log('✅ Supabase connected successfully');
     } else {
-      console.log('⚠️  Running in mock mode - database not connected');
+      console.log('⚠️  Supabase connection test failed, but continuing...');
+      // Try to access products table directly
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .limit(1);
+      
+      if (!error) {
+        supabaseConnected = true;
+        console.log('✅ Supabase products table accessible');
+      } else {
+        console.log('❌ Supabase products table not accessible:', error.message);
+      }
     }
-  })
-  .catch((error) => {
-    console.error('❌ Database initialization failed:', error);
-    console.log('⚠️  Running in mock mode - database not connected');
-  });
+  } catch (error) {
+    console.error('❌ Supabase initialization failed:', error);
+  }
+}
+
+initializeSupabase();
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
@@ -57,20 +71,24 @@ process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
 });
 
-// Make pool available to routes
-app.locals.pool = pool;
+// Make Supabase available to routes
+app.locals.supabase = supabase;
+app.locals.db = db;
+app.locals.supabaseConnected = supabaseConnected;
 
 const productRoutes   = require('./routes/productRoutes');
 const translateRoutes = require('./routes/translateRoutes');
 const chatbotRoutes   = require('./routes/chatbotRoutes');
 const searchRoutes    = require('./routes/searchRoutes');
+const installationRoutes = require('./routes/installationRoutes');
+const regionRoutes = require('./routes/regionRoutes');
 
 // Performance middleware
 app.use(performanceMonitor);
 
 // CORS configuration
 app.use(cors({
-  origin: ['http://localhost:5177', 'http://localhost:5178', 'http://localhost:5179', 'http://localhost:5180'],
+  origin: ['http://localhost:3000', 'http://localhost:5177', 'http://localhost:5178', 'http://localhost:5179', 'http://localhost:5180'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -80,6 +98,10 @@ app.use(express.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
+// Add cookie parser for region detection
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 // mount your APIs with rate limiting
 app.use('/api/products', apiLimiter, productRoutes);
 app.use('/api/translate', apiLimiter, translateRoutes);
@@ -87,6 +109,8 @@ app.use('/api/cables', apiLimiter, cableRoutes);
 app.use('/api/auth', apiLimiter, authRoutes);
 app.use('/api/chatbot', apiLimiter, chatbotRoutes);
 app.use('/api/search', apiLimiter, searchRoutes);
+app.use('/api/installation-orders', apiLimiter, installationRoutes);
+app.use('/api', apiLimiter, regionRoutes);
 
 // Add a simple test route
 app.get('/api/test', (req, res) => {
@@ -111,14 +135,13 @@ app.get('/', (req, res) => {
 // health check
 app.get('/health', async (req, res) => {
   try {
-    // Test database connection
-    if (pool) {
-      const result = await pool.query('SELECT 1 as test');
+    // Test Supabase connection
+    if (supabaseConnected) {
       res.json({ 
         status: 'OK', 
         timestamp: new Date().toISOString(),
-        database: 'connected',
-        message: 'ScaleVolt API is running'
+        database: 'connected (Supabase)',
+        message: 'ScaleVolt API is running with Supabase'
       });
     } else {
       res.json({ 
@@ -139,19 +162,8 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Ensure users table exists
-if (pool) {
-  pool.query(`CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )`).then(() => {
-    console.log('✅ Users table ready');
-  }).catch(err => {
-    console.error('Error creating users table:', err);
-  });
-}
+// Note: Users table is managed by Supabase, no need to create manually
+console.log('✅ Supabase handles user authentication and tables');
 
 // Global error handler
 app.use((err, req, res, next) => {
@@ -168,6 +180,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📦 Products API:   http://localhost:${PORT}/api/products`);
   console.log(`🔤 Translate API:  http://localhost:${PORT}/api/translate`);
+  console.log(`🔧 Installation API: http://localhost:${PORT}/api/installation-orders`);
   console.log(`❤️ Health check:   http://localhost:${PORT}/health`);
 }).on('error', err => {
   console.error('Failed to start:', err);

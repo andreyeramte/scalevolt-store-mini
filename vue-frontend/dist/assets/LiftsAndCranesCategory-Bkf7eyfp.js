@@ -1,1 +1,0 @@
-import{j as s}from"./index-Cov9520u.js";const e=()=>s.jsxs("div",{className:"container mx-auto px-4 py-8",children:[s.jsx("h1",{className:"text-3xl font-bold mb-6",children:"Lifts and Cranes"}),s.jsx("p",{className:"text-gray-600",children:"Lifts and Cranes Category View - Coming Soon"})]});export{e as default};

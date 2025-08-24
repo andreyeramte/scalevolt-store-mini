@@ -1,0 +1,22 @@
+# Load environment variables from .env file
+function Load-EnvFile {
+    param(
+        [string]$Path = ".env"
+    )
+    
+    if (Test-Path $Path) {
+        Write-Host "Loading environment variables from $Path..." -ForegroundColor Green
+        Get-Content $Path | ForEach-Object { 
+            if($_ -match '^([^=]+)=(.*)$') { 
+                [Environment]::SetEnvironmentVariable($matches[1], $matches[2])
+                Write-Host "Loaded: $($matches[1])" -ForegroundColor Yellow
+            }
+        }
+        Write-Host "Environment variables loaded successfully!" -ForegroundColor Green
+    } else {
+        Write-Host "Error: .env file not found at $Path" -ForegroundColor Red
+    }
+}
+
+# Load the .env file when this script is sourced
+Load-EnvFile
