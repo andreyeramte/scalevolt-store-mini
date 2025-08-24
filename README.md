@@ -277,3 +277,4 @@ For issues or questions:
 ---
 
 **🎉 Your ScaleVolt e-commerce platform is now ready for production!**
+# scalevolt-store-mini
